@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uni Lounge & Ordering Hub</title>
+  <title>Campus Lounge & Social Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -11,13 +11,17 @@
       theme: {
         extend: {
           colors: {
-            brand: {
+            amber: {
+              400: '#fbbf24',
               500: '#f59e0b',
               600: '#d97706',
-              900: '#78350f',
             },
             telebirr: '#0084ff',
-            cbe: '#8b1d41'
+            cbe: '#9d1c47'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
           }
         }
       }
@@ -25,128 +29,185 @@
   </script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-    .glass {
-      background: rgba(24, 24, 27, 0.75);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #050507;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .glass-card {
+      background: rgba(15, 15, 20, 0.65);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .glass-modal {
+      background: rgba(10, 10, 15, 0.9);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .neon-border {
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050507;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d97706;
     }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans pb-24 md:pb-12">
+<body class="text-zinc-100 min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- Ambient Lighting Elements -->
+  <div class="ambient-glow top-0 left-1/4 -translate-x-1/2"></div>
+  <div class="ambient-glow top-1/3 right-0"></div>
 
   <!-- Header / Navigation -->
-  <header class="sticky top-0 z-40 glass border-b border-zinc-800/80">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+  <header class="sticky top-0 z-40 glass-card border-b border-zinc-800/60 bg-zinc-950/80">
+    <div class="max-w-6xl mx-auto px-5 py-4 flex items-center justify-between">
       <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 p-[1px] flex items-center justify-center shadow-lg shadow-amber-500/20">
+          <div class="w-full h-full bg-zinc-950 rounded-[15px] flex items-center justify-center">
+            <span class="text-amber-400 text-sm font-black tracking-tighter">CL</span>
+          </div>
+        </div>
         <div>
-          <h1 class="text-lg font-bold tracking-tight text-white leading-tight">CAMPUS LOUNGE</h1>
-          <p class="text-xs text-amber-500 font-medium">Digital Hub & Orders</p>
+          <h1 class="text-base font-black tracking-wider text-white leading-tight uppercase">CAMPUS LOUNGE</h1>
+          <p class="text-[10px] text-amber-500/90 font-mono tracking-widest uppercase">VIP Table Service & Bar</p>
         </div>
       </div>
 
-      <!-- Cart Button -->
-      <div class="flex items-center gap-2">
-        <button onclick="openCartModal()" class="relative px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-950 flex items-center gap-2 transition">
-          <i class="fa-solid fa-shopping-bag"></i>
-          <span>Cart</span>
-          <span id="cartBadge" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-[10px] w-5 h-5 flex items-center justify-center font-bold">0</span>
-        </button>
-      </div>
+      <!-- Cart Trigger Button -->
+      <button onclick="openCartModal()" class="relative px-4 py-2 rounded-xl text-xs font-bold bg-amber-500 hover:bg-amber-400 text-zinc-950 flex items-center gap-2.5 transition duration-200 shadow-lg shadow-amber-500/10 active:scale-95">
+        <i class="fa-solid fa-bag-shopping text-sm"></i>
+        <span>MY ORDER</span>
+        <span id="cartBadge" class="hidden bg-zinc-950 text-amber-400 rounded-lg text-[10px] font-mono font-bold px-1.5 py-0.5 border border-amber-500/40">0</span>
+      </button>
     </div>
   </header>
 
-  <!-- CUSTOMER VIEW -->
-  <main id="customerView" class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full space-y-8">
+  <!-- CUSTOMER STOREFRONT VIEW -->
+  <main id="customerView" class="max-w-6xl mx-auto px-5 py-8 flex-grow w-full space-y-10 z-10 relative">
     
-    <!-- Hero Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600/30 via-amber-900/10 to-zinc-900 border border-amber-500/20 p-6 md:p-10">
-      <div class="max-w-xl space-y-3 z-10 relative">
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-          Fast Table Side Ordering
-        </span>
-        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
-          Chill, Order & Pay Directly.
+    <!-- Hero Lounge Banner -->
+    <div class="relative overflow-hidden rounded-3xl glass-card border border-amber-500/20 p-8 md:p-12 group">
+      <div class="absolute -right-10 -bottom-10 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/20 transition duration-700"></div>
+      
+      <div class="max-w-xl space-y-4 relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-mono font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> LIVE TABLE ORDERING
+        </div>
+        <h2 class="text-3xl md:text-5xl font-black tracking-tight text-white leading-none">
+          ELEVATE YOUR <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">LOUNGE VIBE</span>
         </h2>
-        <p class="text-sm text-zinc-400">
-          Skip the line. Order your drinks, snacks, and combo meals right from your phone using Telebirr or CBE.
+        <p class="text-xs md:text-sm text-zinc-400 leading-relaxed max-w-md">
+          Browse our exclusive menu, order directly to your table, and complete instant verification via Telebirr or CBE Birr.
         </p>
       </div>
     </div>
 
-    <!-- Category Filters -->
-    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilters">
-      <button onclick="filterCategory('All')" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition">All Items</button>
-      <button onclick="filterCategory('Drinks')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Drinks</button>
-      <button onclick="filterCategory('Snacks')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Snacks & Food</button>
-      <button onclick="filterCategory('Specials')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Combos / Specials</button>
+    <!-- Category Selector Navigation -->
+    <div class="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none" id="categoryFilters">
+      <button onclick="filterCategory('All')" class="cat-btn active px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 text-zinc-950 whitespace-nowrap transition-all duration-200">ALL MENU</button>
+      <button onclick="filterCategory('Drinks')" class="cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-900/80 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition-all duration-200">DRINKS & SHAKE</button>
+      <button onclick="filterCategory('Snacks')" class="cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-900/80 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition-all duration-200">BITES & FOOD</button>
+      <button onclick="filterCategory('Specials')" class="cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-900/80 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition-all duration-200">SPECIAL COMBOS</button>
     </div>
 
-    <!-- Menu Grid -->
-    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-      <!-- Dynamic menu items populate here -->
+    <!-- Product Menu Cards Grid -->
+    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Cards rendered via JavaScript -->
     </div>
   </main>
 
-  <!-- ADMIN LOGIN MODAL -->
-  <div id="adminLoginModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-sm rounded-2xl p-6 space-y-4 relative">
-      <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+  <!-- SECRET ADMIN AUTHENTICATION MODAL -->
+  <div id="adminLoginModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-modal w-full max-w-sm rounded-3xl p-8 space-y-6 relative border border-zinc-800 shadow-2xl">
+      <button onclick="closeAdminLoginModal()" class="absolute top-5 right-5 text-zinc-500 hover:text-white transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
-      <h3 class="text-lg font-bold text-white">Admin Authentication</h3>
-      <form onsubmit="handleAdminLogin(event)" class="space-y-3">
+
+      <div class="space-y-1">
+        <h3 class="text-lg font-extrabold text-white tracking-wide">STAFF AUTHENTICATION</h3>
+        <p class="text-xs text-zinc-500">Authorized personnel access only.</p>
+      </div>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4">
         <div>
-          <label class="block text-xs font-medium text-zinc-400 mb-1">Username</label>
-          <input type="text" id="adminUser" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+          <label class="block text-[11px] font-mono text-zinc-400 mb-1 tracking-wider uppercase">User Identifier</label>
+          <input type="text" id="adminUser" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition">
         </div>
         <div>
-          <label class="block text-xs font-medium text-zinc-400 mb-1">Password</label>
-          <input type="password" id="adminPass" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+          <label class="block text-[11px] font-mono text-zinc-400 mb-1 tracking-wider uppercase">Security Key</label>
+          <input type="password" id="adminPass" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500 transition">
         </div>
-        <button type="submit" class="w-full py-2.5 rounded-lg bg-amber-500 text-zinc-950 font-bold text-xs hover:bg-amber-600 transition">
-          Access Panel
+        <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 text-zinc-950 font-extrabold text-xs tracking-wider uppercase hover:bg-amber-400 transition duration-200">
+          LOGIN TO DASHBOARD
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ADMIN / DEV VIEW -->
-  <main id="adminView" class="hidden max-w-6xl mx-auto px-4 py-6 flex-grow w-full space-y-8">
-    <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
+  <!-- ADMIN / MANAGEMENT DASHBOARD VIEW -->
+  <main id="adminView" class="hidden max-w-6xl mx-auto px-5 py-8 flex-grow w-full space-y-8 z-10 relative">
+    <div class="flex items-center justify-between border-b border-zinc-800/80 pb-5">
       <div>
-        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-amber-500"></i> Admin / Dev Management Dashboard
+        <h2 class="text-2xl font-black text-white flex items-center gap-3 tracking-wide">
+          <i class="fa-solid fa-sliders text-amber-500"></i> CONTROL CONSOLE
         </h2>
-        <p class="text-xs text-zinc-400">Manage incoming orders, payments, and live menu catalog.</p>
+        <p class="text-xs text-zinc-400">Live order feeds, menu catalog expansion, and payment management.</p>
       </div>
-      <button onclick="exitAdminView()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition">
-        Exit to Customer View
+      <button onclick="exitAdminView()" class="px-4 py-2 rounded-xl text-xs font-bold bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border border-zinc-800 transition">
+        Exit Console
       </button>
     </div>
 
-    <!-- Admin Tabs -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
-      <!-- Left Column: Add New Item -->
-      <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-4 h-fit">
-        <h3 class="text-lg font-semibold text-amber-400 flex items-center gap-2">
-          <i class="fa-solid fa-plus-circle"></i> Post New Menu Item
+      <!-- Left Box: Add Menu Item -->
+      <div class="glass-card p-6 rounded-3xl border border-zinc-800 space-y-5 h-fit">
+        <h3 class="text-sm font-extrabold text-amber-400 tracking-wider uppercase flex items-center gap-2">
+          <i class="fa-solid fa-plus text-xs"></i> Post Catalog Item
         </h3>
-        <form id="addItemForm" onsubmit="handleAddNewItem(event)" class="space-y-3">
+        <form id="addItemForm" onsubmit="handleAddNewItem(event)" class="space-y-4">
           <div>
-            <label class="block text-xs font-medium text-zinc-400 mb-1">Item Title</label>
-            <input type="text" id="newItemTitle" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Special Club Sandwich">
+            <label class="block text-[11px] font-mono text-zinc-400 mb-1">ITEM TITLE</label>
+            <input type="text" id="newItemTitle" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Signature Mocktail">
           </div>
 
-          <div class="grid grid-cols-2 gap-2">
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Price (ETB)</label>
-              <input type="number" id="newItemPrice" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="250">
+              <label class="block text-[11px] font-mono text-zinc-400 mb-1">PRICE (ETB)</label>
+              <input type="number" id="newItemPrice" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="250">
             </div>
             <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Category</label>
-              <select id="newItemCategory" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+              <label class="block text-[11px] font-mono text-zinc-400 mb-1">CATEGORY</label>
+              <select id="newItemCategory" class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
                 <option value="Drinks">Drinks</option>
                 <option value="Snacks">Snacks</option>
                 <option value="Specials">Specials</option>
@@ -155,120 +216,120 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-zinc-400 mb-1">Image URL (Optional)</label>
-            <input type="url" id="newItemImage" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="https://images.unsplash.com/...">
+            <label class="block text-[11px] font-mono text-zinc-400 mb-1">IMAGE URL</label>
+            <input type="url" id="newItemImage" class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="https://images.unsplash.com/...">
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-zinc-400 mb-1">Description</label>
-            <textarea id="newItemDesc" rows="2" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="Brief details about the item..."></textarea>
+            <label class="block text-[11px] font-mono text-zinc-400 mb-1">DESCRIPTION</label>
+            <textarea id="newItemDesc" rows="2" class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Item details..."></textarea>
           </div>
 
-          <button type="submit" class="w-full py-2.5 rounded-lg bg-amber-500 text-zinc-950 font-bold text-xs hover:bg-amber-600 transition">
-            Publish Item
+          <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 text-zinc-950 font-extrabold text-xs tracking-wider uppercase hover:bg-amber-400 transition">
+            PUBLISH TO MENU
           </button>
         </form>
       </div>
 
-      <!-- Right Column: Live Order Feed -->
-      <div class="lg:col-span-2 glass p-5 rounded-2xl border border-zinc-800 space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-lg font-semibold text-white flex items-center gap-2">
-            <i class="fa-solid fa-receipt text-amber-400"></i> Live Customer Orders
+      <!-- Right Box: Incoming Orders Feed -->
+      <div class="lg:col-span-2 glass-card p-6 rounded-3xl border border-zinc-800 space-y-5">
+        <div class="flex items-center justify-between border-b border-zinc-800/80 pb-3">
+          <h3 class="text-sm font-extrabold text-white tracking-wider uppercase flex items-center gap-2">
+            <i class="fa-solid fa-list-check text-amber-500"></i> LIVE ORDERS QUEUE
           </h3>
-          <button onclick="clearAllOrders()" class="text-xs text-red-400 hover:text-red-300 transition">Clear Orders</button>
+          <button onclick="clearAllOrders()" class="text-[11px] font-mono text-red-400 hover:text-red-300 transition">Clear History</button>
         </div>
 
         <div id="ordersFeed" class="space-y-4 max-h-[600px] overflow-y-auto pr-1">
-          <!-- Dynamic Orders render here -->
+          <!-- Dynamic order entries populating -->
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- CART & CHECKOUT MODAL -->
-  <div id="cartModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-lg rounded-2xl p-6 space-y-5 relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeCartModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+  <!-- CART & CHECKOUT SLIDE MODAL -->
+  <div id="cartModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-modal border border-zinc-800 w-full max-w-lg rounded-3xl p-6 md:p-8 space-y-6 relative max-h-[92vh] overflow-y-auto shadow-2xl">
+      <button onclick="closeCartModal()" class="absolute top-6 right-6 text-zinc-500 hover:text-white transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <h3 class="text-xl font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-bag-shopping text-amber-500"></i> Your Order
-      </h3>
+      <div class="space-y-1">
+        <h3 class="text-xl font-black text-white tracking-wide">ORDER CHECKOUT</h3>
+        <p class="text-xs text-zinc-400">Review your selected items and complete payment verification.</p>
+      </div>
 
       <div id="cartItemsList" class="space-y-3 divide-y divide-zinc-800/60 max-h-48 overflow-y-auto pr-1">
-        <!-- Cart items list here -->
+        <!-- Cart Items List -->
       </div>
 
-      <div class="border-t border-zinc-800 pt-3 flex items-center justify-between text-base font-bold text-white">
-        <span>Total Amount:</span>
-        <span id="cartTotalDisplay" class="text-amber-400">0 ETB</span>
+      <div class="border-t border-zinc-800/80 pt-4 flex items-center justify-between">
+        <span class="text-xs font-mono text-zinc-400 uppercase">Total Amount Due</span>
+        <span id="cartTotalDisplay" class="text-xl font-black text-amber-400">0 ETB</span>
       </div>
 
-      <!-- Customer & Bank Info Form -->
-      <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4 border-t border-zinc-800 pt-4">
+      <!-- Customer Details & Bank Info Form -->
+      <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4 border-t border-zinc-800/80 pt-5">
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1">Your Full Name / Table Number *</label>
-          <input type="text" id="custName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Alex (Table 4)">
+          <label class="block text-[11px] font-mono text-zinc-400 mb-1 uppercase">Name / Table Number *</label>
+          <input type="text" id="custName" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Samuel (Table 08)">
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-1">Bank / Telebirr Sender Name *</label>
-          <input type="text" id="custBankName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="Name on Telebirr/CBE account sent from">
-          <p class="text-[11px] text-zinc-500 mt-1">This helps staff match your transfer instantly.</p>
+          <label class="block text-[11px] font-mono text-zinc-400 mb-1 uppercase">Bank / Telebirr Sender Account Name *</label>
+          <input type="text" id="custBankName" required class="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Name on bank account used for transfer">
         </div>
 
-        <!-- Payment Method Choice -->
-        <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-2">Select Payment Method</label>
+        <!-- Payment Switcher -->
+        <div class="space-y-2">
+          <label class="block text-[11px] font-mono text-zinc-400 uppercase">Select Transfer Channel</label>
           <div class="grid grid-cols-2 gap-3">
-            <label class="cursor-pointer border border-zinc-800 rounded-xl p-3 flex flex-col items-center gap-1 bg-zinc-950/60 hover:border-telebirr transition">
+            <label class="cursor-pointer border border-zinc-800 rounded-2xl p-3.5 flex flex-col items-center gap-1 bg-zinc-950/40 hover:border-telebirr transition">
               <input type="radio" name="payMethod" value="Telebirr" checked class="hidden" onchange="switchPayTab('telebirr')">
-              <span class="text-xs font-bold text-telebirr">Telebirr</span>
-              <span class="text-[10px] text-zinc-500">Mobile Money</span>
+              <span class="text-xs font-black text-telebirr">Telebirr</span>
+              <span class="text-[10px] text-zinc-500 font-mono">Mobile Money</span>
             </label>
-            <label class="cursor-pointer border border-zinc-800 rounded-xl p-3 flex flex-col items-center gap-1 bg-zinc-950/60 hover:border-cbe transition">
+            <label class="cursor-pointer border border-zinc-800 rounded-2xl p-3.5 flex flex-col items-center gap-1 bg-zinc-950/40 hover:border-cbe transition">
               <input type="radio" name="payMethod" value="CBE Birr" class="hidden" onchange="switchPayTab('cbe')">
-              <span class="text-xs font-bold text-pink-500">CBE Birr</span>
-              <span class="text-[10px] text-zinc-500">Bank Transfer</span>
+              <span class="text-xs font-black text-pink-500">CBE Birr</span>
+              <span class="text-[10px] text-zinc-500 font-mono">Bank Transfer</span>
             </label>
           </div>
         </div>
 
-        <!-- Account Details Box -->
-        <div id="telebirrInfo" class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl text-xs space-y-1">
-          <p class="text-zinc-400">Send Payment to Telebirr Number:</p>
-          <p class="font-mono text-amber-400 font-bold text-base">0912 34 56 78</p>
+        <!-- Account Display details -->
+        <div id="telebirrInfo" class="bg-zinc-950/90 border border-zinc-800/80 p-4 rounded-2xl text-xs space-y-1">
+          <p class="text-[11px] text-zinc-400 font-mono uppercase">Send Payment via Telebirr:</p>
+          <p class="font-mono text-amber-400 font-black text-lg tracking-wider">0912 34 56 78</p>
           <p class="text-[10px] text-zinc-500">Account Holder: Lounge Manager</p>
         </div>
 
-        <div id="cbeInfo" class="hidden bg-zinc-950 border border-zinc-800 p-3 rounded-xl text-xs space-y-1">
-          <p class="text-zinc-400">Send Payment to Commercial Bank of Ethiopia (CBE):</p>
-          <p class="font-mono text-amber-400 font-bold text-base">1000 1234 5678 9</p>
-          <p class="text-[10px] text-zinc-500">Account Name: Campus Lounge PLC</p>
+        <div id="cbeInfo" class="hidden bg-zinc-950/90 border border-zinc-800/80 p-4 rounded-2xl text-xs space-y-1">
+          <p class="text-[11px] text-zinc-400 font-mono uppercase">Send Payment via CBE Bank:</p>
+          <p class="font-mono text-amber-400 font-black text-lg tracking-wider">1000 1234 5678 9</p>
+          <p class="text-[10px] text-zinc-500">Account Holder: Campus Lounge PLC</p>
         </div>
 
-        <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 font-bold text-zinc-950 text-sm transition">
-          Confirm & Place Order
+        <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 font-black text-zinc-950 text-xs tracking-wider uppercase transition duration-200 shadow-lg shadow-amber-500/20">
+          CONFIRM & DISPATCH ORDER
         </button>
       </form>
     </div>
   </div>
 
-  <footer class="mt-auto py-4 text-center text-xs text-zinc-600 border-t border-zinc-900">
-    Designed & Powered by <span onclick="triggerAdminSecret()" class="text-zinc-400 font-semibold cursor-pointer hover:text-amber-500 transition">@gray_exists0</span>
+  <!-- Footer Branding -->
+  <footer class="mt-auto py-6 text-center text-[11px] font-mono text-zinc-600 border-t border-zinc-900/80 z-10 relative">
+    POWERED & DESIGNED BY <span onclick="triggerAdminSecret()" class="text-zinc-400 font-semibold cursor-pointer hover:text-amber-400 transition">@gray_exists0</span>
   </footer>
 
-  <!-- App Script Logic -->
+  <!-- Application Logic -->
   <script>
-    // Initial Menu State
     const defaultMenu = [
-      { id: 1, title: 'Black Coffee / Macchiato', category: 'Drinks', price: 60, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', desc: 'Fresh local roast espresso or macchiato.' },
-      { id: 2, title: 'Special Shisa / Vibe Combo', category: 'Specials', price: 350, image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500', desc: 'Flavored shisha + choice of 2 cold beverages.' },
-      { id: 3, title: 'Club Sandwich & Fries', category: 'Snacks', price: 280, image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=500', desc: 'Triple decker sandwich served with seasoned fries.' },
-      { id: 4, title: 'Cold Red Bull / Energy', category: 'Drinks', price: 200, image: 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=500', desc: 'Chilled energy drink.' }
+      { id: 1, title: 'Black Espresso / Macchiato', category: 'Drinks', price: 60, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', desc: 'Fresh local roast espresso or rich macchiato.' },
+      { id: 2, title: 'Special Shisha Vibe Combo', category: 'Specials', price: 350, image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500', desc: 'Flavored lounge shisha + choice of 2 chilled beverages.' },
+      { id: 3, title: 'Club Sandwich & Seasoned Fries', category: 'Snacks', price: 280, image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=500', desc: 'Triple decker sandwich served with crispy fries.' },
+      { id: 4, title: 'Chilled Red Bull / Energy', category: 'Drinks', price: 200, image: 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=500', desc: 'Ice cold energy boost.' }
     ];
 
     let menu = JSON.parse(localStorage.getItem('lounge_menu')) || defaultMenu;
@@ -279,7 +340,7 @@
     function saveMenu() { localStorage.setItem('lounge_menu', JSON.stringify(menu)); }
     function saveOrders() { localStorage.setItem('lounge_orders', JSON.stringify(orders)); }
 
-    // Renders
+    // Render Product Catalog Cards
     function renderMenu() {
       const menuGrid = document.getElementById('menuGrid');
       menuGrid.innerHTML = '';
@@ -290,25 +351,25 @@
         const imgUrl = item.image || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500';
         
         const card = document.createElement('div');
-        card.className = 'glass rounded-2xl overflow-hidden border border-zinc-800 flex flex-col justify-between group hover:border-amber-500/40 transition';
+        card.className = 'glass-card rounded-3xl overflow-hidden border border-zinc-800/80 flex flex-col justify-between group hover:border-amber-500/40 transition duration-300';
         
         card.innerHTML = `
           <div>
-            <div class="h-40 w-full overflow-hidden relative">
-              <img src="${imgUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              <span class="absolute top-3 right-3 px-2 py-1 rounded-md text-[10px] font-bold bg-zinc-950/80 text-amber-400 backdrop-blur-md">
+            <div class="h-44 w-full overflow-hidden relative">
+              <img src="${imgUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <span class="absolute top-3.5 right-3.5 px-2.5 py-1 rounded-xl text-[10px] font-mono font-bold bg-zinc-950/80 text-amber-400 border border-amber-500/20 backdrop-blur-md">
                 ${item.category}
               </span>
             </div>
-            <div class="p-4 space-y-2">
-              <h3 class="font-bold text-white text-base">${item.title}</h3>
-              <p class="text-xs text-zinc-400 line-clamp-2">${item.desc}</p>
+            <div class="p-5 space-y-2">
+              <h3 class="font-extrabold text-white text-base tracking-wide">${item.title}</h3>
+              <p class="text-xs text-zinc-400 line-clamp-2 leading-relaxed">${item.desc}</p>
             </div>
           </div>
-          <div class="p-4 pt-0 flex items-center justify-between mt-2">
-            <span class="text-lg font-extrabold text-amber-400">${item.price} ETB</span>
-            <button class="add-to-cart-btn px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs transition flex items-center gap-1" data-id="${item.id}">
-              <i class="fa-solid fa-plus"></i> Add
+          <div class="p-5 pt-0 flex items-center justify-between mt-3">
+            <span class="text-lg font-black font-mono text-amber-400">${item.price} ETB</span>
+            <button class="add-to-cart-btn px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 font-extrabold text-xs tracking-wider transition duration-200 shadow-md shadow-amber-500/10 active:scale-95 flex items-center gap-1.5" data-id="${item.id}">
+              <i class="fa-solid fa-plus text-[10px]"></i> ADD
             </button>
           </div>
         `;
@@ -326,16 +387,16 @@
     function filterCategory(cat) {
       activeCategory = cat;
       document.querySelectorAll('.cat-btn').forEach(btn => {
-        if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All'))) {
-          btn.className = "cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition";
+        if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('ALL'))) {
+          btn.className = "cat-btn active px-5 py-2.5 rounded-xl text-xs font-bold bg-amber-500 text-zinc-950 whitespace-nowrap transition-all duration-200";
         } else {
-          btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition";
+          btn.className = "cat-btn px-5 py-2.5 rounded-xl text-xs font-bold bg-zinc-900/80 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition-all duration-200";
         }
       });
       renderMenu();
     }
 
-    // Cart Logic
+    // Cart Operations
     function addToCart(id) {
       const item = menu.find(m => m.id === id);
       const existing = cart.find(c => c.id === id);
@@ -364,7 +425,7 @@
       list.innerHTML = '';
 
       if(cart.length === 0) {
-        list.innerHTML = `<p class="text-center text-xs text-zinc-500 py-4">Your cart is empty.</p>`;
+        list.innerHTML = `<p class="text-center text-xs text-zinc-500 py-6 font-mono">Your order bag is empty.</p>`;
         totalDisplay.innerText = `0 ETB`;
       } else {
         let total = 0;
@@ -372,12 +433,12 @@
           const itemTotal = item.price * item.qty;
           total += itemTotal;
           list.innerHTML += `
-            <div class="flex items-center justify-between pt-2">
+            <div class="flex items-center justify-between pt-3">
               <div>
-                <p class="text-xs font-semibold text-white">${item.title}</p>
-                <p class="text-[10px] text-zinc-400">${item.price} ETB x ${item.qty}</p>
+                <p class="text-xs font-bold text-white">${item.title}</p>
+                <p class="text-[10px] font-mono text-zinc-400">${item.price} ETB x ${item.qty}</p>
               </div>
-              <span class="text-xs font-bold text-amber-400">${itemTotal} ETB</span>
+              <span class="text-xs font-black font-mono text-amber-400">${itemTotal} ETB</span>
             </div>
           `;
         });
@@ -401,21 +462,21 @@
       }
     }
 
-    // RECEIPT & TELEGRAM INTEGRATION FUNCTIONS
+    // TELEGRAM DISPATCH (@ulqvoid INTEGRATION)
     function generateReceiptText(order) {
       let itemsFormatted = order.items.map(i => `- ${i.qty}x ${i.title} (${i.price * i.qty} ETB)`).join('\n');
       
       return `RECEIPT - CAMPUS LOUNGE\n` +
              `---------------------------\n` +
              `Order ID: ${order.id}\n` +
-             `Customer: ${order.customer}\n` +
+             `Customer / Table: ${order.customer}\n` +
              `Payment Method: ${order.method}\n` +
-             `Sender Account Name: ${order.bankName}\n` +
+             `Bank Sender Name: ${order.bankName}\n` +
              `---------------------------\n` +
              `ITEMS:\n${itemsFormatted}\n` +
              `---------------------------\n` +
-             `TOTAL: ${order.total} ETB\n` +
-             `Time: ${order.timestamp}\n` +
+             `TOTAL DUE: ${order.total} ETB\n` +
+             `Timestamp: ${order.timestamp}\n` +
              `---------------------------\n` +
              `Status: Pending Verification`;
     }
@@ -443,7 +504,7 @@
 
     function submitOrder(e) {
       e.preventDefault();
-      if(cart.length === 0) return alert('Add items to your cart first!');
+      if(cart.length === 0) return alert('Add items to your order first!');
 
       const custName = document.getElementById('custName').value;
       const custBankName = document.getElementById('custBankName').value;
@@ -469,8 +530,8 @@
       closeCartModal();
       document.getElementById('checkoutForm').reset();
 
-      // Prompt customer to send receipt to Telegram channel @ulqvoid
-      if(confirm(`Order ${newOrder.id} placed successfully!\nClick OK to send your receipt directly to Telegram (@ulqvoid) for quick verification.`)) {
+      // Dispatch receipt directly to Telegram receiver @ulqvoid
+      if(confirm(`Order ${newOrder.id} generated!\nClick OK to send your order receipt directly to Telegram (@ulqvoid) for instant staff verification.`)) {
         sendReceiptToTelegram(newOrder);
       } else {
         downloadReceiptFile(newOrder);
@@ -479,7 +540,7 @@
       renderOrdersFeed();
     }
 
-    // Secret Admin Access via Watermark click
+    // Secret Admin Panel Login (333 / sixthree)
     function triggerAdminSecret() {
       document.getElementById('adminLoginModal').classList.remove('hidden');
     }
@@ -502,7 +563,7 @@
         document.getElementById('adminView').classList.remove('hidden');
         renderOrdersFeed();
       } else {
-        alert('Invalid credentials');
+        alert('Invalid access credentials');
       }
     }
 
@@ -532,7 +593,7 @@
       saveMenu();
       renderMenu();
       document.getElementById('addItemForm').reset();
-      alert('New item posted to menu!');
+      alert('New item posted to menu catalog!');
     }
 
     function renderOrdersFeed() {
@@ -540,7 +601,7 @@
       feed.innerHTML = '';
 
       if(orders.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-zinc-500 py-6 text-center">No orders received yet.</p>`;
+        feed.innerHTML = `<p class="text-xs text-zinc-500 py-8 text-center font-mono">No live orders received yet.</p>`;
         return;
       }
 
@@ -548,29 +609,29 @@
         const itemsSummary = ord.items.map(i => `${i.qty}x ${i.title}`).join(', ');
         
         const orderCard = document.createElement('div');
-        orderCard.className = 'bg-zinc-950 border border-zinc-800 p-4 rounded-xl space-y-3';
+        orderCard.className = 'bg-zinc-950/80 border border-zinc-800/80 p-4 rounded-2xl space-y-3';
         
         orderCard.innerHTML = `
-          <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+          <div class="flex items-center justify-between border-b border-zinc-800/60 pb-2">
             <div>
               <span class="font-mono text-xs text-amber-400 font-bold">${ord.id}</span>
               <h4 class="text-sm font-bold text-white">${ord.customer}</h4>
             </div>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${ord.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}">
+            <span class="px-2.5 py-0.5 rounded-lg text-[10px] font-mono font-bold ${ord.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}">
               ${ord.status}
             </span>
           </div>
 
-          <div class="text-xs space-y-1">
-            <p class="text-zinc-300"><span class="text-zinc-500">Items:</span> ${itemsSummary}</p>
-            <p class="text-zinc-300"><span class="text-zinc-500">Payment:</span> ${ord.method} - <span class="text-amber-400 font-medium">${ord.bankName}</span></p>
-            <p class="text-zinc-300"><span class="text-zinc-500">Total:</span> <span class="font-bold text-white">${ord.total} ETB</span> <span class="text-[10px] text-zinc-500">(${ord.timestamp})</span></p>
+          <div class="text-xs space-y-1 font-mono">
+            <p class="text-zinc-300"><span class="text-zinc-500 uppercase">Items:</span> ${itemsSummary}</p>
+            <p class="text-zinc-300"><span class="text-zinc-500 uppercase">Payment:</span> ${ord.method} - <span class="text-amber-400">${ord.bankName}</span></p>
+            <p class="text-zinc-300"><span class="text-zinc-500 uppercase">Total:</span> <span class="font-bold text-white">${ord.total} ETB</span> <span class="text-[10px] text-zinc-500">(${ord.timestamp})</span></p>
           </div>
 
           <div class="flex gap-2 pt-1 flex-wrap">
-            <button class="complete-btn px-2.5 py-1 rounded bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[11px] font-semibold border border-green-500/30 transition" data-id="${ord.id}">Mark Paid & Done</button>
-            <button class="receipt-btn px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-[11px] font-semibold border border-amber-500/30 transition" data-id="${ord.id}">Copy Receipt</button>
-            <button class="delete-btn px-2.5 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 text-[11px] font-semibold border border-red-500/30 transition" data-id="${ord.id}">Remove</button>
+            <button class="complete-btn px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-[11px] font-bold border border-emerald-500/30 transition" data-id="${ord.id}">Mark Paid & Served</button>
+            <button class="receipt-btn px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-[11px] font-bold border border-amber-500/30 transition" data-id="${ord.id}">Copy Receipt</button>
+            <button class="delete-btn px-3 py-1.5 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-400 text-[11px] font-bold border border-red-500/30 transition" data-id="${ord.id}">Remove</button>
           </div>
         `;
         feed.appendChild(orderCard);
@@ -624,7 +685,7 @@
       }
     }
 
-    // Initialize
+    // Initial Execution
     renderMenu();
   </script>
 </body>
