@@ -157,12 +157,14 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
     <div id="cartList"></div>
     <div id="checkout" class="hide">
       <label for="cName">Your name</label><input id="cName" autocomplete="name">
-      <label for="cPhone">Phone number</label><input id="cPhone" type="tel" autocomplete="tel" placeholder="07XX XXX XXX">
+      <label for="cPhone">Phone number</label><input id="cPhone" type="tel" autocomplete="tel" placeholder="09XX XXX XXX">
       <label for="cType">Order type</label>
       <select id="cType"><option>Dine in</option><option>Takeaway</option><option>Delivery</option></select>
       <label for="cWhere" id="whereLabel">Table number</label><input id="cWhere">
       <label for="cPay">Payment method</label>
-      <select id="cPay"><option>M-Pesa</option><option>Cash</option><option>Card</option></select>
+      <select id="cPay"><option>Telebirr</option><option>CBE bank transfer</option><option>Cash on arrival</option></select>
+      <div id="payInfo" style="background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.9rem;color:var(--mute)"></div>
+      <div id="refBox"><label for="cRef">Transaction reference</label><input id="cRef" placeholder="Reference from your payment receipt"></div>
       <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
       <p id="formMsg" style="color:var(--red);margin-top:8px"></p>
     </div>
@@ -206,12 +208,16 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 /* ===================== SETTINGS ===================== */
 const C = {
   NAME: "Wangari Lounge",
-  CURRENCY: "KES",
+  CURRENCY: "ETB",
   TG_USER: "ulqvoid",
   BOT_TOKEN: "",          /* optional: Telegram bot token for automatic sending */
   CHAT_ID: "",            /* optional: your Telegram chat id */
   DEV_PIN: "1234",        /* CHANGE THIS before you publish */
   LOW_STOCK: 5,
+  TELEBIRR_NUMBER: "09XXXXXXXX",   /* your Telebirr number */
+  TELEBIRR_NAME: "Wangari Lounge",
+  CBE_ACCOUNT: "1000XXXXXXXXX",    /* your CBE account number */
+  CBE_NAME: "Wangari Lounge",
   FIREBASE: { projectId: "", apiKey: "" }  /* optional: shared storage so orders reach your dashboard from any phone */
 };
 
@@ -335,6 +341,7 @@ function renderCart(){
   $("#cartTotal").textContent = money(t);
   $("#placeBtn").disabled = n === 0;
   $("#checkout").classList.toggle("hide", n === 0);
+  payInfo();
   $("#cartList").innerHTML = n === 0 ? '<p class="empty">Your order is empty. Add something from the menu.</p>' :
     items.map(i => '<div class="line"><span>' + esc(i.name) + '</span><span class="qty"><button data-q="' + esc(i.id) + '" data-d="-1" aria-label="Remove one">-</button><span>' + i.qty + '</span><button data-q="' + esc(i.id) + '" data-d="1" aria-label="Add one">+</button></span><span class="price">' + money(i.price * i.qty) + '</span></div>').join("");
 }
@@ -342,7 +349,7 @@ function openCart(){ $("#drawer").classList.add("show"); $("#mask").classList.ad
 function closeCart(){ $("#drawer").classList.remove("show"); $("#mask").classList.remove("show"); }
 
 function receiptText(o){
-  const L = [C.NAME.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay, "------------------------------"];
+  const L = [C.NAME.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Ref: " + o.ref + ")" : ""), "------------------------------"];
   o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty)));
   L.push("------------------------------", "TOTAL: " + money(o.total));
   if(o.notes) L.push("Notes: " + o.notes);
@@ -360,12 +367,13 @@ async function placeOrder(){
   const msg = $("#formMsg"); msg.textContent = "";
   if(!val("cName") || !val("cPhone")){ msg.textContent = "Enter your name and phone number."; return; }
   if(!/^[0-9+\s-]{9,15}$/.test(val("cPhone"))){ msg.textContent = "Enter a valid phone number."; return; }
+  if(val("cPay") !== "Cash on arrival" && !val("cRef")){ msg.textContent = "Enter the transaction reference from your payment receipt."; return; }
   const btn = $("#placeBtn"); btn.disabled = true; btn.textContent = "Placing order...";
   await loadMenu();
   const items = cartItems();
   const bad = items.find(i => i.qty > i.stock);
   if(bad){ msg.textContent = "Sorry, only " + bad.stock + " of " + bad.name + " left. Please adjust your order."; btn.textContent = "Place order"; renderCart(); renderMenu(); return; }
-  const o = {id: uid("WL"), t: Date.now(), name: val("cName"), phone: val("cPhone"), type: val("cType"), where: val("cWhere"), pay: val("cPay"), notes: val("cNotes"), items: items.map(i => ({id:i.id,name:i.name,price:i.price,qty:i.qty})), total: cartTotal(), status: "New"};
+  const o = {id: uid("WL"), t: Date.now(), name: val("cName"), phone: val("cPhone"), type: val("cType"), where: val("cWhere"), pay: val("cPay"), ref: val("cRef"), notes: val("cNotes"), items: items.map(i => ({id:i.id,name:i.name,price:i.price,qty:i.qty})), total: cartTotal(), status: "New"};
   items.forEach(i => { const m = menu.find(x => x.id === i.id); m.stock -= i.qty; });
   await saveMenu(); await saveOrder(o);
   const text = receiptText(o);
@@ -398,6 +406,15 @@ $("#cType").onchange = e => {
   const v = e.target.value;
   $("#whereLabel").textContent = v === "Dine in" ? "Table number" : v === "Delivery" ? "Delivery address" : "Pickup time (optional)";
 };
+function payInfo(){
+  const p = $("#cPay").value;
+  $("#refBox").classList.toggle("hide", p === "Cash on arrival");
+  const amt = "<b>" + esc(money(cartTotal())) + "</b>";
+  $("#payInfo").innerHTML = p === "Telebirr" ? "Send " + amt + " to Telebirr number <b>" + esc(C.TELEBIRR_NUMBER) + "</b> (" + esc(C.TELEBIRR_NAME) + "), then enter the transaction reference below."
+    : p === "CBE bank transfer" ? "Transfer " + amt + " to Commercial Bank of Ethiopia account <b>" + esc(C.CBE_ACCOUNT) + "</b> (" + esc(C.CBE_NAME) + "), then enter the transaction reference below."
+    : "Pay in cash when your order arrives or at your table.";
+}
+$("#cPay").onchange = payInfo;
 $("#copyRcpt").onclick = async () => { try{ await navigator.clipboard.writeText($("#rcptText").textContent); toast("Receipt copied"); }catch(e){ toast("Press and hold the text to copy it"); } };
 $("#doneRcpt").onclick = () => $("#rcpt").classList.remove("show");
 
@@ -436,7 +453,7 @@ function tabOrders(){
   let h = '<div class="stats"><div class="stat"><b>' + td.length + '</b><span>Orders today</span></div><div class="stat"><b>' + money(sales) + '</b><span>Sales today</span></div><div class="stat"><b>' + orders.filter(o => o.status === "New").length + '</b><span>New orders waiting</span></div><div class="stat"><b>' + (cloud() ? "Shared" : "This phone") + '</b><span>Where orders are saved</span></div></div>';
   h += '<div class="tools"><select id="ofilter" data-act="filter" style="max-width:220px"><option>All</option>' + STATUSES.map(s => '<option' + (s === ofilter ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div>';
   if(!list.length) return h + '<p class="empty">No orders yet.</p>';
-  return h + list.map(o => '<div class="ord"><div class="top"><b>' + esc(o.id) + '</b><span class="st ' + esc(o.status) + '">' + esc(o.status) + '</span></div><div style="color:var(--mute);font-size:.9rem">' + new Date(o.t).toLocaleString() + '</div><div>' + esc(o.name) + ' | <a href="tel:' + esc(o.phone) + '">' + esc(o.phone) + '</a></div><div style="color:var(--mute);font-size:.9rem">' + esc(o.type) + ' | ' + esc(o.where || "-") + ' | ' + esc(o.pay) + '</div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + '</li>').join("") + '</ul>' + (o.notes ? '<div style="color:var(--mute);font-size:.9rem">Notes: ' + esc(o.notes) + '</div>' : '') + '<div class="total" style="margin:8px 0"><span>Total</span><b>' + money(o.total) + '</b></div><div class="acts"><select data-act="status" data-id="' + esc(o.id) + '" style="width:auto">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select><button class="btn ghost sm" data-act="copyo" data-id="' + esc(o.id) + '">Copy receipt</button><button class="btn red sm" data-act="delo" data-id="' + esc(o.id) + '">Delete</button></div></div>').join("");
+  return h + list.map(o => '<div class="ord"><div class="top"><b>' + esc(o.id) + '</b><span class="st ' + esc(o.status) + '">' + esc(o.status) + '</span></div><div style="color:var(--mute);font-size:.9rem">' + new Date(o.t).toLocaleString() + '</div><div>' + esc(o.name) + ' | <a href="tel:' + esc(o.phone) + '">' + esc(o.phone) + '</a></div><div style="color:var(--mute);font-size:.9rem">' + esc(o.type) + ' | ' + esc(o.where || "-") + ' | ' + esc(o.pay) + (o.ref ? ' | Ref ' + esc(o.ref) : '') + '</div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + '</li>').join("") + '</ul>' + (o.notes ? '<div style="color:var(--mute);font-size:.9rem">Notes: ' + esc(o.notes) + '</div>' : '') + '<div class="total" style="margin:8px 0"><span>Total</span><b>' + money(o.total) + '</b></div><div class="acts"><select data-act="status" data-id="' + esc(o.id) + '" style="width:auto">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select><button class="btn ghost sm" data-act="copyo" data-id="' + esc(o.id) + '">Copy receipt</button><button class="btn red sm" data-act="delo" data-id="' + esc(o.id) + '">Delete</button></div></div>').join("");
 }
 
 function tabMenu(){
