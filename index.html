@@ -5,260 +5,571 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wangari Lounge</title>
 <style>
-  :root{--bg:#14100d;--card:#1f1914;--gold:#c9a15b;--text:#f3ece2;--mute:#a79b8c;--line:#33291f}
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:Georgia,serif;background:var(--bg);color:var(--text);line-height:1.5}
-  header{padding:70px 20px 50px;text-align:center;background:linear-gradient(180deg,#2a1f15,var(--bg))}
-  header h1{font-size:2.6rem;letter-spacing:4px;color:var(--gold);text-transform:uppercase}
-  header p{color:var(--mute);margin-top:10px}
-  header a.btn{display:inline-block;margin-top:24px}
-  .btn{background:var(--gold);color:#1a130c;border:0;padding:12px 22px;font-size:1rem;font-family:inherit;cursor:pointer;border-radius:4px;text-decoration:none;font-weight:bold}
-  .btn.alt{background:transparent;color:var(--gold);border:1px solid var(--gold)}
-  section{max-width:900px;margin:0 auto;padding:40px 18px}
-  h2{color:var(--gold);margin-bottom:18px;letter-spacing:2px;text-transform:uppercase;font-size:1.2rem;border-bottom:1px solid var(--line);padding-bottom:8px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-  .item{background:var(--card);border:1px solid var(--line);padding:16px;border-radius:6px;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
-  .item h3{font-size:1.05rem}
-  .item small{color:var(--mute)}
-  .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
-  .price{color:var(--gold);font-weight:bold}
-  .add{padding:8px 14px;font-size:.9rem}
-  #cart,#checkout,#receipt{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px}
-  .cartline{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);gap:8px}
-  .qty button{background:var(--line);color:var(--text);border:0;width:28px;height:28px;border-radius:4px;cursor:pointer;font-size:1rem}
-  .qty span{display:inline-block;min-width:24px;text-align:center}
-  .total{font-size:1.2rem;margin-top:12px;text-align:right;color:var(--gold)}
-  label{display:block;margin:12px 0 4px;color:var(--mute);font-size:.9rem}
-  input,select,textarea{width:100%;padding:11px;background:#120e0b;color:var(--text);border:1px solid var(--line);border-radius:4px;font-family:inherit;font-size:1rem}
-  .hidden{display:none}
-  pre{white-space:pre-wrap;font-family:"Courier New",monospace;background:#120e0b;padding:14px;border-radius:4px;border:1px dashed var(--gold);margin:12px 0;font-size:.9rem}
-  .info p{color:var(--mute);margin-bottom:6px}
-  footer{text-align:center;padding:30px;color:var(--mute);border-top:1px solid var(--line);font-size:.85rem}
-  .msg{margin-top:10px;font-size:.9rem;color:var(--mute)}
+:root{--bg:#0d2822;--bg2:#12342b;--card:#173f35;--line:#2a5a4c;--amber:#f0a93b;--amber2:#ffcf7a;--text:#f2efe6;--mute:#a9c2b6;--red:#e2674f;--ok:#6fcf97;--r:10px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{font-family:"Trebuchet MS",Verdana,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding-bottom:84px}
+h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:700}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+a{color:var(--amber2)}
+.btn{background:var(--amber);color:#1b1306;border:0;border-radius:var(--r);padding:11px 18px;font-weight:bold;cursor:pointer;text-decoration:none;display:inline-block;text-align:center}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--amber2);border:1px solid var(--line)}
+.btn.red{background:var(--red);color:#fff}
+.btn.sm{padding:6px 12px;font-size:.85rem}
+.topbar{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 16px}
+.brand{font-family:Georgia,serif;font-size:1.25rem;color:var(--amber2);text-decoration:none}
+.topnav{display:flex;gap:16px;align-items:center}
+.topnav a.l{color:var(--mute);text-decoration:none;font-size:.95rem}
+.cartbtn{display:flex;gap:8px;align-items:center}
+.count{background:#1b1306;color:var(--amber2);border-radius:20px;padding:0 8px;min-width:22px;font-size:.85rem}
+.hero{padding:56px 18px 40px;text-align:left;max-width:980px;margin:0 auto}
+.hero h1{font-size:clamp(2rem,6vw,3.4rem);line-height:1.1;max-width:15ch}
+.hero p{color:var(--mute);margin:14px 0 22px;max-width:46ch}
+.hero .row{display:flex;gap:10px;flex-wrap:wrap}
+.wrap{max-width:980px;margin:0 auto;padding:10px 16px 30px}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:14px 0}
+.tools input{flex:1;min-width:180px}
+input,select,textarea{width:100%;background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{resize:vertical}
+label{display:block;font-size:.88rem;color:var(--mute);margin:12px 0 4px}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.tab{background:var(--bg2);border:1px solid var(--line);border-radius:20px;padding:7px 16px;cursor:pointer;white-space:nowrap}
+.tab.on{background:var(--amber);color:#1b1306;border-color:var(--amber);font-weight:bold}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.card img{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;background:var(--bg2)}
+.card .body{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.card h3{font-size:1.1rem}
+.card p{color:var(--mute);font-size:.9rem;flex:1}
+.card .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.price{color:var(--amber2);font-weight:bold}
+.badge{font-size:.78rem;border-radius:6px;padding:2px 8px;background:var(--bg2);color:var(--mute);align-self:flex-start}
+.badge.low{background:#5b3f12;color:var(--amber2)}
+.badge.out{background:#5a2519;color:#ffb4a3}
+.empty{color:var(--mute);padding:30px 0}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:10px}
+.info div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.info h3{margin-bottom:6px;font-size:1rem}
+.info p{color:var(--mute);font-size:.92rem}
+footer{border-top:1px solid var(--line);padding:24px 16px;text-align:center;color:var(--mute);font-size:.88rem}
+footer a{margin-left:8px}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--amber);color:#1b1306;display:none;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;font-weight:bold;cursor:pointer;border:0;width:100%;box-shadow:0 -6px 20px rgba(0,0,0,.35)}
+.bar.show{display:flex}
+.mask{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none}
+.mask.show{display:block}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(440px,100%);background:var(--bg);z-index:60;transform:translateX(100%);transition:transform .22s;display:flex;flex-direction:column;border-left:1px solid var(--line)}
+.drawer.show{transform:none}
+.dhead{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dbody{flex:1;overflow-y:auto;padding:14px 16px}
+.dfoot{padding:12px 16px;border-top:1px solid var(--line);background:var(--bg2)}
+.line{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.qty{display:flex;align-items:center;gap:6px}
+.qty button{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:var(--bg2);cursor:pointer}
+.total{display:flex;justify-content:space-between;font-size:1.1rem;margin-bottom:10px}
+.modal{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.65)}
+.modal.show{display:flex}
+.box{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:18px;width:min(460px,100%);max-height:92vh;overflow-y:auto}
+pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospace;font-size:.88rem;background:var(--bg2);border:1px dashed var(--amber);border-radius:8px;padding:12px;margin:12px 0}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--text);color:#10261f;padding:10px 16px;border-radius:8px;z-index:90;display:none;max-width:90%}
+.toast.show{display:block}
+#dev{position:fixed;inset:0;background:var(--bg);z-index:80;display:none;flex-direction:column}
+#dev.show{display:flex}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.dnav{display:flex;gap:6px;flex-wrap:wrap}
+.dnav button{background:var(--bg2);border:1px solid var(--line);padding:7px 14px;border-radius:8px;cursor:pointer}
+.dnav button.on{background:var(--amber);color:#1b1306;font-weight:bold;border-color:var(--amber)}
+#devBody{flex:1;overflow-y:auto;padding:16px;max-width:1000px;width:100%;margin:0 auto}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stat b{display:block;font-size:1.4rem;color:var(--amber2);font-family:Georgia,serif}
+.stat span{color:var(--mute);font-size:.85rem}
+.ord{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.ord .top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.ord ul{margin:6px 0 8px 18px;color:var(--mute);font-size:.92rem}
+.st{font-size:.8rem;border-radius:6px;padding:2px 8px;background:var(--bg2)}
+.st.New{background:#5b3f12;color:var(--amber2)}
+.st.Completed{background:#1c4a33;color:var(--ok)}
+.st.Cancelled{background:#5a2519;color:#ffb4a3}
+.frm{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 14px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:6px 16px 16px;margin-bottom:18px}
+.frm .full{grid-column:1/-1}
+.row2{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px;margin-bottom:10px}
+.row2 img{width:64px;height:48px;object-fit:cover;border-radius:6px}
+.row2 .grow{flex:1;min-width:0}
+.row2 .grow small{color:var(--mute);display:block}
+.stk{width:70px;text-align:center}
+.pin{max-width:320px;margin:15vh auto;text-align:center}
+.hide{display:none!important}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){.topnav a.l{display:none}.line{grid-template-columns:1fr auto}.line .price{grid-column:2}}
 </style>
 </head>
 <body>
 
-<header>
-  <h1>Wangari Lounge</h1>
-  <p>Good drinks. Good food. Good company.</p>
-  <a class="btn" href="#menu">View Menu and Order</a>
-</header>
+<div class="topbar">
+  <a class="brand" href="#top">Wangari Lounge</a>
+  <div class="topnav">
+    <a class="l" href="#menu">Menu</a>
+    <a class="l" href="#visit">Visit</a>
+    <button class="btn cartbtn" id="topCart">Place order <span class="count" id="topCount">0</span></button>
+  </div>
+</div>
 
-<section id="menu">
+<div id="top" class="hero">
+  <h1>Drinks, grills and good company</h1>
+  <p>Browse the menu, add what you want, and place your order from your phone. We send your receipt straight to our team.</p>
+  <div class="row">
+    <a class="btn" href="#menu">See the menu</a>
+    <button class="btn ghost" id="heroCart">View my order</button>
+  </div>
+</div>
+
+<main class="wrap" id="menu">
   <h2>Menu</h2>
-  <div id="menuList"></div>
-</section>
+  <div class="tools"><input id="search" type="search" placeholder="Search the menu" aria-label="Search the menu"></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid" id="grid"></div>
+</main>
 
-<section id="cartSection">
-  <h2>Your Order</h2>
-  <div id="cart"></div>
-</section>
-
-<section id="checkout" class="hidden" style="padding-top:0">
-  <h2>Checkout</h2>
-  <div id="checkout">
-    <label>Your name</label>
-    <input id="cName" placeholder="Full name">
-    <label>Phone number</label>
-    <input id="cPhone" type="tel" placeholder="07XX XXX XXX">
-    <label>Order type</label>
-    <select id="cType">
-      <option>Dine in</option>
-      <option>Takeaway</option>
-      <option>Delivery</option>
-    </select>
-    <label>Table number or delivery location</label>
-    <input id="cWhere" placeholder="e.g. Table 4 or your address">
-    <label>Payment method</label>
-    <select id="cPay">
-      <option>M-Pesa</option>
-      <option>Cash</option>
-      <option>Card</option>
-    </select>
-    <label>Notes (optional)</label>
-    <textarea id="cNotes" rows="2" placeholder="Any special request"></textarea>
-    <button class="btn" style="margin-top:16px;width:100%" id="placeBtn">Place Order</button>
-    <p class="msg" id="formMsg"></p>
+<section class="wrap" id="visit">
+  <h2>Visit us</h2>
+  <div class="info">
+    <div><h3>Opening hours</h3><p>Daily, 11:00 AM until late</p></div>
+    <div><h3>Find us</h3><p>Edit this line with your address</p></div>
+    <div><h3>Call us</h3><p>Edit this line with your phone number</p></div>
   </div>
 </section>
 
-<section id="receiptSection" class="hidden" style="padding-top:0">
-  <h2>Order Receipt</h2>
-  <div id="receipt">
-    <pre id="receiptText"></pre>
-    <p class="msg" id="sendStatus"></p>
-    <a class="btn" id="tgLink" target="_blank" rel="noopener">Send Receipt on Telegram</a>
-    <button class="btn alt" id="newOrder" style="margin-left:6px">New Order</button>
+<footer>
+  <span id="yr"></span> Wangari Lounge. All rights reserved.
+  <a href="#dev" id="staffLink">Staff login</a>
+</footer>
+
+<button class="bar" id="bar" aria-label="Open your order"><span id="barText">0 items</span><span id="barGo">Place order</span></button>
+
+<div class="mask" id="mask"></div>
+
+<aside class="drawer" id="drawer" aria-label="Your order">
+  <div class="dhead"><h2>Your order</h2><button class="btn ghost sm" id="closeCart">Close</button></div>
+  <div class="dbody">
+    <div id="cartList"></div>
+    <div id="checkout" class="hide">
+      <label for="cName">Your name</label><input id="cName" autocomplete="name">
+      <label for="cPhone">Phone number</label><input id="cPhone" type="tel" autocomplete="tel" placeholder="07XX XXX XXX">
+      <label for="cType">Order type</label>
+      <select id="cType"><option>Dine in</option><option>Takeaway</option><option>Delivery</option></select>
+      <label for="cWhere" id="whereLabel">Table number</label><input id="cWhere">
+      <label for="cPay">Payment method</label>
+      <select id="cPay"><option>M-Pesa</option><option>Cash</option><option>Card</option></select>
+      <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
+      <p id="formMsg" style="color:var(--red);margin-top:8px"></p>
+    </div>
   </div>
+  <div class="dfoot">
+    <div class="total"><span>Total</span><b id="cartTotal">KES 0</b></div>
+    <button class="btn" style="width:100%" id="placeBtn" disabled>Place order</button>
+  </div>
+</aside>
+
+<div class="modal" id="rcpt">
+  <div class="box">
+    <h2>Order placed</h2>
+    <p id="rcptMsg" style="color:var(--mute);margin-top:4px"></p>
+    <pre id="rcptText"></pre>
+    <div class="acts">
+      <a class="btn" id="tgLink" target="_blank" rel="noopener">Send receipt on Telegram</a>
+      <button class="btn ghost" id="copyRcpt">Copy receipt</button>
+      <button class="btn ghost" id="doneRcpt">Done</button>
+    </div>
+  </div>
+</div>
+
+<section id="dev">
+  <div class="dh">
+    <h2>Staff dashboard</h2>
+    <div class="dnav" id="dnav">
+      <button data-tab="orders">Orders <span id="newBadge"></span></button>
+      <button data-tab="menu">Menu items</button>
+      <button data-tab="stock">Stock</button>
+      <button data-tab="care">Maintenance</button>
+    </div>
+    <div class="acts"><button class="btn ghost sm" data-act="refresh">Refresh</button><button class="btn ghost sm" data-act="logout">Log out</button></div>
+  </div>
+  <div id="devBody"></div>
 </section>
 
-<section class="info">
-  <h2>Visit Us</h2>
-  <p>Open daily: 11:00 AM to Late</p>
-  <p>Location: Edit this line with your address</p>
-  <p>Phone: Edit this line with your number</p>
-</section>
-
-<footer>&copy; <span id="yr"></span> Wangari Lounge. All rights reserved.</footer>
+<div class="toast" id="toast"></div>
 
 <script>
-/* ============ SETTINGS YOU CAN EDIT ============ */
-const CURRENCY = "KES";
-const TELEGRAM_USERNAME = "ulqvoid";
-
-/* OPTIONAL: automatic sending with a Telegram bot.
-   Leave both empty to use the simple "Send Receipt on Telegram" button.
-   Warning: anything placed here is visible to anyone who views the site source. */
-const BOT_TOKEN = "";
-const CHAT_ID = "";
-
-/* MENU: edit names, descriptions and prices freely */
-const MENU = {
-  "Drinks": [
-    {n:"Tusker Lager", d:"500ml", p:350},
-    {n:"Guinness", d:"500ml", p:380},
-    {n:"House Red Wine", d:"Glass", p:600},
-    {n:"Signature Cocktail", d:"Ask your server for today's mix", p:800},
-    {n:"Fresh Passion Juice", d:"Chilled", p:250},
-    {n:"Soda", d:"300ml", p:150}
-  ],
-  "Food": [
-    {n:"Nyama Choma", d:"Grilled goat with kachumbari", p:900},
-    {n:"Chicken Wings", d:"Spicy glaze, 8 pieces", p:700},
-    {n:"Beef Samosas", d:"Served with chilli sauce", p:300},
-    {n:"Chips Masala", d:"Crispy chips in masala sauce", p:400},
-    {n:"Tilapia Fry", d:"Whole fish with ugali", p:1100}
-  ],
-  "Shisha and Extras": [
-    {n:"Shisha", d:"Choice of flavour", p:1500},
-    {n:"Mineral Water", d:"500ml", p:100}
-  ]
+/* ===================== SETTINGS ===================== */
+const C = {
+  NAME: "Wangari Lounge",
+  CURRENCY: "KES",
+  TG_USER: "ulqvoid",
+  BOT_TOKEN: "",          /* optional: Telegram bot token for automatic sending */
+  CHAT_ID: "",            /* optional: your Telegram chat id */
+  DEV_PIN: "1234",        /* CHANGE THIS before you publish */
+  LOW_STOCK: 5,
+  FIREBASE: { projectId: "", apiKey: "" }  /* optional: shared storage so orders reach your dashboard from any phone */
 };
-/* ================================================= */
 
-let cart = {};
-const fmt = n => CURRENCY + " " + n.toLocaleString();
-document.getElementById("yr").textContent = new Date().getFullYear();
+/* ===================== HELPERS ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const money = n => C.CURRENCY + " " + Number(n || 0).toLocaleString();
+const uid = p => p + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2, 4).toUpperCase();
+let tt;
+function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 3000); }
 
-function renderMenu(){
-  const box = document.getElementById("menuList");
-  box.innerHTML = "";
-  Object.keys(MENU).forEach(cat => {
-    const h = document.createElement("h3");
-    h.textContent = cat;
-    h.style.cssText = "margin:22px 0 10px;color:#f3ece2";
-    box.appendChild(h);
-    const g = document.createElement("div");
-    g.className = "grid";
-    MENU[cat].forEach(it => {
-      const el = document.createElement("div");
-      el.className = "item";
-      el.innerHTML = '<div><h3></h3><small></small></div><div class="row"><span class="price"></span><button class="btn add">Add</button></div>';
-      el.querySelector("h3").textContent = it.n;
-      el.querySelector("small").textContent = it.d;
-      el.querySelector(".price").textContent = fmt(it.p);
-      el.querySelector(".add").onclick = () => { cart[it.n] = cart[it.n] || {p:it.p, q:0}; cart[it.n].q++; renderCart(); };
-      g.appendChild(el);
-    });
-    box.appendChild(g);
-  });
+/* ===================== DEFAULT MENU ===================== */
+const SEED = [
+  {id:"m1",name:"Nyama choma",cat:"Food",price:900,stock:20,desc:"Grilled goat served with kachumbari",img:"",active:true},
+  {id:"m2",name:"Chicken wings",cat:"Food",price:700,stock:25,desc:"Eight pieces in a spicy glaze",img:"",active:true},
+  {id:"m3",name:"Beef samosas",cat:"Food",price:300,stock:40,desc:"Crisp pastry with chilli sauce",img:"",active:true},
+  {id:"m4",name:"Chips masala",cat:"Food",price:400,stock:30,desc:"Fried chips tossed in masala sauce",img:"",active:true},
+  {id:"m5",name:"Tilapia fry",cat:"Food",price:1100,stock:12,desc:"Whole fish served with ugali",img:"",active:true},
+  {id:"m6",name:"Tusker lager",cat:"Drinks",price:350,stock:60,desc:"Cold, 500ml",img:"",active:true},
+  {id:"m7",name:"Guinness",cat:"Drinks",price:380,stock:48,desc:"Cold, 500ml",img:"",active:true},
+  {id:"m8",name:"House red wine",cat:"Drinks",price:600,stock:20,desc:"By the glass",img:"",active:true},
+  {id:"m9",name:"Signature cocktail",cat:"Drinks",price:800,stock:30,desc:"Ask your server for today's mix",img:"",active:true},
+  {id:"m10",name:"Fresh passion juice",cat:"Drinks",price:250,stock:25,desc:"Chilled and freshly pressed",img:"",active:true},
+  {id:"m11",name:"Shisha",cat:"Extras",price:1500,stock:10,desc:"Your choice of flavour",img:"",active:true},
+  {id:"m12",name:"Mineral water",cat:"Extras",price:100,stock:80,desc:"500ml bottle",img:"",active:true}
+];
+
+/* Drawn illustration used when an item has no photo */
+function art(it){
+  const cat = (it.cat || "").toLowerCase();
+  const base = cat.includes("drink") ? 170 : cat.includes("food") ? 20 : 270;
+  const hue = ([...(it.name || "x")].reduce((a, c) => a + c.charCodeAt(0), 0) % 60) + base;
+  let s;
+  if (cat.includes("drink")) s = '<path d="M130 60h140l-18 160a12 12 0 0 1-12 10h-80a12 12 0 0 1-12-10z" fill="rgba(255,255,255,.22)"/><path d="M138 125h124l-10 95h-104z" fill="hsl('+hue+',70%,58%)"/><rect x="196" y="20" width="8" height="90" rx="4" fill="rgba(255,255,255,.6)"/>';
+  else if (cat.includes("food")) s = '<ellipse cx="200" cy="170" rx="130" ry="62" fill="rgba(255,255,255,.92)"/><ellipse cx="200" cy="165" rx="98" ry="44" fill="hsl('+hue+',65%,50%)"/><circle cx="170" cy="155" r="16" fill="hsl('+hue+',70%,70%)"/><circle cx="220" cy="172" r="18" fill="hsl('+hue+',60%,34%)"/><circle cx="238" cy="145" r="10" fill="hsl('+((hue+60)%360)+',60%,55%)"/>';
+  else s = '<circle cx="200" cy="140" r="78" fill="rgba(255,255,255,.18)"/><circle cx="200" cy="140" r="44" fill="hsl('+hue+',70%,58%)"/>';
+  const g = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl('+hue+',45%,30%)"/><stop offset="1" stop-color="hsl('+((hue+40)%360)+',50%,15%)"/></linearGradient></defs><rect width="400" height="260" fill="url(#g)"/>'+s+'</svg>';
+  return "data:image/svg+xml;utf8," + encodeURIComponent(g);
 }
+const imgTag = it => '<img src="' + esc(it.img || art(it)) + '" data-f="' + esc(art(it)) + '" alt="' + esc(it.name) + '" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.f">';
 
-function total(){ return Object.values(cart).reduce((s,i)=>s+i.p*i.q,0); }
-
-function renderCart(){
-  const c = document.getElementById("cart");
-  const names = Object.keys(cart);
-  const co = document.getElementById("checkout");
-  if(!names.length){
-    c.innerHTML = '<p style="color:#a79b8c">Your order is empty. Add items from the menu above.</p>';
-    co.classList.add("hidden");
-    return;
-  }
-  c.innerHTML = "";
-  names.forEach(n => {
-    const i = cart[n];
-    const line = document.createElement("div");
-    line.className = "cartline";
-    line.innerHTML = '<span></span><span class="qty"><button>-</button><span></span><button>+</button></span><span class="price"></span>';
-    line.children[0].textContent = n;
-    line.querySelector(".qty span").textContent = i.q;
-    line.querySelector(".price").textContent = fmt(i.p*i.q);
-    const b = line.querySelectorAll(".qty button");
-    b[0].onclick = () => { i.q--; if(i.q<=0) delete cart[n]; renderCart(); };
-    b[1].onclick = () => { i.q++; renderCart(); };
-    c.appendChild(line);
-  });
-  const t = document.createElement("div");
-  t.className = "total";
-  t.textContent = "Total: " + fmt(total());
-  c.appendChild(t);
-  co.classList.remove("hidden");
-}
-
-function buildReceipt(){
-  const no = "WL" + Date.now().toString().slice(-6);
-  const now = new Date().toLocaleString();
-  let t = "WANGARI LOUNGE - ORDER RECEIPT\n";
-  t += "--------------------------------\n";
-  t += "Order No: " + no + "\nDate: " + now + "\n";
-  t += "--------------------------------\n";
-  t += "Name: " + val("cName") + "\nPhone: " + val("cPhone") + "\n";
-  t += "Type: " + val("cType") + "\nLocation: " + (val("cWhere")||"-") + "\n";
-  t += "Payment: " + val("cPay") + "\n";
-  t += "--------------------------------\n";
-  Object.keys(cart).forEach(n => {
-    const i = cart[n];
-    t += i.q + " x " + n + "  " + fmt(i.p*i.q) + "\n";
-  });
-  t += "--------------------------------\n";
-  t += "TOTAL: " + fmt(total()) + "\n";
-  if(val("cNotes")) t += "Notes: " + val("cNotes") + "\n";
-  return t;
-}
-function val(id){ return document.getElementById(id).value.trim(); }
-
-document.getElementById("placeBtn").onclick = async () => {
-  const msg = document.getElementById("formMsg");
-  if(!val("cName") || !val("cPhone")){ msg.textContent = "Please enter your name and phone number."; return; }
-  if(!Object.keys(cart).length){ msg.textContent = "Your order is empty."; return; }
-  msg.textContent = "";
-  const text = buildReceipt();
-  document.getElementById("receiptText").textContent = text;
-  document.getElementById("tgLink").href = "https://t.me/" + TELEGRAM_USERNAME + "?text=" + encodeURIComponent(text);
-  document.getElementById("receiptSection").classList.remove("hidden");
-  document.getElementById("receiptSection").scrollIntoView({behavior:"smooth"});
-  const st = document.getElementById("sendStatus");
-
-  if(BOT_TOKEN && CHAT_ID){
-    st.textContent = "Sending receipt...";
+/* ===================== STORAGE ===================== */
+let menu = [], orders = [], cart = {};
+const LS = {
+  get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ toast("Browser storage is full. Use smaller photos."); return false; } }
+};
+const cloud = () => !!(C.FIREBASE.projectId && C.FIREBASE.apiKey);
+const FS = {
+  u(p){ return "https://firestore.googleapis.com/v1/projects/" + C.FIREBASE.projectId + "/databases/(default)/documents/" + p; },
+  k(){ return "key=" + encodeURIComponent(C.FIREBASE.apiKey); },
+  async get(p){ const r = await fetch(this.u(p) + "?" + this.k()); if(r.status === 404) return null; if(!r.ok) throw new Error("get " + r.status); const d = await r.json(); return JSON.parse(d.fields.json.stringValue); },
+  async set(p, o){ const r = await fetch(this.u(p) + "?" + this.k(), {method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{json:{stringValue:JSON.stringify(o)}}})}); if(!r.ok) throw new Error("set " + r.status); },
+  async list(c){ const r = await fetch(this.u(c) + "?pageSize=300&" + this.k()); if(!r.ok) throw new Error("list " + r.status); const d = await r.json(); return (d.documents || []).map(x => JSON.parse(x.fields.json.stringValue)); },
+  async del(p){ await fetch(this.u(p) + "?" + this.k(), {method:"DELETE"}); }
+};
+async function loadMenu(){
+  if(cloud()){
     try{
-      const r = await fetch("https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({chat_id:CHAT_ID, text:text})
-      });
-      const j = await r.json();
-      st.textContent = j.ok ? "Order received. Receipt sent to Telegram." : "Automatic sending failed. Please use the button below.";
-    }catch(e){
-      st.textContent = "Automatic sending failed. Please use the button below.";
-    }
-  } else {
-    st.textContent = "Tap the button below to send your receipt to Telegram.";
+      const d = await FS.get("config/menu");
+      if(d && d.items){ menu = d.items; LS.set("wl_menu", menu); return; }
+      menu = LS.get("wl_menu", null) || JSON.parse(JSON.stringify(SEED));
+      await FS.set("config/menu", {items: menu}); return;
+    }catch(e){ toast("Cloud is offline. Showing the saved menu."); }
   }
-};
+  menu = LS.get("wl_menu", null) || JSON.parse(JSON.stringify(SEED));
+}
+async function saveMenu(){
+  LS.set("wl_menu", menu);
+  if(cloud()){ try{ await FS.set("config/menu", {items: menu}); }catch(e){ toast("Cloud save failed. Saved on this phone only."); } }
+}
+async function loadOrders(){
+  if(cloud()){ try{ orders = await FS.list("orders"); LS.set("wl_orders", orders); }catch(e){ orders = LS.get("wl_orders", []); } }
+  else orders = LS.get("wl_orders", []);
+  orders.sort((a, b) => b.t - a.t);
+}
+async function saveOrder(o){
+  const i = orders.findIndex(x => x.id === o.id);
+  if(i < 0) orders.unshift(o); else orders[i] = o;
+  LS.set("wl_orders", orders);
+  if(cloud()){ try{ await FS.set("orders/" + o.id, o); }catch(e){ toast("Cloud save failed. Saved on this phone only."); } }
+}
+async function removeOrder(id){
+  orders = orders.filter(o => o.id !== id);
+  LS.set("wl_orders", orders);
+  if(cloud()){ try{ await FS.del("orders/" + id); }catch(e){} }
+}
 
-document.getElementById("newOrder").onclick = () => {
-  cart = {};
-  ["cName","cPhone","cWhere","cNotes"].forEach(id => document.getElementById(id).value = "");
-  document.getElementById("receiptSection").classList.add("hidden");
-  renderCart();
-  window.scrollTo({top:0,behavior:"smooth"});
-};
+/* ===================== CUSTOMER MENU ===================== */
+let cat = "All", q = "";
+function renderTabs(){
+  const cats = ["All", ...new Set(menu.filter(i => i.active).map(i => i.cat))];
+  if(!cats.includes(cat)) cat = "All";
+  $("#tabs").innerHTML = cats.map(c => '<button class="tab' + (c === cat ? " on" : "") + '" data-c="' + esc(c) + '">' + esc(c) + '</button>').join("");
+}
+function renderMenu(){
+  const list = menu.filter(i => i.active && (cat === "All" || i.cat === cat) && (i.name + " " + i.desc).toLowerCase().includes(q));
+  if(!list.length){ $("#grid").innerHTML = '<p class="empty">Nothing matches your search.</p>'; return; }
+  $("#grid").innerHTML = list.map(i => {
+    const out = i.stock <= 0, low = !out && i.stock <= C.LOW_STOCK;
+    const b = out ? '<span class="badge out">Sold out</span>' : low ? '<span class="badge low">Only ' + i.stock + ' left</span>' : '';
+    return '<article class="card">' + imgTag(i) + '<div class="body"><h3>' + esc(i.name) + '</h3>' + b + '<p>' + esc(i.desc) + '</p><div class="foot"><span class="price">' + money(i.price) + '</span><button class="btn sm" data-add="' + esc(i.id) + '"' + (out ? " disabled" : "") + '>' + (out ? "Sold out" : "Add") + '</button></div></div></article>';
+  }).join("");
+}
+function cartItems(){ return Object.keys(cart).map(id => { const m = menu.find(x => x.id === id); return m ? {id, name:m.name, price:m.price, qty:cart[id], stock:m.stock} : null; }).filter(Boolean); }
+const cartTotal = () => cartItems().reduce((s, i) => s + i.price * i.qty, 0);
+const cartCount = () => cartItems().reduce((s, i) => s + i.qty, 0);
+function addToCart(id, d){
+  const m = menu.find(x => x.id === id); if(!m) return;
+  const n = (cart[id] || 0) + d;
+  if(n <= 0) delete cart[id];
+  else if(n > m.stock){ toast("Only " + m.stock + " of " + m.name + " available."); return; }
+  else cart[id] = n;
+  LS.set("wl_cart", cart); renderCart();
+}
+function renderCart(){
+  const items = cartItems(), n = cartCount(), t = cartTotal();
+  $("#topCount").textContent = n;
+  $("#bar").classList.toggle("show", n > 0);
+  $("#barText").textContent = n + (n === 1 ? " item" : " items") + "  |  " + money(t);
+  $("#cartTotal").textContent = money(t);
+  $("#placeBtn").disabled = n === 0;
+  $("#checkout").classList.toggle("hide", n === 0);
+  $("#cartList").innerHTML = n === 0 ? '<p class="empty">Your order is empty. Add something from the menu.</p>' :
+    items.map(i => '<div class="line"><span>' + esc(i.name) + '</span><span class="qty"><button data-q="' + esc(i.id) + '" data-d="-1" aria-label="Remove one">-</button><span>' + i.qty + '</span><button data-q="' + esc(i.id) + '" data-d="1" aria-label="Add one">+</button></span><span class="price">' + money(i.price * i.qty) + '</span></div>').join("");
+}
+function openCart(){ $("#drawer").classList.add("show"); $("#mask").classList.add("show"); }
+function closeCart(){ $("#drawer").classList.remove("show"); $("#mask").classList.remove("show"); }
 
-renderMenu();
-renderCart();
+function receiptText(o){
+  const L = [C.NAME.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay, "------------------------------"];
+  o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty)));
+  L.push("------------------------------", "TOTAL: " + money(o.total));
+  if(o.notes) L.push("Notes: " + o.notes);
+  return L.join("\n");
+}
+async function botSend(text){
+  if(!C.BOT_TOKEN || !C.CHAT_ID) return null;
+  try{
+    const r = await fetch("https://api.telegram.org/bot" + C.BOT_TOKEN + "/sendMessage", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:C.CHAT_ID,text:text})});
+    return (await r.json()).ok;
+  }catch(e){ return false; }
+}
+const val = id => $("#" + id).value.trim();
+async function placeOrder(){
+  const msg = $("#formMsg"); msg.textContent = "";
+  if(!val("cName") || !val("cPhone")){ msg.textContent = "Enter your name and phone number."; return; }
+  if(!/^[0-9+\s-]{9,15}$/.test(val("cPhone"))){ msg.textContent = "Enter a valid phone number."; return; }
+  const btn = $("#placeBtn"); btn.disabled = true; btn.textContent = "Placing order...";
+  await loadMenu();
+  const items = cartItems();
+  const bad = items.find(i => i.qty > i.stock);
+  if(bad){ msg.textContent = "Sorry, only " + bad.stock + " of " + bad.name + " left. Please adjust your order."; btn.textContent = "Place order"; renderCart(); renderMenu(); return; }
+  const o = {id: uid("WL"), t: Date.now(), name: val("cName"), phone: val("cPhone"), type: val("cType"), where: val("cWhere"), pay: val("cPay"), notes: val("cNotes"), items: items.map(i => ({id:i.id,name:i.name,price:i.price,qty:i.qty})), total: cartTotal(), status: "New"};
+  items.forEach(i => { const m = menu.find(x => x.id === i.id); m.stock -= i.qty; });
+  await saveMenu(); await saveOrder(o);
+  const text = receiptText(o);
+  $("#rcptText").textContent = text;
+  $("#tgLink").href = "https://t.me/" + C.TG_USER + "?text=" + encodeURIComponent(text);
+  $("#rcptMsg").textContent = "Thank you. Tap the button below to send your receipt to our team on Telegram.";
+  const sent = await botSend(text);
+  if(sent === true) $("#rcptMsg").textContent = "Thank you. Your receipt was sent to our team on Telegram.";
+  cart = {}; LS.set("wl_cart", cart);
+  btn.textContent = "Place order";
+  closeCart(); renderCart(); renderTabs(); renderMenu();
+  $("#rcpt").classList.add("show");
+}
+
+/* ===================== CUSTOMER EVENTS ===================== */
+document.addEventListener("click", e => {
+  const t = e.target;
+  if(t.closest("[data-add]")){ addToCart(t.closest("[data-add]").dataset.add, 1); toast("Added to your order"); return; }
+  if(t.closest("[data-q]")){ const b = t.closest("[data-q]"); addToCart(b.dataset.q, Number(b.dataset.d)); return; }
+  if(t.closest(".tab")){ cat = t.closest(".tab").dataset.c; renderTabs(); renderMenu(); return; }
+});
+$("#topCart").onclick = openCart;
+$("#heroCart").onclick = openCart;
+$("#bar").onclick = openCart;
+$("#closeCart").onclick = closeCart;
+$("#mask").onclick = closeCart;
+$("#placeBtn").onclick = placeOrder;
+$("#search").oninput = e => { q = e.target.value.toLowerCase().trim(); renderMenu(); };
+$("#cType").onchange = e => {
+  const v = e.target.value;
+  $("#whereLabel").textContent = v === "Dine in" ? "Table number" : v === "Delivery" ? "Delivery address" : "Pickup time (optional)";
+};
+$("#copyRcpt").onclick = async () => { try{ await navigator.clipboard.writeText($("#rcptText").textContent); toast("Receipt copied"); }catch(e){ toast("Press and hold the text to copy it"); } };
+$("#doneRcpt").onclick = () => $("#rcpt").classList.remove("show");
+
+/* ===================== STAFF DASHBOARD ===================== */
+let tab = "orders", ofilter = "All", editId = null, pendImg = "";
+const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
+const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
+
+async function openDev(){
+  $("#dev").classList.add("show");
+  if(!isAuth()){ pinScreen(); return; }
+  $("#devBody").innerHTML = '<p class="empty">Loading...</p>';
+  await Promise.all([loadMenu(), loadOrders()]);
+  setTab(tab);
+}
+function closeDev(){ $("#dev").classList.remove("show"); if(location.hash === "#dev") history.replaceState(null, "", "#top"); renderTabs(); renderMenu(); renderCart(); }
+function pinScreen(){
+  $("#dnav").classList.add("hide");
+  $("#devBody").innerHTML = '<div class="pin"><h2>Staff only</h2><label for="pin">Enter the staff PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="off"><p id="pinMsg" style="color:var(--red);margin:8px 0"></p><div class="acts" style="justify-content:center"><button class="btn" data-act="login">Open dashboard</button><button class="btn ghost" data-act="exit">Back to site</button></div></div>';
+}
+function setTab(t){
+  tab = t; editId = null; pendImg = "";
+  $("#dnav").classList.remove("hide");
+  document.querySelectorAll("#dnav button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
+  const f = {orders: tabOrders, menu: tabMenu, stock: tabStock, care: tabCare}[t];
+  $("#devBody").innerHTML = f();
+  badge();
+}
+function badge(){ const n = orders.filter(o => o.status === "New").length; $("#newBadge").textContent = n ? "(" + n + ")" : ""; }
+
+function tabOrders(){
+  const sameDay = o => new Date(o.t).toDateString() === new Date().toDateString();
+  const td = orders.filter(o => sameDay(o) && o.status !== "Cancelled");
+  const sales = td.reduce((s, o) => s + o.total, 0);
+  const list = orders.filter(o => ofilter === "All" || o.status === ofilter);
+  let h = '<div class="stats"><div class="stat"><b>' + td.length + '</b><span>Orders today</span></div><div class="stat"><b>' + money(sales) + '</b><span>Sales today</span></div><div class="stat"><b>' + orders.filter(o => o.status === "New").length + '</b><span>New orders waiting</span></div><div class="stat"><b>' + (cloud() ? "Shared" : "This phone") + '</b><span>Where orders are saved</span></div></div>';
+  h += '<div class="tools"><select id="ofilter" data-act="filter" style="max-width:220px"><option>All</option>' + STATUSES.map(s => '<option' + (s === ofilter ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div>';
+  if(!list.length) return h + '<p class="empty">No orders yet.</p>';
+  return h + list.map(o => '<div class="ord"><div class="top"><b>' + esc(o.id) + '</b><span class="st ' + esc(o.status) + '">' + esc(o.status) + '</span></div><div style="color:var(--mute);font-size:.9rem">' + new Date(o.t).toLocaleString() + '</div><div>' + esc(o.name) + ' | <a href="tel:' + esc(o.phone) + '">' + esc(o.phone) + '</a></div><div style="color:var(--mute);font-size:.9rem">' + esc(o.type) + ' | ' + esc(o.where || "-") + ' | ' + esc(o.pay) + '</div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + '</li>').join("") + '</ul>' + (o.notes ? '<div style="color:var(--mute);font-size:.9rem">Notes: ' + esc(o.notes) + '</div>' : '') + '<div class="total" style="margin:8px 0"><span>Total</span><b>' + money(o.total) + '</b></div><div class="acts"><select data-act="status" data-id="' + esc(o.id) + '" style="width:auto">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select><button class="btn ghost sm" data-act="copyo" data-id="' + esc(o.id) + '">Copy receipt</button><button class="btn red sm" data-act="delo" data-id="' + esc(o.id) + '">Delete</button></div></div>').join("");
+}
+
+function tabMenu(){
+  const e = menu.find(x => x.id === editId) || {name:"",cat:"",price:"",stock:"",desc:"",img:"",active:true};
+  const cats = [...new Set(menu.map(i => i.cat))];
+  let h = '<h3 style="margin-bottom:10px">' + (editId ? "Edit item" : "Post a new item") + '</h3><div class="frm">';
+  h += '<div><label for="fName">Name</label><input id="fName" value="' + esc(e.name) + '"></div>';
+  h += '<div><label for="fCat">Category</label><input id="fCat" list="cats" value="' + esc(e.cat) + '" placeholder="Food, Drinks, Extras"><datalist id="cats">' + cats.map(c => '<option value="' + esc(c) + '">').join("") + '</datalist></div>';
+  h += '<div><label for="fPrice">Price (' + C.CURRENCY + ')</label><input id="fPrice" type="number" min="0" value="' + esc(e.price) + '"></div>';
+  h += '<div><label for="fStock">Stock quantity</label><input id="fStock" type="number" min="0" value="' + esc(e.stock) + '"></div>';
+  h += '<div class="full"><label for="fDesc">Description</label><input id="fDesc" value="' + esc(e.desc) + '"></div>';
+  h += '<div><label for="fImg">Photo link (optional)</label><input id="fImg" value="' + (e.img && e.img.startsWith("data:") ? "" : esc(e.img)) + '" placeholder="https://..."></div>';
+  h += '<div><label for="fFile">Or upload a photo</label><input id="fFile" type="file" accept="image/*" data-act="file"></div>';
+  h += '<div class="full"><div id="prev" style="margin-top:12px">' + imgTag(e).replace("<img", '<img style="width:140px;border-radius:8px"') + '</div></div>';
+  h += '<div class="full"><label><input type="checkbox" id="fActive" style="width:auto" ' + (e.active ? "checked" : "") + '> Show this item on the menu</label></div>';
+  h += '<div class="full acts" style="margin-top:12px"><button class="btn" data-act="saveitem">' + (editId ? "Save changes" : "Post item") + '</button>' + (editId ? '<button class="btn ghost" data-act="cancel">Cancel</button>' : '') + '</div></div>';
+  h += '<h3 style="margin-bottom:10px">All items (' + menu.length + ')</h3>';
+  h += menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + ' | ' + money(i.price) + ' | stock ' + i.stock + (i.active ? "" : " | hidden") + '</small></div><div class="acts"><button class="btn ghost sm" data-act="edit" data-id="' + esc(i.id) + '">Edit</button><button class="btn ghost sm" data-act="toggle" data-id="' + esc(i.id) + '">' + (i.active ? "Hide" : "Show") + '</button><button class="btn red sm" data-act="delitem" data-id="' + esc(i.id) + '">Delete</button></div></div>').join("");
+  return h;
+}
+
+function tabStock(){
+  const low = menu.filter(i => i.stock <= C.LOW_STOCK);
+  let h = '<div class="stats"><div class="stat"><b>' + menu.length + '</b><span>Items</span></div><div class="stat"><b>' + low.filter(i => i.stock > 0).length + '</b><span>Running low</span></div><div class="stat"><b>' + menu.filter(i => i.stock <= 0).length + '</b><span>Sold out</span></div></div>';
+  h += '<div class="frm"><div><label for="rsTo">Restock every low or sold out item to</label><input id="rsTo" type="number" min="1" value="20"></div><div style="align-self:end"><button class="btn" data-act="restock">Restock now</button></div></div>';
+  return h + menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + (i.stock <= 0 ? " | sold out" : i.stock <= C.LOW_STOCK ? " | running low" : "") + '</small></div><div class="qty"><button data-act="stk" data-id="' + esc(i.id) + '" data-d="-1">-</button><input class="stk" type="number" min="0" value="' + i.stock + '" data-act="setstk" data-id="' + esc(i.id) + '"><button data-act="stk" data-id="' + esc(i.id) + '" data-d="1">+</button></div></div>').join("");
+}
+
+function tabCare(){
+  const done = orders.filter(o => o.status !== "Cancelled");
+  const rev = done.reduce((s, o) => s + o.total, 0), cnt = {};
+  done.forEach(o => o.items.forEach(i => cnt[i.name] = (cnt[i.name] || 0) + i.qty));
+  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 5);
+  let h = '<div class="stats"><div class="stat"><b>' + done.length + '</b><span>Orders, all time</span></div><div class="stat"><b>' + money(rev) + '</b><span>Sales, all time</span></div><div class="stat"><b>' + (cloud() ? "Connected" : "Not connected") + '</b><span>Shared cloud storage</span></div></div>';
+  h += '<h3 style="margin-bottom:8px">Best sellers</h3>' + (top.length ? '<ul style="margin:0 0 18px 18px;color:var(--mute)">' + top.map(t => '<li>' + esc(t[0]) + ': ' + t[1] + ' sold</li>').join("") + '</ul>' : '<p class="empty">No sales yet.</p>');
+  h += '<h3 style="margin-bottom:8px">Maintenance</h3><div class="acts" style="margin-bottom:12px"><button class="btn" data-act="export">Download backup</button><label class="btn ghost" style="margin:0;color:var(--amber2)">Restore backup<input type="file" accept=".json" data-act="import" class="hide"></label><button class="btn ghost" data-act="tgtest">Test Telegram bot</button></div>';
+  h += '<div class="acts"><button class="btn ghost" data-act="clearold">Delete finished orders older than 30 days</button><button class="btn red" data-act="resetmenu">Reset menu to defaults</button></div>';
+  h += '<p style="color:var(--mute);font-size:.88rem;margin-top:16px;max-width:60ch">Tip: download a backup every week. The PIN only hides the dashboard on the page. Change DEV_PIN in the settings at the top of the code and keep your Telegram bot token empty unless you accept that it can be read from the page.</p>';
+  return h;
+}
+
+function shrink(file, cb){
+  const r = new FileReader();
+  r.onload = () => { const im = new Image(); im.onload = () => { const s = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = im.width * s; c.height = im.height * s; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL("image/jpeg", .72)); }; im.src = r.result; };
+  r.readAsDataURL(file);
+}
+const download = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type:"application/json"})); a.download = name; a.click(); };
+
+async function setStatus(id, ns){
+  const o = orders.find(x => x.id === id); if(!o) return;
+  const was = o.status;
+  if(ns === "Cancelled" && was !== "Cancelled") o.items.forEach(i => { const m = menu.find(x => x.id === i.id); if(m) m.stock += i.qty; });
+  if(was === "Cancelled" && ns !== "Cancelled") o.items.forEach(i => { const m = menu.find(x => x.id === i.id); if(m) m.stock = Math.max(0, m.stock - i.qty); });
+  o.status = ns;
+  await saveOrder(o); await saveMenu(); setTab("orders");
+}
+
+document.addEventListener("click", async e => {
+  const b = e.target.closest("[data-act]"); if(!b || b.tagName === "SELECT" || b.tagName === "INPUT") return;
+  const a = b.dataset.act, id = b.dataset.id;
+  if(a === "login"){ if($("#pin").value === C.DEV_PIN){ sessionStorage.setItem("wl_auth", "1"); openDev(); } else $("#pinMsg").textContent = "Wrong PIN."; }
+  else if(a === "exit") closeDev();
+  else if(a === "logout"){ sessionStorage.removeItem("wl_auth"); closeDev(); }
+  else if(a === "refresh"){ await Promise.all([loadMenu(), loadOrders()]); setTab(tab); toast("Updated"); }
+  else if(a === "copyo"){ try{ await navigator.clipboard.writeText(receiptText(orders.find(x => x.id === id))); toast("Receipt copied"); }catch(er){ toast("Could not copy"); } }
+  else if(a === "delo"){ if(confirm("Delete this order?")){ await removeOrder(id); setTab("orders"); } }
+  else if(a === "edit"){ editId = id; pendImg = ""; $("#devBody").innerHTML = tabMenu(); scrollTo(0, 0); $("#devBody").scrollTop = 0; }
+  else if(a === "cancel") setTab("menu");
+  else if(a === "toggle"){ const m = menu.find(x => x.id === id); m.active = !m.active; await saveMenu(); setTab("menu"); }
+  else if(a === "delitem"){ if(confirm("Delete this item from the menu?")){ menu = menu.filter(x => x.id !== id); await saveMenu(); setTab("menu"); } }
+  else if(a === "saveitem"){
+    const name = $("#fName").value.trim(), price = Number($("#fPrice").value), stock = Number($("#fStock").value);
+    if(!name || !$("#fCat").value.trim() || isNaN(price) || isNaN(stock)){ toast("Fill in name, category, price and stock."); return; }
+    const img = pendImg || $("#fImg").value.trim() || (editId ? (menu.find(x => x.id === editId).img || "") : "");
+    const it = {id: editId || uid("m"), name, cat: $("#fCat").value.trim(), price, stock, desc: $("#fDesc").value.trim(), img: pendImg || $("#fImg").value.trim() || (editId && !$("#fImg").value.trim() && !pendImg ? menu.find(x => x.id === editId).img : ""), active: $("#fActive").checked};
+    if(editId) menu[menu.findIndex(x => x.id === editId)] = it; else menu.push(it);
+    await saveMenu(); toast(editId ? "Item updated" : "Item posted"); setTab("menu");
+  }
+  else if(a === "stk"){ const m = menu.find(x => x.id === id); m.stock = Math.max(0, m.stock + Number(b.dataset.d)); await saveMenu(); setTab("stock"); }
+  else if(a === "restock"){ const n = Number($("#rsTo").value) || 20; menu.forEach(i => { if(i.stock <= C.LOW_STOCK) i.stock = n; }); await saveMenu(); setTab("stock"); toast("Restocked"); }
+  else if(a === "export") download("wangari-backup-" + new Date().toISOString().slice(0, 10) + ".json", JSON.stringify({menu, orders}));
+  else if(a === "clearold"){
+    const cut = Date.now() - 30 * 864e5, old = orders.filter(o => o.t < cut && (o.status === "Completed" || o.status === "Cancelled"));
+    if(!old.length){ toast("Nothing to clear"); return; }
+    if(confirm("Delete " + old.length + " old orders?")){ for(const o of old) await removeOrder(o.id); setTab("care"); }
+  }
+  else if(a === "resetmenu"){ if(confirm("Replace the whole menu with the default menu?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("care"); toast("Menu reset"); } }
+  else if(a === "tgtest"){ const r = await botSend("Test message from " + C.NAME + " dashboard"); toast(r === true ? "Test message sent" : r === null ? "Add BOT_TOKEN and CHAT_ID in the settings first" : "Telegram refused the message"); }
+});
+
+document.addEventListener("change", async e => {
+  const t = e.target, a = t.dataset && t.dataset.act; if(!a) return;
+  if(a === "status") setStatus(t.dataset.id, t.value);
+  else if(a === "filter"){ ofilter = t.value; setTab("orders"); }
+  else if(a === "setstk"){ const m = menu.find(x => x.id === t.dataset.id); m.stock = Math.max(0, Number(t.value) || 0); await saveMenu(); setTab("stock"); }
+  else if(a === "file" && t.files[0]) shrink(t.files[0], d => { pendImg = d; $("#prev").innerHTML = '<img style="width:140px;border-radius:8px" src="' + d + '" alt="Preview">'; });
+  else if(a === "import" && t.files[0]){
+    const r = new FileReader();
+    r.onload = async () => {
+      try{
+        const d = JSON.parse(r.result);
+        if(!Array.isArray(d.menu) || !Array.isArray(d.orders)) throw new Error("bad");
+        if(!confirm("Replace the current menu and orders with this backup?")) return;
+        menu = d.menu; await saveMenu();
+        orders = d.orders; LS.set("wl_orders", orders);
+        if(cloud()) for(const o of orders){ try{ await FS.set("orders/" + o.id, o); }catch(er){} }
+        setTab("care"); toast("Backup restored");
+      }catch(er){ toast("That file is not a valid backup."); }
+    };
+    r.readAsText(t.files[0]);
+  }
+});
+$("#dnav").onclick = e => { const b = e.target.closest("button"); if(b) setTab(b.dataset.tab); };
+$("#staffLink").onclick = e => { e.preventDefault(); history.replaceState(null, "", "#dev"); openDev(); };
+window.addEventListener("hashchange", () => { if(location.hash === "#dev") openDev(); });
+
+/* Check for new orders every 20 seconds while the dashboard is open */
+setInterval(async () => {
+  if(!$("#dev").classList.contains("show") || !isAuth()) return;
+  const before = orders.length;
+  await loadOrders(); badge();
+  if(orders.length > before){ toast("New order received"); if(tab === "orders") setTab("orders"); }
+}, 20000);
+
+/* ===================== START ===================== */
+(async function init(){
+  $("#yr").textContent = new Date().getFullYear();
+  cart = LS.get("wl_cart", {});
+  await loadMenu();
+  Object.keys(cart).forEach(id => { if(!menu.find(m => m.id === id)) delete cart[id]; });
+  renderTabs(); renderMenu(); renderCart();
+  if(location.hash === "#dev") openDev();
+})();
 </script>
 </body>
 </html>
