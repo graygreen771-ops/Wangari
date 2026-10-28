@@ -433,6 +433,49 @@
 
   <!-- Application Logic -->
   <script>
+  // --- RECEIPT & TELEGRAM INTEGRATION ---
+function generateReceiptText(order) {
+  let itemsFormatted = order.items.map(i => `- ${i.qty}x ${i.title} (${i.price * i.qty} ETB)`).join('\n');
+  
+  return `RECEIPT - CAMPUS LOUNGE\n` +
+         `---------------------------\n` +
+         `Order ID: ${order.id}\n` +
+         `Customer: ${order.customer}\n` +
+         `Payment Method: ${order.method}\n` +
+         `Sender Account Name: ${order.bankName}\n` +
+         `---------------------------\n` +
+         `ITEMS:\n${itemsFormatted}\n` +
+         `---------------------------\n` +
+         `TOTAL: ${order.total} ETB\n` +
+         `Time: ${order.timestamp}\n` +
+         `---------------------------\n` +
+         `Status: Pending Verification`;
+}
+
+function sendReceiptToTelegram(order) {
+  const receiptText = generateReceiptText(order);
+  const encodedText = encodeURIComponent(receiptText);
+  
+  // Connects directly to your Telegram channel order bot/inbox
+  const telegramHandle = 'mela_market_orders'; 
+  const telegramUrl = `https://t.me/${telegramHandle}?text=${encodedText}`;
+  
+  window.open(telegramUrl, '_blank');
+}
+
+function downloadReceiptFile(order) {
+  const receiptText = generateReceiptText(order);
+  const blob = new Blob([receiptText], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Receipt-${order.id}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
     // State & Catalog Datasets
     const defaultCatalog = [
       { id: 101, title: 'Espresso / Macchiato', category: 'Hot Drinks', price: 60, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', desc: 'Single or double shot rich local roast espresso with steamed milk foam options.', tags: ['Popular', 'Coffee'], available: true },
