@@ -1,10 +1,9 @@
-```html
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wangari Lounge</title>
+  <title>Uni Lounge & Ordering Hub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -32,109 +31,71 @@
       -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
-    .custom-scrollbar::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-      background: rgba(24, 24, 27, 0.5);
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-      background: rgba(245, 158, 11, 0.4);
-    }
   </style>
 </head>
-<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans pb-12 custom-scrollbar">
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col font-sans pb-24 md:pb-12">
 
   <!-- Header / Navigation -->
   <header class="sticky top-0 z-40 glass border-b border-zinc-800/80">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
-          <i class="fa-solid fa-mug-hot text-xl"></i>
-        </div>
         <div>
-          <h1 class="text-base sm:text-lg font-extrabold tracking-tight text-white leading-tight">CAMPUS LOUNGE</h1>
-          <p class="text-[11px] text-amber-500 font-medium">Digital Table Side Hub</p>
+          <h1 class="text-lg font-bold tracking-tight text-white leading-tight">CAMPUS LOUNGE</h1>
+          <p class="text-xs text-amber-500 font-medium">Digital Hub & Orders</p>
         </div>
       </div>
 
-      <!-- Header Search & Cart Toggle -->
-      <div class="flex items-center gap-3">
-        <div class="relative hidden sm:block w-48 lg:w-64">
-          <input type="text" id="headerSearchInput" placeholder="Quick search item..." class="w-full bg-zinc-900/90 border border-zinc-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 transition">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-zinc-500 text-xs"></i>
-        </div>
-
-        <button id="openCartBtn" class="relative px-3.5 py-2 rounded-xl text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-950 flex items-center gap-2 transition shadow-lg shadow-amber-500/10">
-          <i class="fa-solid fa-cart-shopping"></i>
-          <span class="hidden sm:inline">Order Cart</span>
-          <span id="cartBadge" class="hidden bg-red-600 text-white rounded-full text-[10px] w-5 h-5 flex items-center justify-center font-bold">0</span>
+      <!-- Cart Button -->
+      <div class="flex items-center gap-2">
+        <button onclick="openCartModal()" class="relative px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-950 flex items-center gap-2 transition">
+          <i class="fa-solid fa-shopping-bag"></i>
+          <span>Cart</span>
+          <span id="cartBadge" class="hidden absolute -top-2 -right-2 bg-red-600 text-white rounded-full text-[10px] w-5 h-5 flex items-center justify-center font-bold">0</span>
         </button>
       </div>
     </div>
   </header>
 
   <!-- CUSTOMER VIEW -->
-  <main id="customerView" class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-grow w-full space-y-8">
+  <main id="customerView" class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full space-y-8">
     
     <!-- Hero Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600/25 via-amber-900/10 to-zinc-900 border border-amber-500/20 p-6 md:p-10">
-      <div class="max-w-2xl space-y-3 z-10 relative">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-          <i class="fa-solid fa-bolt text-[10px]"></i> Instant Digital Ordering
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-600/30 via-amber-900/10 to-zinc-900 border border-amber-500/20 p-6 md:p-10">
+      <div class="max-w-xl space-y-3 z-10 relative">
+        <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+          Fast Table Side Ordering
         </span>
-        <h2 class="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
-          Relax at Your Table. Order & Pay Instantly.
+        <h2 class="text-3xl md:text-5xl font-extrabold tracking-tight text-white">
+          Chill, Order & Pay Directly.
         </h2>
-        <p class="text-xs sm:text-sm text-zinc-400 max-w-lg">
-          Browse our live menu, customize options, and complete payments seamlessly with Telebirr or CBE Birr.
+        <p class="text-sm text-zinc-400">
+          Skip the line. Order your drinks, snacks, and combo meals right from your phone using Telebirr or CBE.
         </p>
       </div>
     </div>
 
-    <!-- Controls: Mobile Search & Category Filters -->
-    <div class="space-y-4">
-      <div class="sm:hidden">
-        <input type="text" id="mobileSearchInput" placeholder="Search beverages, meals, snacks..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-500">
-      </div>
-
-      <div class="flex items-center justify-between gap-2 overflow-x-auto pb-1 scrollbar-none" id="categoryFilters">
-        <div class="flex items-center gap-2">
-          <button data-cat="All" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition">All Items</button>
-          <button data-cat="Hot Drinks" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Hot Drinks</button>
-          <button data-cat="Cold Beverages" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Cold Beverages</button>
-          <button data-cat="Snacks & Bites" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Snacks & Bites</button>
-          <button data-cat="Meals" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Meals</button>
-          <button data-cat="Shisha & Lounge Specials" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Shisha & Lounge Specials</button>
-        </div>
-        <span id="itemCountDisplay" class="text-xs text-zinc-500 whitespace-nowrap hidden md:inline">Showing 0 items</span>
-      </div>
+    <!-- Category Filters -->
+    <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="categoryFilters">
+      <button onclick="filterCategory('All')" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition">All Items</button>
+      <button onclick="filterCategory('Drinks')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Drinks</button>
+      <button onclick="filterCategory('Snacks')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Snacks & Food</button>
+      <button onclick="filterCategory('Specials')" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition">Combos / Specials</button>
     </div>
 
     <!-- Menu Grid -->
-    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+    <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       <!-- Dynamic menu items populate here -->
     </div>
   </main>
 
-  <!-- SECRET ADMIN AUTH MODAL -->
+  <!-- ADMIN LOGIN MODAL -->
   <div id="adminLoginModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-zinc-900 border border-zinc-800 w-full max-w-sm rounded-2xl p-6 space-y-4 relative">
-      <button id="closeAdminLoginBtn" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+      <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
-      <div class="space-y-1">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-lock text-amber-500"></i> Dev Management Auth
-        </h3>
-        <p class="text-xs text-zinc-400">Authorized personnel access only.</p>
-      </div>
-      <form id="adminLoginForm" class="space-y-3">
+      <h3 class="text-lg font-bold text-white">Admin Authentication</h3>
+      <form onsubmit="handleAdminLogin(event)" class="space-y-3">
         <div>
           <label class="block text-xs font-medium text-zinc-400 mb-1">Username</label>
           <input type="text" id="adminUser" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
@@ -144,236 +105,132 @@
           <input type="password" id="adminPass" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
         </div>
         <button type="submit" class="w-full py-2.5 rounded-lg bg-amber-500 text-zinc-950 font-bold text-xs hover:bg-amber-600 transition">
-          Launch
+          Access Panel
         </button>
       </form>
     </div>
   </div>
 
-  <!-- ADMIN / DEV DASHBOARD VIEW -->
-  <main id="adminView" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-grow w-full space-y-8">
-    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-zinc-800 pb-4 gap-4">
+  <!-- ADMIN / DEV VIEW -->
+  <main id="adminView" class="hidden max-w-6xl mx-auto px-4 py-6 flex-grow w-full space-y-8">
+    <div class="flex items-center justify-between border-b border-zinc-800 pb-4">
       <div>
         <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-sliders text-amber-500"></i> Admin Console & Operations
+          <i class="fa-solid fa-sliders text-amber-500"></i> Admin / Dev Management Dashboard
         </h2>
-        <p class="text-xs text-zinc-400">Real-time incoming orders, catalog management, and revenue analytics.</p>
+        <p class="text-xs text-zinc-400">Manage incoming orders, payments, and live menu catalog.</p>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="exportDataBtn" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-900 text-zinc-300 border border-zinc-800 hover:text-white transition">
-          <i class="fa-solid fa-download mr-1"></i> Export Data
-        </button>
-        <button id="exitAdminBtn" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-amber-500 hover:bg-amber-600 text-zinc-950 transition">
-          Exit Console
-        </button>
-      </div>
+      <button onclick="exitAdminView()" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition">
+        Exit to Customer View
+      </button>
     </div>
 
-    <!-- Analytics Cards -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="glass p-4 rounded-2xl border border-zinc-800">
-        <p class="text-xs text-zinc-500 uppercase font-semibold">Total Revenue</p>
-        <p id="statTotalRev" class="text-xl sm:text-2xl font-black text-amber-400 mt-1">0 ETB</p>
-      </div>
-      <div class="glass p-4 rounded-2xl border border-zinc-800">
-        <p class="text-xs text-zinc-500 uppercase font-semibold">Total Orders</p>
-        <p id="statTotalOrders" class="text-xl sm:text-2xl font-black text-white mt-1">0</p>
-      </div>
-      <div class="glass p-4 rounded-2xl border border-zinc-800">
-        <p class="text-xs text-zinc-500 uppercase font-semibold">Telebirr vs CBE</p>
-        <p id="statPaymentSplit" class="text-xs sm:text-sm font-bold text-zinc-300 mt-2">0 / 0</p>
-      </div>
-      <div class="glass p-4 rounded-2xl border border-zinc-800">
-        <p class="text-xs text-zinc-500 uppercase font-semibold">Catalog Items</p>
-        <p id="statCatalogCount" class="text-xl sm:text-2xl font-black text-white mt-1">0</p>
-      </div>
-    </div>
-
-    <!-- Admin Operations Hub -->
+    <!-- Admin Tabs -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       
-      <!-- Left Column: Add New Item & Controls -->
-      <div class="space-y-6">
-        <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-4">
-          <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
-            <i class="fa-solid fa-plus-circle"></i> Create Catalog Item
-          </h3>
-          <form id="addItemForm" class="space-y-3">
-            <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Item Title</label>
-              <input type="text" id="newItemTitle" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-2">
-              <div>
-                <label class="block text-xs font-medium text-zinc-400 mb-1">Price (ETB)</label>
-                <input type="number" id="newItemPrice" required min="1" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
-              </div>
-              <div>
-                <label class="block text-xs font-medium text-zinc-400 mb-1">Category</label>
-                <select id="newItemCategory" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
-                  <option value="Hot Drinks">Hot Drinks</option>
-                  <option value="Cold Beverages">Cold Beverages</option>
-                  <option value="Snacks & Bites">Snacks & Bites</option>
-                  <option value="Meals">Meals</option>
-                  <option value="Shisha & Lounge Specials">Shisha & Lounge Specials</option>
-                </select>
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Image URL</label>
-              <input type="url" id="newItemImage" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="https://...">
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Tags / Ingredients (Comma separated)</label>
-              <input type="text" id="newItemTags" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Spicy, Vegan, Recommended">
-            </div>
-
-            <div>
-              <label class="block text-xs font-medium text-zinc-400 mb-1">Description</label>
-              <textarea id="newItemDesc" rows="2" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500"></textarea>
-            </div>
-
-            <button type="submit" class="w-full py-2.5 rounded-lg bg-amber-500 text-zinc-950 font-bold text-xs hover:bg-amber-600 transition">
-              Publish To Menu
-            </button>
-          </form>
-        </div>
-
-        <!-- System Reset Panel -->
-        <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-3">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-zinc-400">Data Management</h3>
-          <p class="text-[11px] text-zinc-500">Reset orders or restore original catalog datasets.</p>
-          <div class="flex gap-2">
-            <button id="resetOrdersBtn" class="flex-1 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-semibold hover:bg-red-500/20 transition">Clear Orders</button>
-            <button id="resetMenuBtn" class="flex-1 py-1.5 rounded-lg bg-zinc-800 border border-zinc-700 text-zinc-300 text-xs font-semibold hover:bg-zinc-700 transition">Reset Menu</button>
+      <!-- Left Column: Add New Item -->
+      <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-4 h-fit">
+        <h3 class="text-lg font-semibold text-amber-400 flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle"></i> Post New Menu Item
+        </h3>
+        <form id="addItemForm" onsubmit="handleAddNewItem(event)" class="space-y-3">
+          <div>
+            <label class="block text-xs font-medium text-zinc-400 mb-1">Item Title</label>
+            <input type="text" id="newItemTitle" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Special Club Sandwich">
           </div>
-        </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">Price (ETB)</label>
+              <input type="number" id="newItemPrice" required class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="250">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-zinc-400 mb-1">Category</label>
+              <select id="newItemCategory" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500">
+                <option value="Drinks">Drinks</option>
+                <option value="Snacks">Snacks</option>
+                <option value="Specials">Specials</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-zinc-400 mb-1">Image URL (Optional)</label>
+            <input type="url" id="newItemImage" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="https://images.unsplash.com/...">
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-zinc-400 mb-1">Description</label>
+            <textarea id="newItemDesc" rows="2" class="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="Brief details about the item..."></textarea>
+          </div>
+
+          <button type="submit" class="w-full py-2.5 rounded-lg bg-amber-500 text-zinc-950 font-bold text-xs hover:bg-amber-600 transition">
+            Publish Item
+          </button>
+        </form>
       </div>
 
-      <!-- Right Column: Live Order Feed & Stock Control Tabs -->
-      <div class="lg:col-span-2 space-y-6">
-        
-        <!-- Live Orders Feed -->
-        <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-4">
-          <div class="flex items-center justify-between border-b border-zinc-800/80 pb-3">
-            <h3 class="text-base font-bold text-white flex items-center gap-2">
-              <i class="fa-solid fa-receipt text-amber-500"></i> Live Incoming Orders
-            </h3>
-            <span id="orderFeedBadge" class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">0 Pending</span>
-          </div>
-
-          <div id="ordersFeed" class="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
-            <!-- Dynamic Orders render here -->
-          </div>
-        </div>
-
-        <!-- Active Inventory Management -->
-        <div class="glass p-5 rounded-2xl border border-zinc-800 space-y-4">
-          <h3 class="text-base font-bold text-white flex items-center gap-2">
-            <i class="fa-solid fa-boxes-stacked text-amber-500"></i> Active Inventory Catalog
+      <!-- Right Column: Live Order Feed -->
+      <div class="lg:col-span-2 glass p-5 rounded-2xl border border-zinc-800 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+            <i class="fa-solid fa-receipt text-amber-400"></i> Live Customer Orders
           </h3>
-          <div id="adminMenuCatalog" class="space-y-2 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-            <!-- Admin inventory items list -->
-          </div>
+          <button onclick="clearAllOrders()" class="text-xs text-red-400 hover:text-red-300 transition">Clear Orders</button>
         </div>
 
+        <div id="ordersFeed" class="space-y-4 max-h-[600px] overflow-y-auto pr-1">
+          <!-- Dynamic Orders render here -->
+        </div>
       </div>
 
     </div>
   </main>
 
-  <!-- CUSTOMIZATION MODAL -->
-  <div id="customizeModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-md rounded-2xl p-6 space-y-5 relative">
-      <button id="closeCustomizeBtn" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <div class="space-y-1">
-        <h3 id="custModalTitle" class="text-lg font-bold text-white">Customize Options</h3>
-        <p id="custModalPrice" class="text-xs font-semibold text-amber-400">0 ETB</p>
-      </div>
-
-      <div class="space-y-4 text-xs">
-        <div>
-          <label class="block font-semibold text-zinc-300 mb-1.5">Preparation Preference / Sugar Level</label>
-          <select id="custOptionPrep" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500">
-            <option value="Standard">Standard Preparation</option>
-            <option value="Low Sugar">Low Sugar / Mild Spice</option>
-            <option value="Extra Hot / Extra Spicy">Extra Hot / Extra Spicy</option>
-            <option value="No Sugar">No Sugar Added</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block font-semibold text-zinc-300 mb-1.5">Special Instructions / Requests</label>
-          <textarea id="custOptionNotes" rows="2" class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Extra napkins, no ice, well done..."></textarea>
-        </div>
-      </div>
-
-      <button id="confirmAddToCartBtn" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 font-bold text-zinc-950 text-xs transition">
-        Add To Cart
-      </button>
-    </div>
-  </div>
-
   <!-- CART & CHECKOUT MODAL -->
   <div id="cartModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-lg rounded-2xl p-6 space-y-5 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <button id="closeCartBtn" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
+    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-lg rounded-2xl p-6 space-y-5 relative max-h-[90vh] overflow-y-auto">
+      <button onclick="closeCartModal()" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <h3 class="text-xl font-bold text-white flex items-center gap-2">
-        <i class="fa-solid fa-bag-shopping text-amber-500"></i> Your Order Cart
+        <i class="fa-solid fa-bag-shopping text-amber-500"></i> Your Order
       </h3>
 
-      <div id="cartItemsList" class="space-y-3 divide-y divide-zinc-800/60 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+      <div id="cartItemsList" class="space-y-3 divide-y divide-zinc-800/60 max-h-48 overflow-y-auto pr-1">
         <!-- Cart items list here -->
       </div>
 
-      <div class="border-t border-zinc-800 pt-3 space-y-1.5 text-xs">
-        <div class="flex justify-between text-zinc-400">
-          <span>Subtotal</span>
-          <span id="cartSubtotalDisplay">0 ETB</span>
-        </div>
-        <div class="flex justify-between text-zinc-400">
-          <span>Service Fee (0%)</span>
-          <span>0 ETB</span>
-        </div>
-        <div class="flex justify-between text-sm font-bold text-white pt-1 border-t border-zinc-800/50">
-          <span>Total Payable</span>
-          <span id="cartTotalDisplay" class="text-amber-400">0 ETB</span>
-        </div>
+      <div class="border-t border-zinc-800 pt-3 flex items-center justify-between text-base font-bold text-white">
+        <span>Total Amount:</span>
+        <span id="cartTotalDisplay" class="text-amber-400">0 ETB</span>
       </div>
 
       <!-- Customer & Bank Info Form -->
-      <form id="checkoutForm" class="space-y-4 border-t border-zinc-800 pt-4">
+      <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4 border-t border-zinc-800 pt-4">
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1">Your Full Name / Table Number *</label>
-          <input type="text" id="custName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Alex (Table 04)">
+          <input type="text" id="custName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="e.g. Alex (Table 4)">
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-zinc-300 mb-1">Bank / Telebirr Sender Name *</label>
-          <input type="text" id="custBankName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-500" placeholder="Full name registered on bank app used to send money">
-          <p class="text-[10px] text-zinc-500 mt-1">Staff will cross-reference this name against incoming transfers.</p>
+          <input type="text" id="custBankName" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-amber-500" placeholder="Name on Telebirr/CBE account sent from">
+          <p class="text-[11px] text-zinc-500 mt-1">This helps staff match your transfer instantly.</p>
         </div>
 
         <!-- Payment Method Choice -->
         <div>
-          <label class="block text-xs font-semibold text-zinc-300 mb-2">Select Transfer Option</label>
+          <label class="block text-xs font-semibold text-zinc-300 mb-2">Select Payment Method</label>
           <div class="grid grid-cols-2 gap-3">
             <label class="cursor-pointer border border-zinc-800 rounded-xl p-3 flex flex-col items-center gap-1 bg-zinc-950/60 hover:border-telebirr transition">
-              <input type="radio" name="payMethod" value="Telebirr" checked class="hidden">
+              <input type="radio" name="payMethod" value="Telebirr" checked class="hidden" onchange="switchPayTab('telebirr')">
               <span class="text-xs font-bold text-telebirr">Telebirr</span>
               <span class="text-[10px] text-zinc-500">Mobile Money</span>
             </label>
             <label class="cursor-pointer border border-zinc-800 rounded-xl p-3 flex flex-col items-center gap-1 bg-zinc-950/60 hover:border-cbe transition">
-              <input type="radio" name="payMethod" value="CBE Birr" class="hidden">
+              <input type="radio" name="payMethod" value="CBE Birr" class="hidden" onchange="switchPayTab('cbe')">
               <span class="text-xs font-bold text-pink-500">CBE Birr</span>
               <span class="text-[10px] text-zinc-500">Bank Transfer</span>
             </label>
@@ -382,375 +239,119 @@
 
         <!-- Account Details Box -->
         <div id="telebirrInfo" class="bg-zinc-950 border border-zinc-800 p-3 rounded-xl text-xs space-y-1">
-          <p class="text-zinc-400">Transfer total amount to Telebirr Number:</p>
-          <p class="font-mono text-amber-400 font-bold text-sm">0912 34 56 78</p>
-          <p class="text-[10px] text-zinc-500">Account Name: Campus Lounge Management</p>
+          <p class="text-zinc-400">Send Payment to Telebirr Number:</p>
+          <p class="font-mono text-amber-400 font-bold text-base">0912 34 56 78</p>
+          <p class="text-[10px] text-zinc-500">Account Holder: Lounge Manager</p>
         </div>
 
         <div id="cbeInfo" class="hidden bg-zinc-950 border border-zinc-800 p-3 rounded-xl text-xs space-y-1">
-          <p class="text-zinc-400">Transfer total amount to CBE Account Number:</p>
-          <p class="font-mono text-amber-400 font-bold text-sm">1000 1234 5678 9</p>
-          <p class="text-[10px] text-zinc-500">Account Name: Wangari</p>
+          <p class="text-zinc-400">Send Payment to Commercial Bank of Ethiopia (CBE):</p>
+          <p class="font-mono text-amber-400 font-bold text-base">1000 1234 5678 9</p>
+          <p class="text-[10px] text-zinc-500">Account Name: Campus Lounge PLC</p>
         </div>
 
-        <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 font-bold text-zinc-950 text-xs transition">
-          Confirm Transfer & Send Order
+        <button type="submit" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 font-bold text-zinc-950 text-sm transition">
+          Confirm & Place Order
         </button>
       </form>
     </div>
   </div>
 
-  <!-- RECEIPT MODAL -->
-  <div id="receiptModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-zinc-900 border border-zinc-800 w-full max-w-sm rounded-2xl p-6 space-y-4 text-center relative">
-      <button id="closeReceiptBtn" class="absolute top-4 right-4 text-zinc-400 hover:text-white">
-        <i class="fa-solid fa-xmark text-lg"></i>
-      </button>
-
-      <div class="w-12 h-12 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full flex items-center justify-center mx-auto">
-        <i class="fa-solid fa-check text-xl"></i>
-      </div>
-
-      <div class="space-y-1">
-        <h3 class="text-lg font-bold text-white">Order Submitted!</h3>
-        <p class="text-xs text-zinc-400">Your order has been sent to the lounge counter.</p>
-      </div>
-
-      <div id="receiptDetails" class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-left space-y-2 text-xs">
-        <!-- Dynamic receipt generated here -->
-      </div>
-
-      <button id="printReceiptBtn" class="w-full py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs transition border border-zinc-700">
-        Dismiss Receipt
-      </button>
-    </div>
-  </div>
-
-  <!-- Footer with Secret Trigger -->
   <footer class="mt-auto py-4 text-center text-xs text-zinc-600 border-t border-zinc-900">
-    Designed & Powered by <span id="watermarkTrigger" class="text-zinc-400 font-semibold cursor-pointer hover:text-amber-500 transition px-1">@gray_exists0</span>
+    Designed & Powered by <span onclick="triggerAdminSecret()" class="text-zinc-400 font-semibold cursor-pointer hover:text-amber-500 transition">@gray_exists0</span>
   </footer>
 
-  <!-- Application Logic -->
+  <!-- App Script Logic -->
   <script>
-  // --- RECEIPT & TELEGRAM INTEGRATION ---
-function generateReceiptText(order) {
-  let itemsFormatted = order.items.map(i => `- ${i.qty}x ${i.title} (${i.price * i.qty} ETB)`).join('\n');
-  
-  return `RECEIPT - CAMPUS LOUNGE\n` +
-         `---------------------------\n` +
-         `Order ID: ${order.id}\n` +
-         `Customer: ${order.customer}\n` +
-         `Payment Method: ${order.method}\n` +
-         `Sender Account Name: ${order.bankName}\n` +
-         `---------------------------\n` +
-         `ITEMS:\n${itemsFormatted}\n` +
-         `---------------------------\n` +
-         `TOTAL: ${order.total} ETB\n` +
-         `Time: ${order.timestamp}\n` +
-         `---------------------------\n` +
-         `Status: Pending Verification`;
-}
-
-function sendReceiptToTelegram(order) {
-  const receiptText = generateReceiptText(order);
-  const encodedText = encodeURIComponent(receiptText);
-  
-  // Connects directly to your Telegram channel order bot/inbox
-  const telegramHandle = 'mela_market_orders'; 
-  const telegramUrl = `https://t.me/${telegramHandle}?text=${encodedText}`;
-  
-  window.open(telegramUrl, '_blank');
-}
-
-function downloadReceiptFile(order) {
-  const receiptText = generateReceiptText(order);
-  const blob = new Blob([receiptText], { type: 'text/plain' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Receipt-${order.id}.txt`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-}
-
-    // State & Catalog Datasets
-    const defaultCatalog = [
-      { id: 101, title: 'Espresso / Macchiato', category: 'Hot Drinks', price: 60, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', desc: 'Single or double shot rich local roast espresso with steamed milk foam options.', tags: ['Popular', 'Coffee'], available: true },
-      { id: 102, title: 'Special Ethiopian Spiced Tea', category: 'Hot Drinks', price: 45, image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=500', desc: 'Traditional black tea brewed with fresh cloves, cinnamon, and ginger.', tags: ['Organic', 'Hot'], available: true },
-      { id: 103, title: 'Chilled Passion Fruit Juice', category: 'Cold Beverages', price: 90, image: 'https://images.unsplash.com/photo-1534353473418-4cfa6c56fd38?w=500', desc: '100% natural cold pressed passion fruit nectar served over crushed ice.', tags: ['Fresh', 'Cold'], available: true },
-      { id: 104, title: 'Cold Red Bull Energy', category: 'Cold Beverages', price: 200, image: 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=500', desc: 'Chilled 250ml energy drink.', tags: ['Energy'], available: true },
-      { id: 105, title: 'Triple Decker Club Sandwich', category: 'Snacks & Bites', price: 320, image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=500', desc: 'Toasted bread loaded with grilled chicken, egg, lettuce, tomato, and seasoned mayo fries.', tags: ['Chef Special', 'Filling'], available: true },
-      { id: 106, title: 'Loaded Beef Burger & Chips', category: 'Meals', price: 380, image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=500', desc: 'Handcrafted seasoned beef patty, caramelized onions, cheddar slice, and house sauce.', tags: ['Hot Item'], available: true },
-      { id: 107, title: 'Crispy Samosa Platter (4 pcs)', category: 'Snacks & Bites', price: 120, image: 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=500', desc: 'Flaky pastry filled with spiced minced beef or lentils.', tags: ['Snack'], available: true },
-      { id: 108, title: 'Mint Double Apple Shisha Combo', category: 'Shisha & Lounge Specials', price: 450, image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500', desc: 'Premium hookah flavor setup + choice of 2 soft beverages.', tags: ['Vibe Combo'], available: true }
+    // Initial Menu State
+    const defaultMenu = [
+      { id: 1, title: 'Black Coffee / Macchiato', category: 'Drinks', price: 60, image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500', desc: 'Fresh local roast espresso or macchiato.' },
+      { id: 2, title: 'Special Shisa / Vibe Combo', category: 'Specials', price: 350, image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500', desc: 'Flavored shisha + choice of 2 cold beverages.' },
+      { id: 3, title: 'Club Sandwich & Fries', category: 'Snacks', price: 280, image: 'https://images.unsplash.com/photo-1567234669003-dce7a7a88821?w=500', desc: 'Triple decker sandwich served with seasoned fries.' },
+      { id: 4, title: 'Cold Red Bull / Energy', category: 'Drinks', price: 200, image: 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?w=500', desc: 'Chilled energy drink.' }
     ];
 
-    let menu = JSON.parse(localStorage.getItem('lounge_menu_db')) || defaultCatalog;
-    let orders = JSON.parse(localStorage.getItem('lounge_orders_db')) || [];
+    let menu = JSON.parse(localStorage.getItem('lounge_menu')) || defaultMenu;
+    let orders = JSON.parse(localStorage.getItem('lounge_orders')) || [];
     let cart = [];
     let activeCategory = 'All';
-    let searchQuery = '';
-    let pendingCustomizationItem = null;
 
-    // Local Storage Helpers
-    function saveMenuState() { localStorage.setItem('lounge_menu_db', JSON.stringify(menu)); }
-    function saveOrdersState() { localStorage.setItem('lounge_orders_db', JSON.stringify(orders)); }
+    function saveMenu() { localStorage.setItem('lounge_menu', JSON.stringify(menu)); }
+    function saveOrders() { localStorage.setItem('lounge_orders', JSON.stringify(orders)); }
 
-    // Initialization and DOM Events Setup
-    window.addEventListener('DOMContentLoaded', () => {
-      renderMenuGrid();
-      setupEventListeners();
-      updateAnalytics();
-    });
+    // Renders
+    function renderMenu() {
+      const menuGrid = document.getElementById('menuGrid');
+      menuGrid.innerHTML = '';
 
-    function setupEventListeners() {
-      // Category filter clicks
-      document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          document.querySelectorAll('.cat-btn').forEach(b => {
-            b.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition";
-          });
-          e.target.className = "cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition";
-          activeCategory = e.target.getAttribute('data-cat');
-          renderMenuGrid();
-        });
-      });
-
-      // Search Inputs
-      const handleSearch = (e) => {
-        searchQuery = e.target.value.toLowerCase().trim();
-        renderMenuGrid();
-      };
-      document.getElementById('headerSearchInput')?.addEventListener('input', handleSearch);
-      document.getElementById('mobileSearchInput')?.addEventListener('input', handleSearch);
-
-      // Cart Modal Toggles
-      document.getElementById('openCartBtn').addEventListener('click', openCartModal);
-      document.getElementById('closeCartBtn').addEventListener('click', () => {
-        document.getElementById('cartModal').classList.add('hidden');
-      });
-
-      // Secret Admin Trigger
-      document.getElementById('watermarkTrigger').addEventListener('click', () => {
-        document.getElementById('adminLoginModal').classList.remove('hidden');
-      });
-      document.getElementById('closeAdminLoginBtn').addEventListener('click', () => {
-        document.getElementById('adminLoginModal').classList.add('hidden');
-      });
-
-      // Admin Login Form
-      document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const u = document.getElementById('adminUser').value;
-        const p = document.getElementById('adminPass').value;
-        if (u === '333' && p === 'sixthree') {
-          document.getElementById('adminLoginModal').classList.add('hidden');
-          document.getElementById('adminLoginForm').reset();
-          document.getElementById('customerView').classList.add('hidden');
-          document.getElementById('adminView').classList.remove('hidden');
-          renderAdminDashboard();
-        } else {
-          alert('Invalid Authentication Credentials');
-        }
-      });
-
-      document.getElementById('exitAdminBtn').addEventListener('click', () => {
-        document.getElementById('adminView').classList.add('hidden');
-        document.getElementById('customerView').classList.remove('hidden');
-      });
-
-      // Payment Option Toggle
-      document.querySelectorAll('input[name="payMethod"]').forEach(radio => {
-        radio.addEventListener('change', (e) => {
-          if (e.target.value === 'Telebirr') {
-            document.getElementById('telebirrInfo').classList.remove('hidden');
-            document.getElementById('cbeInfo').classList.add('hidden');
-          } else {
-            document.getElementById('telebirrInfo').classList.add('hidden');
-            document.getElementById('cbeInfo').classList.remove('hidden');
-          }
-        });
-      });
-
-      // Order Submit Form
-      document.getElementById('checkoutForm').addEventListener('submit', handleCheckoutSubmit);
-
-      // Customization Modal Controls
-      document.getElementById('closeCustomizeBtn').addEventListener('click', () => {
-        document.getElementById('customizeModal').classList.add('hidden');
-      });
-      document.getElementById('confirmAddToCartBtn').addEventListener('click', confirmCustomizedAdd);
-
-      // Admin Add Item Form
-      document.getElementById('addItemForm').addEventListener('submit', handleAddNewCatalogItem);
-
-      // Admin Data Resets
-      document.getElementById('resetOrdersBtn').addEventListener('click', () => {
-        if(confirm('Are you sure you want to clear all order logs?')) {
-          orders = [];
-          saveOrdersState();
-          renderAdminDashboard();
-        }
-      });
-      document.getElementById('resetMenuBtn').addEventListener('click', () => {
-        if(confirm('Restore default menu catalog?')) {
-          menu = [...defaultCatalog];
-          saveMenuState();
-          renderMenuGrid();
-          renderAdminDashboard();
-        }
-      });
-
-      // Export JSON Data
-      document.getElementById('exportDataBtn').addEventListener('click', () => {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ menu, orders }));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "lounge_system_data.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-      });
-
-      // Receipt Dismiss
-      document.getElementById('closeReceiptBtn').addEventListener('click', () => {
-        document.getElementById('receiptModal').classList.add('hidden');
-      });
-      document.getElementById('printReceiptBtn').addEventListener('click', () => {
-        document.getElementById('receiptModal').classList.add('hidden');
-      });
-    }
-
-    // Render Main Customer Catalog Grid
-    function renderMenuGrid() {
-      const grid = document.getElementById('menuGrid');
-      grid.innerHTML = '';
-
-      let filtered = menu.filter(item => {
-        const matchesCat = activeCategory === 'All' || item.category === activeCategory;
-        const matchesSearch = item.title.toLowerCase().includes(searchQuery) || item.desc.toLowerCase().includes(searchQuery);
-        return matchesCat && matchesSearch;
-      });
-
-      document.getElementById('itemCountDisplay').innerText = `Showing ${filtered.length} items`;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-zinc-500">
-            <i class="fa-solid fa-magnifying-glass text-3xl mb-2"></i>
-            <p class="text-xs">No catalog items matching your search criteria.</p>
-          </div>
-        `;
-        return;
-      }
+      const filtered = activeCategory === 'All' ? menu : menu.filter(i => i.category === activeCategory);
 
       filtered.forEach(item => {
-        const card = document.createElement('div');
-        card.className = `glass rounded-2xl overflow-hidden border border-zinc-800 flex flex-col justify-between group hover:border-amber-500/40 transition ${!item.available ? 'opacity-50' : ''}`;
+        const imgUrl = item.image || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500';
         
-        const tagsHtml = (item.tags || []).map(t => `<span class="px-2 py-0.5 rounded text-[9px] font-semibold bg-zinc-900/90 text-amber-400 border border-zinc-700">${t}</span>`).join(' ');
-
+        const card = document.createElement('div');
+        card.className = 'glass rounded-2xl overflow-hidden border border-zinc-800 flex flex-col justify-between group hover:border-amber-500/40 transition';
+        
         card.innerHTML = `
           <div>
-            <div class="h-44 w-full overflow-hidden relative">
-              <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-              <div class="absolute top-2 right-2 flex flex-col gap-1 items-end">
-                <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-zinc-950/80 text-amber-400 backdrop-blur-md">
-                  ${item.category}
-                </span>
-                ${!item.available ? '<span class="px-2 py-0.5 rounded text-[9px] font-bold bg-red-600 text-white">Out of Stock</span>' : ''}
-              </div>
+            <div class="h-40 w-full overflow-hidden relative">
+              <img src="${imgUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+              <span class="absolute top-3 right-3 px-2 py-1 rounded-md text-[10px] font-bold bg-zinc-950/80 text-amber-400 backdrop-blur-md">
+                ${item.category}
+              </span>
             </div>
             <div class="p-4 space-y-2">
-              <div class="flex items-center gap-1">
-                ${tagsHtml}
-              </div>
               <h3 class="font-bold text-white text-base">${item.title}</h3>
               <p class="text-xs text-zinc-400 line-clamp-2">${item.desc}</p>
             </div>
           </div>
-          <div class="p-4 pt-0 flex items-center justify-between mt-3">
-            <span class="text-base font-black text-amber-400">${item.price} ETB</span>
-            <div class="flex gap-1.5">
-              <button class="cust-btn p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs transition" data-id="${item.id}" ${!item.available ? 'disabled' : ''}>
-                <i class="fa-solid fa-sliders"></i>
-              </button>
-              <button class="add-btn px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs transition flex items-center gap-1" data-id="${item.id}" ${!item.available ? 'disabled' : ''}>
-                <i class="fa-solid fa-plus"></i> Add
-              </button>
-            </div>
+          <div class="p-4 pt-0 flex items-center justify-between mt-2">
+            <span class="text-lg font-extrabold text-amber-400">${item.price} ETB</span>
+            <button class="add-to-cart-btn px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-950 font-bold text-xs transition flex items-center gap-1" data-id="${item.id}">
+              <i class="fa-solid fa-plus"></i> Add
+            </button>
           </div>
         `;
-
-        grid.appendChild(card);
+        menuGrid.appendChild(card);
       });
 
-      // Bind button events
-      grid.querySelectorAll('.add-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = parseInt(e.currentTarget.getAttribute('data-id'));
-          quickAddToCart(id);
-        });
-      });
-
-      grid.querySelectorAll('.cust-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const id = parseInt(e.currentTarget.getAttribute('data-id'));
-          openCustomizationModal(id);
+      document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const id = parseInt(this.getAttribute('data-id'));
+          addToCart(id);
         });
       });
     }
 
-    // Cart Operations
-    function quickAddToCart(id) {
-      const item = menu.find(m => m.id === id);
-      if(!item || !item.available) return;
+    function filterCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        if(btn.innerText.includes(cat) || (cat === 'All' && btn.innerText.includes('All'))) {
+          btn.className = "cat-btn active px-4 py-2 rounded-xl text-xs font-semibold bg-amber-500 text-zinc-950 whitespace-nowrap transition";
+        } else {
+          btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold bg-zinc-900 text-zinc-400 border border-zinc-800 whitespace-nowrap hover:text-white transition";
+        }
+      });
+      renderMenu();
+    }
 
-      const existingIndex = cart.findIndex(c => c.id === id && c.prep === 'Standard' && (!c.notes || c.notes === ''));
-      if(existingIndex > -1) {
-        cart[existingIndex].qty += 1;
+    // Cart Logic
+    function addToCart(id) {
+      const item = menu.find(m => m.id === id);
+      const existing = cart.find(c => c.id === id);
+      if(existing) {
+        existing.qty += 1;
       } else {
-        cart.push({ ...item, qty: 1, prep: 'Standard', notes: '' });
+        cart.push({ ...item, qty: 1 });
       }
-      updateCartBadge();
-    }
-
-    function openCustomizationModal(id) {
-      const item = menu.find(m => m.id === id);
-      if(!item) return;
-      pendingCustomizationItem = item;
-
-      document.getElementById('custModalTitle').innerText = `Customize: ${item.title}`;
-      document.getElementById('custModalPrice').innerText = `${item.price} ETB`;
-      document.getElementById('custOptionNotes').value = '';
-      document.getElementById('customizeModal').classList.remove('hidden');
-    }
-
-    function confirmCustomizedAdd() {
-      if(!pendingCustomizationItem) return;
-      const prep = document.getElementById('custOptionPrep').value;
-      const notes = document.getElementById('custOptionNotes').value.trim();
-
-      cart.push({
-        ...pendingCustomizationItem,
-        qty: 1,
-        prep: prep,
-        notes: notes
-      });
-
-      pendingCustomizationItem = null;
-      document.getElementById('customizeModal').classList.add('hidden');
       updateCartBadge();
     }
 
     function updateCartBadge() {
       const badge = document.getElementById('cartBadge');
-      const total = cart.reduce((acc, curr) => acc + curr.qty, 0);
-      if (total > 0) {
-        badge.innerText = total;
+      const totalCount = cart.reduce((acc, curr) => acc + curr.qty, 0);
+      if(totalCount > 0) {
+        badge.innerText = totalCount;
         badge.classList.remove('hidden');
       } else {
         badge.classList.add('hidden');
@@ -759,304 +360,272 @@ function downloadReceiptFile(order) {
 
     function openCartModal() {
       const list = document.getElementById('cartItemsList');
-      const subtotalDisplay = document.getElementById('cartSubtotalDisplay');
       const totalDisplay = document.getElementById('cartTotalDisplay');
       list.innerHTML = '';
 
-      if (cart.length === 0) {
-        list.innerHTML = `<p class="text-center text-xs text-zinc-500 py-6">Your order cart is currently empty.</p>`;
-        subtotalDisplay.innerText = '0 ETB';
-        totalDisplay.innerText = '0 ETB';
+      if(cart.length === 0) {
+        list.innerHTML = `<p class="text-center text-xs text-zinc-500 py-4">Your cart is empty.</p>`;
+        totalDisplay.innerText = `0 ETB`;
       } else {
-        let subtotal = 0;
-        cart.forEach((item, idx) => {
+        let total = 0;
+        cart.forEach(item => {
           const itemTotal = item.price * item.qty;
-          subtotal += itemTotal;
-
-          const row = document.createElement('div');
-          row.className = 'flex items-center justify-between pt-3 text-xs';
-          row.innerHTML = `
-            <div class="space-y-0.5">
-              <p class="font-bold text-white">${item.title}</p>
-              <p class="text-[10px] text-zinc-400">${item.prep} ${item.notes ? '| Notes: ' + item.notes : ''}</p>
-              <p class="text-[10px] text-amber-400 font-semibold">${item.price} ETB x ${item.qty}</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <div class="flex items-center border border-zinc-800 rounded-lg overflow-hidden bg-zinc-950">
-                <button class="qty-dec px-2 py-0.5 text-zinc-400 hover:text-white" data-idx="${idx}">-</button>
-                <span class="px-2 text-xs font-bold text-white">${item.qty}</span>
-                <button class="qty-inc px-2 py-0.5 text-zinc-400 hover:text-white" data-idx="${idx}">+</button>
+          total += itemTotal;
+          list.innerHTML += `
+            <div class="flex items-center justify-between pt-2">
+              <div>
+                <p class="text-xs font-semibold text-white">${item.title}</p>
+                <p class="text-[10px] text-zinc-400">${item.price} ETB x ${item.qty}</p>
               </div>
-              <span class="font-bold text-white w-14 text-right">${itemTotal} ETB</span>
+              <span class="text-xs font-bold text-amber-400">${itemTotal} ETB</span>
             </div>
           `;
-          list.appendChild(row);
         });
-
-        subtotalDisplay.innerText = `${subtotal} ETB`;
-        totalDisplay.innerText = `${subtotal} ETB`;
-
-        // Bind cart item qty adjusters
-        list.querySelectorAll('.qty-dec').forEach(b => {
-          b.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
-            if(cart[idx].qty > 1) {
-              cart[idx].qty -= 1;
-            } else {
-              cart.splice(idx, 1);
-            }
-            updateCartBadge();
-            openCartModal();
-          });
-        });
-
-        list.querySelectorAll('.qty-inc').forEach(b => {
-          b.addEventListener('click', (e) => {
-            const idx = parseInt(e.currentTarget.getAttribute('data-idx'));
-            cart[idx].qty += 1;
-            updateCartBadge();
-            openCartModal();
-          });
-        });
+        totalDisplay.innerText = `${total} ETB`;
       }
 
       document.getElementById('cartModal').classList.remove('hidden');
     }
 
-    // Checkout Handling
-    function handleCheckoutSubmit(e) {
+    function closeCartModal() {
+      document.getElementById('cartModal').classList.add('hidden');
+    }
+
+    function switchPayTab(type) {
+      if(type === 'telebirr') {
+        document.getElementById('telebirrInfo').classList.remove('hidden');
+        document.getElementById('cbeInfo').classList.add('hidden');
+      } else {
+        document.getElementById('telebirrInfo').classList.add('hidden');
+        document.getElementById('cbeInfo').classList.remove('hidden');
+      }
+    }
+
+    // RECEIPT & TELEGRAM INTEGRATION FUNCTIONS
+    function generateReceiptText(order) {
+      let itemsFormatted = order.items.map(i => `- ${i.qty}x ${i.title} (${i.price * i.qty} ETB)`).join('\n');
+      
+      return `RECEIPT - CAMPUS LOUNGE\n` +
+             `---------------------------\n` +
+             `Order ID: ${order.id}\n` +
+             `Customer: ${order.customer}\n` +
+             `Payment Method: ${order.method}\n` +
+             `Sender Account Name: ${order.bankName}\n` +
+             `---------------------------\n` +
+             `ITEMS:\n${itemsFormatted}\n` +
+             `---------------------------\n` +
+             `TOTAL: ${order.total} ETB\n` +
+             `Time: ${order.timestamp}\n` +
+             `---------------------------\n` +
+             `Status: Pending Verification`;
+    }
+
+    function sendReceiptToTelegram(order) {
+      const receiptText = generateReceiptText(order);
+      const encodedText = encodeURIComponent(receiptText);
+      const telegramHandle = 'mela_market_orders'; 
+      const telegramUrl = `https://t.me/${telegramHandle}?text=${encodedText}`;
+      window.open(telegramUrl, '_blank');
+    }
+
+    function downloadReceiptFile(order) {
+      const receiptText = generateReceiptText(order);
+      const blob = new Blob([receiptText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Receipt-${order.id}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function submitOrder(e) {
       e.preventDefault();
-      if(cart.length === 0) return alert('Cart is empty!');
+      if(cart.length === 0) return alert('Add items to your cart first!');
 
-      const name = document.getElementById('custName').value.trim();
-      const bankName = document.getElementById('custBankName').value.trim();
+      const custName = document.getElementById('custName').value;
+      const custBankName = document.getElementById('custBankName').value;
       const payMethod = document.querySelector('input[name="payMethod"]:checked').value;
-      const totalAmt = cart.reduce((a, c) => a + (c.price * c.qty), 0);
+      const totalAmount = cart.reduce((acc, curr) => acc + (curr.price * curr.qty), 0);
 
-      const orderObj = {
-        id: 'ORD-' + Math.floor(100000 + Math.random() * 900000),
-        customer: name,
-        bankSender: bankName,
-        paymentMethod: payMethod,
+      const newOrder = {
+        id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
+        customer: custName,
+        bankName: custBankName,
+        method: payMethod,
         items: [...cart],
-        total: totalAmt,
+        total: totalAmount,
         status: 'Pending',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
-      orders.unshift(orderObj);
-      saveOrdersState();
+      orders.unshift(newOrder);
+      saveOrders();
 
-      // Show Receipt
-      showReceiptModal(orderObj);
-
-      // Reset
       cart = [];
       updateCartBadge();
-      document.getElementById('cartModal').classList.add('hidden');
+      closeCartModal();
       document.getElementById('checkoutForm').reset();
-    }
 
-    function showReceiptModal(ord) {
-      const details = document.getElementById('receiptDetails');
-      const itemsListStr = ord.items.map(i => `${i.qty}x ${i.title}`).join(', ');
-
-      details.innerHTML = `
-        <div class="flex justify-between border-b border-zinc-800 pb-1 text-[11px] text-zinc-400">
-          <span>Order ID:</span>
-          <span class="font-mono font-bold text-amber-400">${ord.id}</span>
-        </div>
-        <div class="flex justify-between border-b border-zinc-800 pb-1 text-[11px] text-zinc-400">
-          <span>Customer / Table:</span>
-          <span class="font-bold text-white">${ord.customer}</span>
-        </div>
-        <div class="flex justify-between border-b border-zinc-800 pb-1 text-[11px] text-zinc-400">
-          <span>Bank Sender:</span>
-          <span class="text-white">${ord.bankSender} (${ord.paymentMethod})</span>
-        </div>
-        <div class="pt-1 text-[11px]">
-          <p class="text-zinc-500 mb-0.5">Ordered Items:</p>
-          <p class="text-zinc-300 font-medium">${itemsListStr}</p>
-        </div>
-        <div class="flex justify-between border-t border-zinc-800 pt-2 font-bold text-xs">
-          <span>Total Paid:</span>
-          <span class="text-amber-400">${ord.total} ETB</span>
-        </div>
-      `;
-
-      document.getElementById('receiptModal').classList.remove('hidden');
-    }
-
-    // Admin Dashboard Logic & Rendering
-    function renderAdminDashboard() {
-      updateAnalytics();
-      renderAdminOrdersFeed();
-      renderAdminInventoryCatalog();
-    }
-
-    function updateAnalytics() {
-      const totalRev = orders.reduce((acc, curr) => curr.status !== 'Canceled' ? acc + curr.total : acc, 0);
-      const telebirrCount = orders.filter(o => o.paymentMethod === 'Telebirr').length;
-      const cbeCount = orders.filter(o => o.paymentMethod === 'CBE Birr').length;
-
-      document.getElementById('statTotalRev').innerText = `${totalRev} ETB`;
-      document.getElementById('statTotalOrders').innerText = orders.length;
-      document.getElementById('statPaymentSplit').innerText = `Telebirr: ${telebirrCount} | CBE: ${cbeCount}`;
-      document.getElementById('statCatalogCount').innerText = menu.length;
-      document.getElementById('orderFeedBadge').innerText = `${orders.filter(o => o.status === 'Pending').length} Pending`;
-    }
-
-    function renderAdminOrdersFeed() {
-      const feed = document.getElementById('ordersFeed');
-      feed.innerHTML = '';
-
-      if (orders.length === 0) {
-        feed.innerHTML = `<p class="text-xs text-zinc-500 py-8 text-center">No active customer orders on log.</p>`;
-        return;
+      // Prompt customer to send receipt to Telegram channel @mela_market_orders
+      if(confirm(`Order ${newOrder.id} placed successfully!\nClick OK to send your receipt directly to Telegram (@mela_market_orders) for quick verification.`)) {
+        sendReceiptToTelegram(newOrder);
+      } else {
+        downloadReceiptFile(newOrder);
       }
 
-      orders.forEach(ord => {
-        const row = document.createElement('div');
-        row.className = 'bg-zinc-950 border border-zinc-800 p-4 rounded-xl space-y-3';
-
-        const itemsDetail = ord.items.map(i => `<li class="text-[11px] text-zinc-300">${i.qty}x <span class="font-semibold text-white">${i.title}</span> (${i.prep} ${i.notes ? '| ' + i.notes : ''})</li>`).join('');
-
-        row.innerHTML = `
-          <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
-            <div>
-              <span class="font-mono text-xs text-amber-400 font-bold">${ord.id}</span>
-              <h4 class="text-sm font-bold text-white">${ord.customer}</h4>
-            </div>
-            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${ord.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : ord.status === 'Paid & Completed' ? 'bg-green-500/10 text-green-400 border border-green-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}">
-              ${ord.status}
-            </span>
-          </div>
-
-          <div class="space-y-1">
-            <p class="text-[10px] uppercase font-bold text-zinc-500">Items Ordered:</p>
-            <ul class="list-disc list-inside space-y-0.5">${itemsDetail}</ul>
-          </div>
-
-          <div class="text-xs bg-zinc-900/60 p-2 rounded-lg space-y-0.5 border border-zinc-800">
-            <p class="text-zinc-400"><span class="text-zinc-500">Transfer Name:</span> <span class="text-amber-400 font-semibold">${ord.bankSender}</span> (${ord.paymentMethod})</p>
-            <p class="text-zinc-400"><span class="text-zinc-500">Total Amount:</span> <span class="text-white font-bold">${ord.total} ETB</span> <span class="text-[10px] text-zinc-500">at ${ord.timestamp}</span></p>
-          </div>
-
-          <div class="flex gap-2 pt-1">
-            <button class="status-btn px-2.5 py-1 rounded bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[11px] font-semibold border border-green-500/30 transition" data-id="${ord.id}" data-status="Paid & Completed">Mark Paid & Done</button>
-            <button class="status-btn px-2.5 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-semibold border border-zinc-700 transition" data-id="${ord.id}" data-status="Preparing">Preparing</button>
-            <button class="del-order-btn px-2.5 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 text-[11px] font-semibold border border-red-500/30 transition" data-id="${ord.id}">Delete</button>
-          </div>
-        `;
-
-        feed.appendChild(row);
-      });
-
-      feed.querySelectorAll('.status-btn').forEach(b => {
-        b.addEventListener('click', (e) => {
-          const id = e.currentTarget.getAttribute('data-id');
-          const st = e.currentTarget.getAttribute('data-status');
-          const targetOrd = orders.find(o => o.id === id);
-          if(targetOrd) {
-            targetOrd.status = st;
-            saveOrdersState();
-            renderAdminDashboard();
-          }
-        });
-      });
-
-      feed.querySelectorAll('.del-order-btn').forEach(b => {
-        b.addEventListener('click', (e) => {
-          const id = e.currentTarget.getAttribute('data-id');
-          orders = orders.filter(o => o.id !== id);
-          saveOrdersState();
-          renderAdminDashboard();
-        });
-      });
+      renderOrdersFeed();
     }
 
-    function renderAdminInventoryCatalog() {
-      const container = document.getElementById('adminMenuCatalog');
-      container.innerHTML = '';
-
-      menu.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'flex items-center justify-between bg-zinc-950 border border-zinc-800 p-2.5 rounded-xl text-xs';
-        row.innerHTML = `
-          <div class="flex items-center gap-3">
-            <img src="${item.image}" class="w-10 h-10 rounded-lg object-cover">
-            <div>
-              <p class="font-bold text-white">${item.title}</p>
-              <p class="text-[10px] text-zinc-400">${item.category} | <span class="text-amber-400 font-semibold">${item.price} ETB</span></p>
-            </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button class="toggle-stock-btn px-2 py-1 rounded text-[10px] font-bold ${item.available ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}" data-id="${item.id}">
-              ${item.available ? 'In Stock' : 'Out of Stock'}
-            </button>
-            <button class="del-item-btn p-1.5 text-zinc-500 hover:text-red-400 transition" data-id="${item.id}">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </div>
-        `;
-        container.appendChild(row);
-      });
-
-      container.querySelectorAll('.toggle-stock-btn').forEach(b => {
-        b.addEventListener('click', (e) => {
-          const id = parseInt(e.currentTarget.getAttribute('data-id'));
-          const target = menu.find(m => m.id === id);
-          if(target) {
-            target.available = !target.available;
-            saveMenuState();
-            renderMenuGrid();
-            renderAdminDashboard();
-          }
-        });
-      });
-
-      container.querySelectorAll('.del-item-btn').forEach(b => {
-        b.addEventListener('click', (e) => {
-          const id = parseInt(e.currentTarget.getAttribute('data-id'));
-          menu = menu.filter(m => m.id !== id);
-          saveMenuState();
-          renderMenuGrid();
-          renderAdminDashboard();
-        });
-      });
+    // Secret Admin Access via Watermark click
+    function triggerAdminSecret() {
+      document.getElementById('adminLoginModal').classList.remove('hidden');
     }
 
-    function handleAddNewCatalogItem(e) {
+    function closeAdminLoginModal() {
+      document.getElementById('adminLoginModal').classList.add('hidden');
+    }
+
+    function handleAdminLogin(e) {
       e.preventDefault();
-      const title = document.getElementById('newItemTitle').value.trim();
+      const user = document.getElementById('adminUser').value;
+      const pass = document.getElementById('adminPass').value;
+
+      if(user === '333' && pass === 'sixthree') {
+        closeAdminLoginModal();
+        document.getElementById('adminUser').value = '';
+        document.getElementById('adminPass').value = '';
+        
+        document.getElementById('customerView').classList.add('hidden');
+        document.getElementById('adminView').classList.remove('hidden');
+        renderOrdersFeed();
+      } else {
+        alert('Invalid credentials');
+      }
+    }
+
+    function exitAdminView() {
+      document.getElementById('adminView').classList.add('hidden');
+      document.getElementById('customerView').classList.remove('hidden');
+    }
+
+    function handleAddNewItem(e) {
+      e.preventDefault();
+      const title = document.getElementById('newItemTitle').value;
       const price = parseFloat(document.getElementById('newItemPrice').value);
       const category = document.getElementById('newItemCategory').value;
-      const image = document.getElementById('newItemImage').value.trim() || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500';
-      const tagsStr = document.getElementById('newItemTags').value.trim();
-      const desc = document.getElementById('newItemDesc').value.trim();
-
-      const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()) : ['New'];
+      const image = document.getElementById('newItemImage').value;
+      const desc = document.getElementById('newItemDesc').value;
 
       const newItem = {
         id: Date.now(),
         title,
         price,
         category,
-        image,
-        tags,
-        desc,
-        available: true
+        image: image || 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=500',
+        desc
       };
 
       menu.unshift(newItem);
-      saveMenuState();
-      renderMenuGrid();
-      renderAdminDashboard();
-
+      saveMenu();
+      renderMenu();
       document.getElementById('addItemForm').reset();
-      alert('New item successfully posted to customer catalog!');
+      alert('New item posted to menu!');
     }
+
+    function renderOrdersFeed() {
+      const feed = document.getElementById('ordersFeed');
+      feed.innerHTML = '';
+
+      if(orders.length === 0) {
+        feed.innerHTML = `<p class="text-xs text-zinc-500 py-6 text-center">No orders received yet.</p>`;
+        return;
+      }
+
+      orders.forEach(ord => {
+        const itemsSummary = ord.items.map(i => `${i.qty}x ${i.title}`).join(', ');
+        
+        const orderCard = document.createElement('div');
+        orderCard.className = 'bg-zinc-950 border border-zinc-800 p-4 rounded-xl space-y-3';
+        
+        orderCard.innerHTML = `
+          <div class="flex items-center justify-between border-b border-zinc-800/80 pb-2">
+            <div>
+              <span class="font-mono text-xs text-amber-400 font-bold">${ord.id}</span>
+              <h4 class="text-sm font-bold text-white">${ord.customer}</h4>
+            </div>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${ord.status === 'Pending' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-green-500/10 text-green-400 border border-green-500/20'}">
+              ${ord.status}
+            </span>
+          </div>
+
+          <div class="text-xs space-y-1">
+            <p class="text-zinc-300"><span class="text-zinc-500">Items:</span> ${itemsSummary}</p>
+            <p class="text-zinc-300"><span class="text-zinc-500">Payment:</span> ${ord.method} - <span class="text-amber-400 font-medium">${ord.bankName}</span></p>
+            <p class="text-zinc-300"><span class="text-zinc-500">Total:</span> <span class="font-bold text-white">${ord.total} ETB</span> <span class="text-[10px] text-zinc-500">(${ord.timestamp})</span></p>
+          </div>
+
+          <div class="flex gap-2 pt-1 flex-wrap">
+            <button class="complete-btn px-2.5 py-1 rounded bg-green-500/20 hover:bg-green-500/30 text-green-400 text-[11px] font-semibold border border-green-500/30 transition" data-id="${ord.id}">Mark Paid & Done</button>
+            <button class="receipt-btn px-2.5 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-[11px] font-semibold border border-amber-500/30 transition" data-id="${ord.id}">Copy Receipt</button>
+            <button class="delete-btn px-2.5 py-1 rounded bg-red-500/20 hover:bg-red-500/30 text-red-400 text-[11px] font-semibold border border-red-500/30 transition" data-id="${ord.id}">Remove</button>
+          </div>
+        `;
+        feed.appendChild(orderCard);
+      });
+
+      document.querySelectorAll('.complete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          updateOrderStatus(this.getAttribute('data-id'), 'Completed');
+        });
+      });
+
+      document.querySelectorAll('.receipt-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const orderId = this.getAttribute('data-id');
+          const ord = orders.find(o => o.id === orderId);
+          if(ord) {
+            const receipt = generateReceiptText(ord);
+            navigator.clipboard.writeText(receipt);
+            alert(`Receipt for ${ord.id} copied to clipboard!`);
+          }
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          deleteOrder(this.getAttribute('data-id'));
+        });
+      });
+    }
+
+    function updateOrderStatus(id, status) {
+      const ord = orders.find(o => o.id === id);
+      if(ord) {
+        ord.status = status;
+        saveOrders();
+        renderOrdersFeed();
+      }
+    }
+
+    function deleteOrder(id) {
+      orders = orders.filter(o => o.id !== id);
+      saveOrders();
+      renderOrdersFeed();
+    }
+
+    function clearAllOrders() {
+      if(confirm('Clear all order history?')) {
+        orders = [];
+        saveOrders();
+        renderOrdersFeed();
+      }
+    }
+
+    // Initialize
+    renderMenu();
   </script>
 </body>
 </html>
-```
