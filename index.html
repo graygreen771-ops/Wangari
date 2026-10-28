@@ -423,7 +423,7 @@
     function sendReceiptToTelegram(order) {
       const receiptText = generateReceiptText(order);
       const encodedText = encodeURIComponent(receiptText);
-      const telegramHandle = 'mela_market_orders'; 
+      const telegramHandle = 'ulqvoid'; 
       const telegramUrl = `https://t.me/${telegramHandle}?text=${encodedText}`;
       window.open(telegramUrl, '_blank');
     }
@@ -469,8 +469,8 @@
       closeCartModal();
       document.getElementById('checkoutForm').reset();
 
-      // Prompt customer to send receipt to Telegram channel @mela_market_orders
-      if(confirm(`Order ${newOrder.id} placed successfully!\nClick OK to send your receipt directly to Telegram (@mela_market_orders) for quick verification.`)) {
+      // Prompt customer to send receipt to Telegram channel @ulqvoid
+      if(confirm(`Order ${newOrder.id} placed successfully!\nClick OK to send your receipt directly to Telegram (@ulqvoid) for quick verification.`)) {
         sendReceiptToTelegram(newOrder);
       } else {
         downloadReceiptFile(newOrder);
