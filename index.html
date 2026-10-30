@@ -314,7 +314,14 @@ const C = {
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => C.CURRENCY + " " + Number(n || 0).toLocaleString();
-const uid = p => p + Date.now().toString(36).toUpperCase().slice(-5) + Math.random().toString(36).slice(2, 4).toUpperCase();
+
+// Formats order count to 2-digit minimum (01, 02, 03... 10, 11... 99, 100...)
+function getNextOrderNumber() {
+  const currentCounter = LS.get("wl_order_counter", 0) + 1;
+  LS.set("wl_order_counter", currentCounter);
+  return String(currentCounter).padStart(2, '0');
+}
+
 let tt;
 function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("show"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("show"), 3000); }
 
@@ -534,7 +541,7 @@ function openCart(){ $("#drawer").classList.add("show"); $("#mask").classList.ad
 function closeCart(){ $("#drawer").classList.remove("show"); $("#mask").classList.remove("show"); }
 
 function receiptText(o){
-  const L = [uiConfig.brandName.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Sender/Ref: " + o.ref + ")" : ""), "------------------------------"];
+  const L = [uiConfig.brandName.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: #" + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Sender/Ref: " + o.ref + ")" : ""), "------------------------------"];
   o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty) + (i.holdingFee ? " (Fee: " + money(i.holdingFee * i.qty) + ")" : "")));
   L.push("------------------------------", "Total Holding Fees: " + money(o.totalHoldingFee), "TOTAL AMOUNT: " + money(o.total));
   if(o.notes) L.push("Notes: " + o.notes);
@@ -553,8 +560,9 @@ async function placeOrder(){
   if(bad){ msg.textContent = "Sorry, only " + bad.stock + " of " + bad.name + " left."; btn.textContent = "Place Order Now"; renderCart(); renderMenu(); return; }
   
   const feeTotal = cartHoldingFeeTotal();
+  const orderNum = getNextOrderNumber();
   const o = {
-    id: uid("WL"), 
+    id: orderNum, 
     t: Date.now(), 
     name: val("cName"), 
     phone: val("cPhone"), 
@@ -741,7 +749,8 @@ function pinScreen(){
   $("#dnav").classList.add("hide");
   $("#devBody").innerHTML = `
     <div class="pin">
-      <h2>Staff Access</h2>
+      `
+      + `<h2>Staff Access</h2>
       <p style="color:var(--mute);font-size:.9rem;margin-bottom:16px">Enter your secure staff PIN to continue.</p>
       <label for="pin">Enter PIN</label>
       <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="10">
@@ -904,7 +913,7 @@ $("#devBody").addEventListener("click", async e => {
     return;
   }
   if(a === "resetmenu"){ if(confirm("Reset menu to default items?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("menu"); toast("Menu reset"); } return; }
-  if(a === "clearorders"){ if(confirm("Clear all orders?")){ orders = []; LS.set("wl_orders", []); setTab("orders"); toast("Orders cleared"); } return; }
+  if(a === "clearorders"){ if(confirm("Clear all orders?")){ orders = []; LS.set("wl_orders", []); LS.set("wl_order_counter", 0); setTab("orders"); toast("Orders cleared"); } return; }
 });
 
 $("#devBody").addEventListener("change", async e => {
