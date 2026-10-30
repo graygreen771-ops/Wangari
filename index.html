@@ -130,9 +130,26 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 </style>
 </head>
 <body>
-
 <div class="topbar">
-  <a class="brand" href="#top">Wangari Lounge</a>
+  <a class="brand" href="#top" style="display: flex; align-items: center; gap: 10px;">
+    <!-- Clean 2D Yellow-Gold Cup & Coffee Brown Smoke Logo -->
+    <svg width="36" height="36" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+      <!-- Steam / Smoke Lines (Coffee Brown) -->
+      <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
+      <path d="M275 160 C290 135 255 110 270 85 C285 60 250 40 255 20" fill="none" stroke="#6F4E37" stroke-width="14" stroke-linecap="round"/>
+      
+      <!-- Coffee Surface -->
+      <ellipse cx="250" cy="210" rx="95" ry="32" fill="#4A2E1B"/>
+      
+      <!-- Cup Body (Yellow-Gold) -->
+      <path d="M155 210 L175 365 C178 395 205 415 235 415 L265 415 C295 415 322 395 325 365 L345 210 Z" fill="#D4AF37"/>
+      
+      <!-- Cup Handle -->
+      <path d="M335 235 C385 235 395 315 345 345" fill="none" stroke="#D4AF37" stroke-width="22" stroke-linecap="round"/>
+    </svg>
+    Wangari Lounge
+  </a>
+
   <div class="topnav">
     <a class="l" href="#menu">Menu</a>
     <a class="l" href="#visit">Visit</a>
@@ -247,14 +264,18 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 </div>
 
 <section id="dev">
-  <div class="dh">
-    <h2>Staff Dashboard</h2>
-    <div class="dnav" id="dnav">
-      <button data-tab="orders">Orders <span id="newBadge"></span></button>
-      <button data-tab="menu">Menu items</button>
-      <button data-tab="stock">Stock</button>
-      <button data-tab="care">Maintenance</button>
-    </div>
+<div class="dh">
+  <h2 style="display: flex; align-items: center; gap: 8px;">
+    <svg width="24" height="24" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
+      <ellipse cx="250" cy="210" rx="95" ry="32" fill="#4A2E1B"/>
+      <path d="M155 210 L175 365 C178 395 205 415 235 415 L265 415 C295 415 322 395 325 365 L345 210 Z" fill="#D4AF37"/>
+    </svg>
+    Staff Dashboard
+  </h2>
+  ...
+</div>
+
     <div class="acts"><button class="btn ghost sm" data-act="refresh">Refresh</button><button class="btn ghost sm" data-act="logout">Log out</button></div>
   </div>
   <div id="devBody"></div>
