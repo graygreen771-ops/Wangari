@@ -258,14 +258,13 @@ const C = {
 function getSavedPin() {
   let saved = localStorage.getItem("wangari_dev_pin");
   if (!saved) {
-    // If no PIN is set yet, prompt you to create one the first time you log in
     let newPin = prompt("Setup: Create a secret PIN for your dashboard:");
     if (newPin && newPin.trim() !== "") {
       localStorage.setItem("wangari_dev_pin", newPin.trim());
       saved = newPin.trim();
       alert("PIN saved securely on this device!");
     } else {
-      saved = "1234"; // Fallback temporary PIN
+      saved = "NO_PIN_SET"; // Blocks default access if canceled
     }
   }
   return saved;
