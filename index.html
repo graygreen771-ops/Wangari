@@ -166,7 +166,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
   </div>
 </div>
 
-<!-- Dynamic Sections Container for Placement Order -->
+<!-- Dynamic Sections Container for Cloud-Synced Placement Order -->
 <div id="sectionsContainer">
   <main class="wrap" id="menu">
     <h2>Menu</h2>
@@ -412,7 +412,7 @@ async function removeOrder(id){
   if(cloud()){ try{ await FS.del("orders/" + id); }catch(e){} }
 }
 
-/* ===================== UI & CONFIG SETTINGS STORAGE ===================== */
+/* ===================== CLOUD-SYNCED UI & LOGO CONFIG ===================== */
 const defaultLogoSvg = `<svg width="34" height="34" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
   <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="18" stroke-linecap="round"/>
   <path d="M275 160 C290 135 255 110 270 85 C285 60 250 40 255 20" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
@@ -432,6 +432,24 @@ let uiConfig = LS.get("wl_ui_config", {
   sectionOrder: ["menu", "visit", "reviews"]
 });
 
+async function loadUIConfig(){
+  if(cloud()){
+    try{
+      const d = await FS.get("config/ui");
+      if(d){ uiConfig = d; LS.set("wl_ui_config", uiConfig); }
+      else { await FS.set("config/ui", uiConfig); }
+    }catch(e){ toast("Cloud offline. Using cached UI settings."); }
+  }
+  applyUIConfig();
+}
+
+async function saveUIConfig(){
+  LS.set("wl_ui_config", uiConfig);
+  if(cloud()){
+    try{ await FS.set("config/ui", uiConfig); }catch(e){ toast("Failed to sync UI settings to cloud."); }
+  }
+}
+
 function applyUIConfig() {
   $("#siteTitle").textContent = uiConfig.brandName;
   $("#brandNameText").textContent = uiConfig.brandName;
@@ -443,7 +461,6 @@ function applyUIConfig() {
   $("#infoLocation").textContent = uiConfig.location;
   $("#infoPhone").textContent = uiConfig.phone;
 
-  // Reorder sections based on configuration
   const container = $("#sectionsContainer");
   if(container && uiConfig.sectionOrder) {
     uiConfig.sectionOrder.forEach(id => {
@@ -751,7 +768,7 @@ function tabUI(){
 
   return `
     <div class="frm" style="margin-bottom:24px">
-      <h3>Brand & Logo Customization</h3>
+      <h3>Brand & Logo Customization (Cloud Synced)</h3>
       <div class="full"><label>Lounge Name</label><input id="uiBrandName" value="${esc(uiConfig.brandName)}"></div>
       <div class="full"><label>Custom Logo Image/SVG (Paste raw SVG code or image URL)</label><textarea id="uiLogoHtml" rows="3">${esc(uiConfig.logoHtml)}</textarea></div>
       <div class="full"><label>Or Upload Logo Image File</label><input type="file" accept="image/*" id="uiLogoFile"></div>
@@ -767,12 +784,12 @@ function tabUI(){
 
       <h3 style="margin-top:20px">Section Placement Order</h3>
       <div class="full">
-        <label>Drag or type section order (comma separated: menu, visit, reviews)</label>
+        <label>Section order (comma separated: menu, visit, reviews)</label>
         <input id="uiSectionOrder" value="${esc(uiConfig.sectionOrder.join(","))}">
       </div>
 
       <div class="acts full" style="margin-top:16px">
-        <button class="btn sm" data-act="saveui">Save UI Settings</button>
+        <button class="btn sm" data-act="saveui">Save & Sync to Cloud</button>
       </div>
     </div>
 
@@ -839,9 +856,9 @@ $("#devBody").addEventListener("click", async e => {
     if(orderStr) {
       uiConfig.sectionOrder = orderStr.split(",").map(s => s.trim()).filter(Boolean);
     }
-    LS.set("wl_ui_config", uiConfig);
+    await saveUIConfig();
     applyUIConfig();
-    toast("UI & Logo settings saved successfully!");
+    toast("UI settings synced to cloud successfully!");
     return;
   }
   if(a === "resetmenu"){ if(confirm("Reset menu to default items?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("menu"); toast("Menu reset"); } return; }
@@ -883,7 +900,7 @@ $("#devBody").addEventListener("change", async e => {
 /* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
-  applyUIConfig();
+  await loadUIConfig();
   await loadMenu();
   renderTabs();
   renderMenu();
