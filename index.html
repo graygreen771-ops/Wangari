@@ -215,16 +215,6 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
         <option value="Delivery">Delivery (Dorm Dropoff)</option>
       </select>
 
-      <div id="timeBox">
-        <label for="cEta">Estimated arrival / preparation time</label>
-        <select id="cEta">
-          <option value="15">15 minutes (ETB 20 holding fee)</option>
-          <option value="30">30 minutes (ETB 35 holding fee)</option>
-          <option value="45">45+ minutes (ETB 50 holding fee)</option>
-        </select>
-        <small style="color:var(--mute);display:block;margin-top:4px">🛡️ Time-based holding fee secures your reservation/items and prevents order abandonment.</small>
-      </div>
-
       <label for="cWhere" id="whereLabel">Table number</label><input id="cWhere">
       
       <label for="cPay">Payment method</label>
@@ -330,18 +320,18 @@ function toast(m){ const t = $("#toast"); t.textContent = m; t.classList.add("sh
 
 /* ===================== DEFAULT MENU ===================== */
 const SEED = [
-  {id:"m1",name:"Nyama choma",cat:"Food",price:900,stock:20,desc:"Grilled goat served with kachumbari",img:"",active:true},
-  {id:"m2",name:"Chicken wings",cat:"Food",price:700,stock:25,desc:"Eight pieces in a spicy glaze",img:"",active:true},
-  {id:"m3",name:"Beef samosas",cat:"Food",price:300,stock:40,desc:"Crisp pastry with chilli sauce",img:"",active:true},
-  {id:"m4",name:"Chips masala",cat:"Food",price:400,stock:30,desc:"Fried chips tossed in masala sauce",img:"",active:true},
-  {id:"m5",name:"Tilapia fry",cat:"Food",price:1100,stock:12,desc:"Whole fish served with ugali",img:"",active:true},
-  {id:"m6",name:"Tusker lager",cat:"Drinks",price:350,stock:60,desc:"Cold, 500ml",img:"",active:true},
-  {id:"m7",name:"Guinness",cat:"Drinks",price:380,stock:48,desc:"Cold, 500ml",img:"",active:true},
-  {id:"m8",name:"House red wine",cat:"Drinks",price:600,stock:20,desc:"By the glass",img:"",active:true},
-  {id:"m9",name:"Signature cocktail",cat:"Drinks",price:800,stock:30,desc:"Ask your server for today's mix",img:"",active:true},
-  {id:"m10",name:"Fresh passion juice",cat:"Drinks",price:250,stock:25,desc:"Chilled and freshly pressed",img:"",active:true},
-  {id:"m11",name:"Shisha",cat:"Extras",price:1500,stock:10,desc:"Your choice of flavour",img:"",active:true},
-  {id:"m12",name:"Mineral water",cat:"Extras",price:100,stock:80,desc:"500ml bottle",img:"",active:true}
+  {id:"m1",name:"Nyama choma",cat:"Food",price:900,holdingFee:20,stock:20,desc:"Grilled goat served with kachumbari",img:"",active:true},
+  {id:"m2",name:"Chicken wings",cat:"Food",price:700,holdingFee:15,stock:25,desc:"Eight pieces in a spicy glaze",img:"",active:true},
+  {id:"m3",name:"Beef samosas",cat:"Food",price:300,holdingFee:10,stock:40,desc:"Crisp pastry with chilli sauce",img:"",active:true},
+  {id:"m4",name:"Chips masala",cat:"Food",price:400,holdingFee:10,stock:30,desc:"Fried chips tossed in masala sauce",img:"",active:true},
+  {id:"m5",name:"Tilapia fry",cat:"Food",price:1100,holdingFee:30,stock:12,desc:"Whole fish served with ugali",img:"",active:true},
+  {id:"m6",name:"Tusker lager",cat:"Drinks",price:350,holdingFee:10,stock:60,desc:"Cold, 500ml",img:"",active:true},
+  {id:"m7",name:"Guinness",cat:"Drinks",price:380,holdingFee:10,stock:48,desc:"Cold, 500ml",img:"",active:true},
+  {id:"m8",name:"House red wine",cat:"Drinks",price:600,holdingFee:20,stock:20,desc:"By the glass",img:"",active:true},
+  {id:"m9",name:"Signature cocktail",cat:"Drinks",price:800,holdingFee:25,stock:30,desc:"Ask your server for today's mix",img:"",active:true},
+  {id:"m10",name:"Fresh passion juice",cat:"Drinks",price:250,holdingFee:10,stock:25,desc:"Chilled and freshly pressed",img:"",active:true},
+  {id:"m11",name:"Shisha",cat:"Extras",price:1500,holdingFee:50,stock:10,desc:"Your choice of flavour",img:"",active:true},
+  {id:"m12",name:"Mineral water",cat:"Extras",price:100,holdingFee:5,stock:80,desc:"500ml bottle",img:"",active:true}
 ];
 
 function art(it){
@@ -501,18 +491,15 @@ function renderMenu(){
   $("#grid").innerHTML = list.map(i => {
     const out = i.stock <= 0, low = !out && i.stock <= C.LOW_STOCK;
     const b = out ? '<span class="badge out">Sold out</span>' : low ? '<span class="badge low">Only ' + i.stock + ' left</span>' : '';
-    return '<article class="card">' + imgTag(i) + '<div class="body"><h3>' + esc(i.name) + '</h3>' + b + '<p>' + esc(i.desc) + '</p><div class="foot"><span class="price">' + money(i.price) + '</span><button class="btn sm" data-add="' + esc(i.id) + '"' + (out ? " disabled" : "") + '>' + (out ? "Sold out" : "+ Add") + '</button></div></div></article>';
+    const feeText = i.holdingFee ? '<small style="color:var(--mute);display:block">Holding fee: ' + money(i.holdingFee) + '</small>' : '';
+    return '<article class="card">' + imgTag(i) + '<div class="body"><h3>' + esc(i.name) + '</h3>' + b + feeText + '<p>' + esc(i.desc) + '</p><div class="foot"><span class="price">' + money(i.price) + '</span><button class="btn sm" data-add="' + esc(i.id) + '"' + (out ? " disabled" : "") + '>' + (out ? "Sold out" : "+ Add") + '</button></div></div></article>';
   }).join("");
 }
-function cartItems(){ return Object.keys(cart).map(id => { const m = menu.find(x => x.id === id); return m ? {id, name:m.name, price:m.price, qty:cart[id], stock:m.stock} : null; }).filter(Boolean); }
-
-function getBookingFee() {
-  const mins = Number($("#cEta").value) || 15;
-  return mins === 15 ? 20 : mins === 30 ? 35 : 50;
-}
+function cartItems(){ return Object.keys(cart).map(id => { const m = menu.find(x => x.id === id); return m ? {id, name:m.name, price:m.price, holdingFee:Number(m.holdingFee || 0), qty:cart[id], stock:m.stock} : null; }).filter(Boolean); }
 
 const cartSubtotal = () => cartItems().reduce((s, i) => s + i.price * i.qty, 0);
-const cartTotal = () => cartSubtotal() + getBookingFee();
+const cartHoldingFeeTotal = () => cartItems().reduce((s, i) => s + (i.holdingFee * i.qty), 0);
+const cartTotal = () => cartSubtotal() + cartHoldingFeeTotal();
 const cartCount = () => cartItems().reduce((s, i) => s + i.qty, 0);
 
 function addToCart(id, d){
@@ -525,7 +512,7 @@ function addToCart(id, d){
 }
 
 function renderCart(){
-  const items = cartItems(), n = cartCount(), sub = cartSubtotal(), fee = getBookingFee(), t = cartTotal();
+  const items = cartItems(), n = cartCount(), sub = cartSubtotal(), feeTotal = cartHoldingFeeTotal(), t = cartTotal();
   $("#topCount").textContent = n;
   $("#bar").classList.toggle("show", n > 0);
   $("#barText").textContent = n + (n === 1 ? " item" : " items") + "  |  " + money(t);
@@ -535,10 +522,10 @@ function renderCart(){
   payInfo();
   
   let listHtml = n === 0 ? '<p class="empty">Your cart is empty.</p>' :
-    items.map(i => '<div class="line"><span><b>' + esc(i.name) + '</b></span><span class="qty"><button data-q="' + esc(i.id) + '" data-d="-1">-</button><span><b>' + i.qty + '</b></span><button data-q="' + esc(i.id) + '" data-d="1">+</button></span><span class="price">' + money(i.price * i.qty) + '</span></div>').join("");
+    items.map(i => '<div class="line"><span><b>' + esc(i.name) + '</b><br><small style="color:var(--mute)">Item fee: ' + money(i.holdingFee * i.qty) + '</small></span><span class="qty"><button data-q="' + esc(i.id) + '" data-d="-1">-</button><span><b>' + i.qty + '</b></span><button data-q="' + esc(i.id) + '" data-d="1">+</button></span><span class="price">' + money(i.price * i.qty) + '</span></div>').join("");
   
-  if(n > 0) {
-    listHtml += '<div class="line" style="border-top:1px dashed var(--line);margin-top:8px;padding-top:8px"><span><b>Time-Based Holding / Booking Fee</b></span><span></span><span class="price">+ ' + money(fee) + '</span></div>';
+  if(n > 0 && feeTotal > 0) {
+    listHtml += '<div class="line" style="border-top:1px dashed var(--line);margin-top:8px;padding-top:8px"><span><b>Total Holding / Booking Fees</b></span><span></span><span class="price">+ ' + money(feeTotal) + '</span></div>';
   }
   $("#cartList").innerHTML = listHtml;
 }
@@ -547,9 +534,9 @@ function openCart(){ $("#drawer").classList.add("show"); $("#mask").classList.ad
 function closeCart(){ $("#drawer").classList.remove("show"); $("#mask").classList.remove("show"); }
 
 function receiptText(o){
-  const L = [uiConfig.brandName.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "ETA / Timing: " + o.etaMinutes + " mins (Fee: " + money(o.bookingFee) + ")", "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Sender/Ref: " + o.ref + ")" : ""), "------------------------------"];
-  o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty)));
-  L.push("Holding Fee: " + money(o.bookingFee), "------------------------------", "TOTAL: " + money(o.total));
+  const L = [uiConfig.brandName.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Sender/Ref: " + o.ref + ")" : ""), "------------------------------"];
+  o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty) + (i.holdingFee ? " (Fee: " + money(i.holdingFee * i.qty) + ")" : "")));
+  L.push("------------------------------", "Total Holding Fees: " + money(o.totalHoldingFee), "TOTAL AMOUNT: " + money(o.total));
   if(o.notes) L.push("Notes: " + o.notes);
   return L.join("\n");
 }
@@ -565,21 +552,19 @@ async function placeOrder(){
   const bad = items.find(i => i.qty > i.stock);
   if(bad){ msg.textContent = "Sorry, only " + bad.stock + " of " + bad.name + " left."; btn.textContent = "Place Order Now"; renderCart(); renderMenu(); return; }
   
-  const fee = getBookingFee();
-  const etaMins = Number($("#cEta").value) || 15;
+  const feeTotal = cartHoldingFeeTotal();
   const o = {
     id: uid("WL"), 
     t: Date.now(), 
     name: val("cName"), 
     phone: val("cPhone"), 
     type: val("cType"), 
-    etaMinutes: etaMins,
-    bookingFee: fee,
+    totalHoldingFee: feeTotal,
     where: val("cWhere"), 
     pay: val("cPay"), 
     ref: val("cRef"), 
     notes: val("cNotes"), 
-    items: items.map(i => ({id:i.id,name:i.name,price:i.price,qty:i.qty})), 
+    items: items.map(i => ({id:i.id,name:i.name,price:i.price,holdingFee:i.holdingFee,qty:i.qty})), 
     total: cartTotal(), 
     status: "New"
   };
@@ -595,7 +580,7 @@ async function placeOrder(){
   }).catch(err => console.log("Telegram alert error"));
 
   $("#rcptText").textContent = text;
-  $("#rcptMsg").textContent = "Thank you! Your order/reservation with holding fee has been sent to staff.";
+  $("#rcptMsg").textContent = "Thank you! Your order/reservation with item holding fees has been sent to staff.";
   cart = {}; LS.set("wl_cart", cart);
   btn.textContent = "Place Order Now";
   closeCart(); renderCart(); renderTabs(); renderMenu();
@@ -717,15 +702,13 @@ $("#cType").onchange = e => {
   $("#whereLabel").textContent = v === "Dine in" ? "Table number / Dorm room identifier" : v === "Delivery" ? "Dorm building & room number" : "Pickup time reference";
 };
 
-$("#cEta").onchange = () => { renderCart(); };
-
 function payInfo(){
   const p = $("#cPay").value;
   $("#refBox").classList.toggle("hide", p === "Cash on arrival");
   const amt = "<b>" + esc(money(cartTotal())) + "</b>";
   $("#payInfo").innerHTML = p === "Telebirr" ? "Send total amount " + amt + " to Telebirr number <b>" + esc(C.TELEBIRR_NUMBER) + "</b> (" + esc(C.TELEBIRR_NAME) + "), then enter your sender name/receipt ID below."
     : p === "CBE bank transfer" ? "Transfer total amount " + amt + " to Commercial Bank of Ethiopia account <b>" + esc(C.CBE_ACCOUNT) + "</b> (" + esc(C.CBE_NAME) + "), then enter your sender name/receipt ID below."
-    : "Pay holding fee and order total in cash when verified.";
+    : "Pay holding fees and order total in cash when verified.";
 }
 $("#cPay").onchange = payInfo;
 $("#copyRcpt").onclick = async () => { try{ await navigator.clipboard.writeText($("#rcptText").textContent); toast("Receipt copied"); }catch(e){} };
@@ -789,19 +772,20 @@ function tabOrders(){
   let h = '<div class="stats"><div class="stat"><b>' + td.length + '</b><span>Orders today</span></div><div class="stat"><b>' + money(sales) + '</b><span>Sales today</span></div><div class="stat"><b>' + orders.filter(o => o.status === "New").length + '</b><span>New pending</span></div><div class="stat"><b>Live</b><span>Cloud Sync</span></div></div>';
   h += '<div class="tools"><select id="ofilter" data-act="filter" style="max-width:220px"><option>All</option>' + STATUSES.map(s => '<option' + (s === ofilter ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div>';
   if(!list.length) return h + '<p class="empty">No orders found.</p>';
-  h += list.map(o => '<div class="ord"><div class="top"><div><b>#' + esc(o.id) + '</b> &bull; ' + esc(o.name) + ' (' + esc(o.phone) + ')<br><small style="color:var(--mute)">' + new Date(o.t).toLocaleString() + ' &bull; ' + esc(o.type) + (o.etaMinutes ? ' (' + o.etaMinutes + 'm ETA, Fee: ' + money(o.bookingFee) + ')' : '') + (o.where ? ' &bull; ' + esc(o.where) + '' : '') + '</small></div><div style="text-align:right"><span class="price">' + money(o.total) + '</span><br><select data-oid="' + esc(o.id) + '" class="st ' + esc(o.status) + '" style="margin-top:6px">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div></div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + ' (' + money(i.price * i.qty) + ')</li>').join("") + '</ul>' + (o.pay ? '<small style="color:var(--mute)">Payment: ' + esc(o.pay) + (o.ref ? ' | Sender/Ref: ' + esc(o.ref) : '') + '</small><br>' : '') + (o.notes ? '<small style="color:var(--mcd-red);font-weight:700">Notes: ' + esc(o.notes) + '</small><br>' : '') + '<div style="margin-top:12px"><button class="btn red sm" data-del="' + esc(o.id) + '">Delete Order</button></div></div>').join("");
+  h += list.map(o => '<div class="ord"><div class="top"><div><b>#' + esc(o.id) + '</b> &bull; ' + esc(o.name) + ' (' + esc(o.phone) + ')<br><small style="color:var(--mute)">' + new Date(o.t).toLocaleString() + ' &bull; ' + esc(o.type) + (o.totalHoldingFee ? ' (Holding Fee: ' + money(o.totalHoldingFee) + ')' : '') + (o.where ? ' &bull; ' + esc(o.where) + '' : '') + '</small></div><div style="text-align:right"><span class="price">' + money(o.total) + '</span><br><select data-oid="' + esc(o.id) + '" class="st ' + esc(o.status) + '" style="margin-top:6px">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div></div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + ' (' + money(i.price * i.qty) + ')' + (i.holdingFee ? ' [Fee: ' + money(i.holdingFee * i.qty) + ']' : '') + '</li>').join("") + '</ul>' + (o.pay ? '<small style="color:var(--mute)">Payment: ' + esc(o.pay) + (o.ref ? ' | Sender/Ref: ' + esc(o.ref) : '') + '</small><br>' : '') + (o.notes ? '<small style="color:var(--mcd-red);font-weight:700">Notes: ' + esc(o.notes) + '</small><br>' : '') + '<div style="margin-top:12px"><button class="btn red sm" data-del="' + esc(o.id) + '">Delete Order</button></div></div>').join("");
   return h;
 }
 
 function tabMenu(){
   let h = '<div class="tools"><button class="btn sm" data-act="newitem">+ Add Menu Item</button></div>';
   if(editId !== null){
-    const m = editId === "" ? {name:"",cat:"Food",price:500,stock:20,desc:"",img:"",active:true} : menu.find(x => x.id === editId);
+    const m = editId === "" ? {name:"",cat:"Food",price:500,holdingFee:10,stock:20,desc:"",img:"",active:true} : menu.find(x => x.id === editId);
     if(m){
       h += '<div class="frm"><h3>' + (editId === "" ? "New item" : "Edit item") + '</h3>'
         + '<div class="full"><label>Name</label><input id="eName" value="' + esc(m.name) + '"></div>'
         + '<div><label>Category</label><input id="eCat" value="' + esc(m.cat) + '"></div>'
-        + '<div><label>Price</label><input id="ePrice" type="number" value="' + m.price + '"></div>'
+        + '<div><label>Price (ETB)</label><input id="ePrice" type="number" value="' + m.price + '"></div>'
+        + '<div><label>Holding / Booking Fee (ETB)</label><input id="eFee" type="number" value="' + (m.holdingFee || 0) + '"></div>'
         + '<div><label>Stock</label><input id="eStock" type="number" value="' + m.stock + '"></div>'
         + '<div><label>Status</label><select id="eActive"><option value="true"' + (m.active ? " selected" : "") + '>Active</option><option value="false"' + (!m.active ? " selected" : "") + '>Hidden</option></select></div>'
         + '<div class="full"><label>Description</label><textarea id="eDesc" rows="2">' + esc(m.desc) + '</textarea></div>'
@@ -810,7 +794,7 @@ function tabMenu(){
         + '</div>';
     }
   }
-  h += menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + ' &bull; ' + money(i.price) + ' &bull; Stock: ' + i.stock + (!i.active ? ' (Hidden)' : '') + '</small></div><button class="btn ghost sm" data-edit="' + esc(i.id) + '">Edit</button><button class="btn red sm" data-rm="' + esc(i.id) + '">Delete</button></div>').join("");
+  h += menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + ' &bull; Price: ' + money(i.price) + ' &bull; Fee: ' + money(i.holdingFee || 0) + ' &bull; Stock: ' + i.stock + (!i.active ? ' (Hidden)' : '') + '</small></div><button class="btn ghost sm" data-edit="' + esc(i.id) + '">Edit</button><button class="btn red sm" data-rm="' + esc(i.id) + '">Delete</button></div>').join("");
   return h;
 }
 
@@ -892,6 +876,7 @@ $("#devBody").addEventListener("click", async e => {
       name,
       cat: $("#eCat").value.trim() || "Food",
       price: Number($("#ePrice").value) || 0,
+      holdingFee: Number($("#eFee").value) || 0,
       stock: Number($("#eStock").value) || 0,
       desc: $("#eDesc").value.trim(),
       active: $("#eActive").value === "true",
