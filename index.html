@@ -172,7 +172,11 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       <label for="cPay">Payment method</label>
       <select id="cPay"><option>Telebirr</option><option>CBE bank transfer</option><option>Cash on arrival</option></select>
       <div id="payInfo" style="background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.9rem;color:var(--mute)"></div>
-      <div id="refBox"><label for="cRef">Transaction reference</label><input id="cRef" placeholder="Reference from your payment receipt"></div>
+     <div id="refBox">
+  <label for="cRef">Transaction Reference / Sender Phone</label>
+  <input id="cRef" placeholder="Enter Telebirr/CBE ref or your phone number used to pay">
+  <small style="color:var(--mute);display:block;margin-top:4px">⚠️ Note: Please put your phone number or order name in your bank/Telebirr transfer remark so we can verify it instantly.</small>
+</div>
       <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
       <p id="formMsg" style="color:var(--red);margin-top:8px"></p>
     </div>
@@ -417,7 +421,7 @@ async function placeOrder(){
   const msg = $("#formMsg"); msg.textContent = "";
   if(!val("cName") || !val("cPhone")){ msg.textContent = "Enter your name and phone number."; return; }
   if(!/^[0-9+\s-]{9,15}$/.test(val("cPhone"))){ msg.textContent = "Enter a valid phone number."; return; }
-  if(val("cPay") !== "Cash on arrival" && !val("cRef")){ msg.textContent = "Enter the transaction reference from your payment receipt."; return; }
+  if(val("cPay") !== "Cash on arrival" && !val("cRef")){ msg.textContent = "Please enter your payment reference or the phone number you used to transfer."; return; }
   const btn = $("#placeBtn"); btn.disabled = true; btn.textContent = "Placing order...";
   await loadMenu();
   const items = cartItems();
