@@ -98,6 +98,8 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 .toast{position:fixed;left:50%;bottom:95px;transform:translateX(-50%);background:#1e293b;color:#ffffff;padding:14px 24px;border-radius:14px;z-index:90;display:none;max-width:90%;box-shadow:0 10px 30px rgba(0,0,0,0.3);font-weight:700}
 .toast.show{display:block}
 
+.hide { display: none !important; }
+
 /* Staff Dashboard Enforced Light Theme Styles */
 #dev{position:fixed;inset:0;background:#ffffff!important;color:#111827!important;z-index:80;display:none;flex-direction:column}
 #dev.show{display:flex}
@@ -267,7 +269,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       </svg>
       Staff Dashboard
     </h2>
-    <div class="dnav" id="dnav">
+    <div class="dnav hide" id="dnav">
       <button data-tab="orders">Orders <span id="newBadge"></span></button>
       <button data-tab="menu">Menu items</button>
       <button data-tab="stock">Stock</button>
@@ -616,11 +618,20 @@ const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
 async function openDev(){
   $("#dev").classList.add("show");
   if(!isAuth()){ pinScreen(); return; }
+  $("#dnav").classList.remove("hide");
   $("#devBody").innerHTML = '<p class="empty">Loading...</p>';
   await Promise.all([loadMenu(), loadOrders()]);
   setTab(tab);
 }
-function closeDev(){ $("#dev").classList.remove("show"); if(location.hash === "#dev") history.replaceState(null, "", "#top"); renderTabs(); renderMenu(); renderCart(); }
+
+function closeDev(){ 
+  $("#dev").classList.remove("show"); 
+  if(location.hash === "#dev") history.replaceState(null, "", "#top"); 
+  renderTabs(); 
+  renderMenu(); 
+  renderCart(); 
+}
+
 function pinScreen(){
   $("#dnav").classList.add("hide");
   $("#devBody").innerHTML = `
@@ -638,6 +649,7 @@ function pinScreen(){
 }
 
 function setTab(t){
+  if(!isAuth()){ pinScreen(); return; }
   tab = t; editId = null; pendImg = "";
   $("#dnav").classList.remove("hide");
   document.querySelectorAll("#dnav button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
