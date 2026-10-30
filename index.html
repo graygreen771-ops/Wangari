@@ -113,6 +113,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
   <div class="topnav">
     <a class="l" href="#menu">Menu</a>
     <a class="l" href="#visit">Visit</a>
+    <a class="l" href="#reviews">Reviews</a>
     <button class="btn cartbtn" id="topCart">Place order <span class="count" id="topCount">0</span></button>
   </div>
 </div>
@@ -140,6 +141,13 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
     <div><h3>Find us</h3><p>Edit this line with your address</p></div>
     <div><h3>Call us</h3><p>Edit this line with your phone number</p></div>
   </div>
+</section>
+  <section class="wrap" id="reviews">
+  <h2>Customer Reviews</h2>
+  <div class="tools">
+    <button class="btn sm" id="openReviewModal">Leave a review</button>
+  </div>
+  <div class="grid" id="reviewGrid"></div>
 </section>
 
 <footer>
@@ -184,6 +192,28 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       <a class="btn" id="tgLink" target="_blank" rel="noopener">Send receipt on Telegram</a>
       <button class="btn ghost" id="copyRcpt">Copy receipt</button>
       <button class="btn ghost" id="doneRcpt">Done</button>
+    </div>
+  </div>
+</div>
+  <div class="modal" id="reviewModal">
+  <div class="box">
+    <h2>Leave a Review</h2>
+    <label for="revName">Your Name</label>
+    <input id="revName" placeholder="e.g., Samuel">
+    <label for="revRating">Rating</label>
+    <select id="revRating">
+      <option value="5">⭐⭐⭐⭐⭐ (5/5)</option>
+      <option value="4">⭐⭐⭐⭐ (4/5)</option>
+      <option value="3">⭐⭐⭐ (3/5)</option>
+      <option value="2">⭐⭐ (2/5)</option>
+      <option value="1">⭐ (1/5)</option>
+    </select>
+    <label for="revComment">Your Comments</label>
+    <textarea id="revComment" rows="3" placeholder="How was the food and service?"></textarea>
+    <p id="revMsg" style="color:var(--red);margin-top:8px"></p>
+    <div class="acts" style="margin-top:12px">
+      <button class="btn" id="submitReview">Post Review</button>
+      <button class="btn ghost" id="closeReviewModal">Cancel</button>
     </div>
   </div>
 </div>
@@ -607,6 +637,61 @@ setInterval(async () => {
   renderTabs(); renderMenu(); renderCart();
   if(location.hash === "#dev") openDev();
 })();
+
+  /* ===================== CUSTOMER REVIEWS ===================== */
+let reviews = LS.get("wl_reviews", [
+  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
+  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
+]);
+
+function renderReviews() {
+  const grid = $("#reviewGrid");
+  if(!grid) return;
+  if(!reviews.length) {
+    grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
+    return;
+  }
+  grid.innerHTML = reviews.map(r => {
+    const stars = "⭐".repeat(Number(r.rating) || 5);
+    return `<article class="card"><div class="body"><h3>${esc(r.name)}</h3><div style="color:var(--amber2);font-size:.9rem">${stars}</div><p>${esc(r.comment)}</p><small style="color:var(--mute);margin-top:4px">${esc(r.date)}</small></div></article>`;
+  }).join("");
+}
+
+if($("#openReviewModal")) {
+  $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
+  $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
+  $("#submitReview").onclick = () => {
+    const name = $("#revName").value.trim();
+    const comment = $("#revComment").value.trim();
+    const rating = $("#revRating").value;
+    const msg = $("#revMsg");
+
+    if(!name || !comment) {
+      msg.textContent = "Please enter your name and comment.";
+      return;
+    }
+
+    reviews.unshift({ name, rating, comment, date: "Just now" });
+    LS.set("wl_reviews", reviews);
+    renderReviews();
+
+    $("#revName").value = "";
+    $("#revComment").value = "";
+    msg.textContent = "";
+    $("#reviewModal").classList.remove("show");
+    toast("Thank you for your review!");
+  };
+}
+  render.reviews(/* ===================== INIT ===================== */
+$("#yr").textContent = new Date().getFullYear();
+(async () => {
+  await loadMenu();
+  renderTabs();
+  renderMenu();
+  renderCart();
+  renderReviews(); // <--- Add this line here!
+  if(location.hash === "#dev") openDev();
+})();)
 </script>
 </body>
 </html>
