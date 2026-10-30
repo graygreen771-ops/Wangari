@@ -459,23 +459,41 @@ if($("#openReviewModal")) {
   };
 }
 
+/* ===================== BACKEND PIN VERIFICATION ===================== */
+async function verifyStaffPin(enteredPin) {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: enteredPin })
+    });
+    const data = await response.json();
+    return data.success;
+  } catch (err) {
+    return false;
+  }
+}
+
 /* ===================== CUSTOMER EVENTS ===================== */
 document.addEventListener("click", e => {
   const t = e.target;
   if(t.closest("[data-add]")){ addToCart(t.closest("[data-add]").dataset.add, 1); toast("Added to your order"); return; }
   if(t.closest("[data-q]")){ const b = t.closest("[data-q]"); addToCart(b.dataset.q, Number(b.dataset.d)); return; }
   if(t.closest(".tab")){ cat = t.closest(".tab").dataset.c; renderTabs(); renderMenu(); return; }
-  if(t.closest('[data-act="reqpin"]')){ generateAndSendPin(); return; }
+  
   if(t.closest('[data-act="login"]')){ 
-    if($("#pin").value.trim() === activePin && activePin !== ""){ 
-      sessionStorage.setItem("wl_auth", "1"); 
-      activePin = ""; 
-      openDev(); 
-    } else { 
-      $("#pinMsg").textContent = "Wrong or expired PIN."; 
-    } 
+    const enteredPin = $("#pin").value.trim();
+    verifyStaffPin(enteredPin).then(isValid => {
+      if(isValid){ 
+        sessionStorage.setItem("wl_auth", "1"); 
+        openDev(); 
+      } else { 
+        $("#pinMsg").textContent = "Wrong PIN."; 
+      }
+    });
     return;
   }
+
   if(t.closest('[data-act="exit"]')){ closeDev(); return; }
   if(t.closest('[data-act="refresh"]')){ openDev(); return; }
   if(t.closest('[data-act="logout"]')){ sessionStorage.removeItem("wl_auth"); pinScreen(); return; }
@@ -509,9 +527,6 @@ $("#staffLink").onclick = e => { e.preventDefault(); openDev(); };
 let tab = "orders", ofilter = "All", editId = null, pendImg = "";
 const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
-let activePin = "";
-
-  
 
 async function openDev(){
   $("#dev").classList.add("show");
@@ -526,10 +541,9 @@ function pinScreen(){
   $("#devBody").innerHTML = `
     <div class="pin">
       <h2>Staff only</h2>
-      <p style="color:var(--mute);font-size:.9rem;margin-bottom:12px">Click below to send a secure login PIN to your Telegram.</p>
-      <button class="btn ghost sm" data-act="reqpin" style="margin-bottom:12px">Send PIN to Telegram</button>
-      <label for="pin">Enter the 4-digit PIN</label>
-      <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="4">
+      <p style="color:var(--mute);font-size:.9rem;margin-bottom:12px">Enter your secure staff PIN to continue.</p>
+      <label for="pin">Enter PIN</label>
+      <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="10">
       <p id="pinMsg" style="color:var(--red);margin:8px 0"></p>
       <div class="acts" style="justify-content:center">
         <button class="btn" data-act="login">Open dashboard</button>
@@ -648,35 +662,6 @@ $("#devBody").addEventListener("change", async e => {
     reader.readAsDataURL(file);
   }
 });
-  async function verifyStaffPin(enteredPin) {
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin: enteredPin })
-    });
-    
-    const data = await response.json();
-    return data.success;
-  } catch (err) {
-    return false;
-  }
-}
-if(t.closest('[data-act="login"]')){ 
-  const enteredPin = $("#pin").value.trim();
-  
-  // Call the secure backend function
-  verifyStaffPin(enteredPin).then(isValid => {
-    if(isValid){ 
-      sessionStorage.setItem("wl_auth", "1"); 
-      openDev(); 
-    } else { 
-      $("#pinMsg").textContent = "Wrong PIN."; 
-    }
-  });
-  return;
-}
-
 
 /* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
