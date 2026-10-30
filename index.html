@@ -682,16 +682,16 @@ if($("#openReviewModal")) {
     toast("Thank you for your review!");
   };
 }
-  render.reviews(/* ===================== INIT ===================== */
+  /* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
   await loadMenu();
   renderTabs();
   renderMenu();
   renderCart();
-  renderReviews(); // <--- Add this line here!
+  renderReviews(); // This is the correct spot!
   if(location.hash === "#dev") openDev();
-})();)
+})();
 </script>
 </body>
 </html>
