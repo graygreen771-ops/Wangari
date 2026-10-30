@@ -246,8 +246,6 @@ const C = {
   NAME: "Wangari Lounge",
   CURRENCY: "ETB",
   TG_USER: "ulqvoid",
-  BOT_TOKEN: "",         /* optional: Telegram bot token */
-  CHAT_ID: "",            /* optional: Telegram chat id */
   LOW_STOCK: 5,
   TELEBIRR_NUMBER: "09XXXXXXXX",   /* your Telebirr number */
   TELEBIRR_NAME: "Wangari Lounge",
@@ -389,13 +387,6 @@ function receiptText(o){
   if(o.notes) L.push("Notes: " + o.notes);
   return L.join("\n");
 }
-async function botSend(text){
-  if(!C.BOT_TOKEN || !C.CHAT_ID) return null;
-  try{
-    const r = await fetch("https://api.telegram.org/bot" + C.BOT_TOKEN + "/sendMessage", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({chat_id:C.CHAT_ID,text:text})});
-    return (await r.json()).ok;
-  }catch(e){ return false; }
-}
 const val = id => $("#" + id).value.trim();
 async function placeOrder(){
   const msg = $("#formMsg"); msg.textContent = "";
@@ -414,8 +405,6 @@ async function placeOrder(){
   $("#rcptText").textContent = text;
   $("#tgLink").href = "https://t.me/" + C.TG_USER + "?text=" + encodeURIComponent(text);
   $("#rcptMsg").textContent = "Thank you. Tap the button below to send your receipt to our team on Telegram.";
-  const sent = await botSend(text);
-  if(sent === true) $("#rcptMsg").textContent = "Thank you. Your receipt was sent to our team on Telegram.";
   cart = {}; LS.set("wl_cart", cart);
   btn.textContent = "Place order";
   closeCart(); renderCart(); renderTabs(); renderMenu();
@@ -519,21 +508,14 @@ const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
 let activePin = "";
 
-/* ===================== STAFF LOGIN PIN ===================== */
-let activePin = "";
-
 function generateAndSendPin() {
-  // Generate a random 4-digit PIN (e.g., 4829)
   activePin = Math.floor(1000 + Math.random() * 9000).toString();
-  
-  const message = ` Wangari Lounge Staff Login\nMy secure login PIN is: ${activePin}\n\n(Please send this message to get access)`;
-  
-  // Open Telegram directly to @ulqvoid with the pre-filled message
+  const message = `🔐 Wangari Lounge Staff Login\nMy secure login PIN is: ${activePin}\n\n(Please send this message to get access)`;
   const tgUrl = "https://t.me/" + C.TG_USER + "?text=" + encodeURIComponent(message);
-  
   window.open(tgUrl, "_blank");
   toast("PIN generated! Send the message in Telegram to get your code.");
 }
+
 async function openDev(){
   $("#dev").classList.add("show");
   if(!isAuth()){ pinScreen(); return; }
