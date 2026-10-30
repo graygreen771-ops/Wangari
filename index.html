@@ -553,35 +553,61 @@ $("#copyRcpt").onclick = () => {
 };
 $("#doneRcpt").onclick = () => { $("#rcpt").classList.remove("show"); location.reload(); };
 
-/* ===================== STAFF DASHBOARD LOGIC ===================== */
-let dTab = "orders";
+/* ===================== STAFF LOGIN FIX ===================== */
+
+// 1. When clicking "Staff login" in the footer
+$("#staffLink").onclick = e => {
+  e.preventDefault();
+  
+  // Check if already authenticated in this session
+  if(sessionStorage.getItem("wl_auth") === "1"){ 
+    openDev(); 
+  } else {
+    // Show the login modal/screen
+    $("#dev").classList.add("show");
+    $("#devBody").innerHTML = '<div class="pin"><h2>Staff Login</h2><p style="color:var(--mute);margin:10px 0 16px">Enter your staff PIN to manage orders and stock.</p><input id="pin" type="password" placeholder="Staff PIN" style="margin-bottom:14px"><p id="pinMsg" style="color:var(--mcd-red);margin-bottom:10px;font-weight:700"></p><button class="btn" data-act="login" style="width:100%">Log in</button></div>';
+  }
+};
+
+// 2. Handle the login button click
 document.addEventListener("click", e => {
-  if(e.target.dataset.act === "refresh"){ refreshDev(); toast("Refreshed"); }
-  if(e.target.dataset.act === "logout"){ sessionStorage.removeItem("wl_auth"); $("#dev").classList.remove("show"); }
-  const b = e.target.closest("#dnav button");
-  if(b){ dTab = b.dataset.tab; renderDev(); }
-  const stBtn = e.target.closest("[data-st]");
-  if(stBtn){
-    const [id, s] = stBtn.dataset.st.split(":");
-    const o = orders.find(x => x.id === id);
-    if(o){ o.status = s; saveOrder(o).then(refreshDev); }
+  const t = e.target;
+
+  if(t.dataset.act === "login"){ 
+    const enteredPin = $("#pin").value.trim();
+    
+    // Calls verifyStaffPin from your login.js file
+    if (typeof verifyStaffPin === 'function') {
+      verifyStaffPin(enteredPin).then(isValid => {
+        if(isValid){ 
+          sessionStorage.setItem("wl_auth", "1"); 
+          openDev(); 
+        } else { 
+          const msg = $("#pinMsg");
+          if(msg) msg.textContent = "Incorrect PIN!";
+          else alert("Incorrect PIN!");
+        }
+      });
+    } else {
+      // Fallback: Default PIN "1234" if login.js isn't caught
+      if(enteredPin === "1234") { 
+        sessionStorage.setItem("wl_auth", "1"); 
+        openDev(); 
+      } else { 
+        const msg = $("#pinMsg");
+        if(msg) msg.textContent = "Incorrect PIN!";
+      }
+    }
+    return;
   }
-  const delBtn = e.target.closest("[data-del]");
-  if(delBtn){
-    if(confirm("Delete this order?")){ removeOrder(delBtn.dataset.del).then(refreshDev); }
-  }
-  const tog = e.target.closest("[data-tog]");
-  if(tog){
-    const m = menu.find(x => x.id === tog.dataset.tog);
-    if(m){ m.active = !m.active; saveMenu().then(refreshDev); renderMenu(); renderTabs(); }
-  }
-  const stk = e.target.closest("[data-stk]");
-  if(stk){
-    const m = menu.find(x => x.id === stk.dataset.stk);
-    if(m){ m.stock = Math.max(0, m.stock + Number(stk.dataset.d)); saveMenu().then(refreshDev); renderMenu(); }
+
+  if(t.dataset.act === "logout"){ 
+    sessionStorage.removeItem("wl_auth"); 
+    $("#dev").classList.remove("show"); 
+    if(typeof stopStaffPolling === 'function') stopStaffPolling();
+    return;
   }
 });
-
 async function refreshDev(){
   await loadOrders(); await loadMenu(); renderDev();
 }
