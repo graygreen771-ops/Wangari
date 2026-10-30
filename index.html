@@ -254,20 +254,11 @@ const C = {
   FIREBASE: { projectId: "", apiKey: "" }
 };
 
-// Secure PIN Management (Hidden from Inspector)
+// Secure PIN Management (Master PIN setup)
 function getSavedPin() {
-  let saved = localStorage.getItem("wangari_dev_pin");
-  if (!saved) {
-    let newPin = prompt("Setup: Create a secret PIN for your dashboard:");
-    if (newPin && newPin.trim() !== "") {
-      localStorage.setItem("wangari_dev_pin", newPin.trim());
-      saved = newPin.trim();
-      alert("PIN saved securely on this device!");
-    } else {
-      saved = "NO_PIN_SET"; // Blocks default access if canceled
-    }
-  }
-  return saved;
+  // Put your permanent secret staff PIN right here inside the quotes:
+  const MASTER_PIN = "2119127"; // <--- CHANGE THIS TO YOUR OWN SECRET 4-DIGIT PIN
+  return MASTER_PIN;
 }
 
 // Use this function wherever you check the PIN in your code:
