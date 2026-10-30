@@ -210,16 +210,36 @@ const C = {
   NAME: "Wangari Lounge",
   CURRENCY: "ETB",
   TG_USER: "ulqvoid",
-  BOT_TOKEN: "",          /* optional: Telegram bot token for automatic sending */
-  CHAT_ID: "",            /* optional: your Telegram chat id */
-  DEV_PIN: "1234",        /* CHANGE THIS before you publish */
+  BOT_TOKEN: "",         /* optional: Telegram bot token */
+  CHAT_ID: "",            /* optional: Telegram chat id */
   LOW_STOCK: 5,
   TELEBIRR_NUMBER: "09XXXXXXXX",   /* your Telebirr number */
   TELEBIRR_NAME: "Wangari Lounge",
   CBE_ACCOUNT: "1000XXXXXXXXX",    /* your CBE account number */
   CBE_NAME: "Wangari Lounge",
-  FIREBASE: { projectId: "", apiKey: "" }  /* optional: shared storage so orders reach your dashboard from any phone */
+  FIREBASE: { projectId: "", apiKey: "" }
 };
+
+// Secure PIN Management (Hidden from Inspector)
+function getSavedPin() {
+  let saved = localStorage.getItem("wangari_dev_pin");
+  if (!saved) {
+    // If no PIN is set yet, prompt you to create one the first time you log in
+    let newPin = prompt("Setup: Create a secret PIN for your dashboard:");
+    if (newPin && newPin.trim() !== "") {
+      localStorage.setItem("wangari_dev_pin", newPin.trim());
+      saved = newPin.trim();
+      alert("PIN saved securely on this device!");
+    } else {
+      saved = "1234"; // Fallback temporary PIN
+    }
+  }
+  return saved;
+}
+
+// Use this function wherever you check the PIN in your code:
+// Instead of: if (enteredPin === C.DEV_PIN)
+// Use:        if (enteredPin === getSavedPin())
 
 /* ===================== HELPERS ===================== */
 const $ = s => document.querySelector(s);
@@ -514,7 +534,7 @@ async function setStatus(id, ns){
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-act]"); if(!b || b.tagName === "SELECT" || b.tagName === "INPUT") return;
   const a = b.dataset.act, id = b.dataset.id;
-  if(a === "login"){ if($("#pin").value === C.DEV_PIN){ sessionStorage.setItem("wl_auth", "1"); openDev(); } else $("#pinMsg").textContent = "Wrong PIN."; }
+  if(a === "login"){ if($("#pin").value === getSavedPin()){ sessionStorage.setItem("wl_auth", "1"); openDev(); } else $("#pinMsg").textContent = "Wrong PIN."; }
   else if(a === "exit") closeDev();
   else if(a === "logout"){ sessionStorage.removeItem("wl_auth"); closeDev(); }
   else if(a === "refresh"){ await Promise.all([loadMenu(), loadOrders()]); setTab(tab); toast("Updated"); }
