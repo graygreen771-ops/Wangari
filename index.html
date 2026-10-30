@@ -511,13 +511,7 @@ const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
 let activePin = "";
 
-function generateAndSendPin() {
-  activePin = Math.floor(1000 + Math.random() * 9000).toString();
-  const message = `🔐 Wangari Lounge Staff Login\nMy secure login PIN is: ${activePin}\n\n(Please send this message to get access)`;
-  const tgUrl = "https://t.me/" + C.TG_USER + "?text=" + encodeURIComponent(message);
-  window.open(tgUrl, "_blank");
-  toast("PIN generated! Send the message in Telegram to get your code.");
-}
+  
 
 async function openDev(){
   $("#dev").classList.add("show");
@@ -654,6 +648,35 @@ $("#devBody").addEventListener("change", async e => {
     reader.readAsDataURL(file);
   }
 });
+  async function verifyStaffPin(enteredPin) {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: enteredPin })
+    });
+    
+    const data = await response.json();
+    return data.success;
+  } catch (err) {
+    return false;
+  }
+}
+if(t.closest('[data-act="login"]')){ 
+  const enteredPin = $("#pin").value.trim();
+  
+  // Call the secure backend function
+  verifyStaffPin(enteredPin).then(isValid => {
+    if(isValid){ 
+      sessionStorage.setItem("wl_auth", "1"); 
+      openDev(); 
+    } else { 
+      $("#pinMsg").textContent = "Wrong PIN."; 
+    }
+  });
+  return;
+}
+
 
 /* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
