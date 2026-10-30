@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wangari Lounge</title>
+<title id="siteTitle">Wangari Lounge</title>
 <style>
 :root{--bg:#f4f5f7;--surface:#ffffff;--card:#ffffff;--line:#e2e8f0;--mcd-red:#da291c;--mcd-yellow:#ffc72c;--text:#111827;--mute:#64748b;--ok:#16a34a;--r:16px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,6 +25,7 @@ a{color:var(--mcd-red)}
 
 .topbar{position:sticky;top:0;z-index:30;background:#ffffff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 24px;box-shadow:0 4px 20px rgba(0,0,0,0.04)}
 .brand{font-weight:900;font-size:1.4rem;color:var(--mcd-red);text-decoration:none;letter-spacing:-0.5px;display:flex;align-items:center;gap:10px}
+.brand img, .brand svg { height: 34px; width: auto; display: block; }
 .topnav{display:flex;gap:20px;align-items:center}
 .topnav a.l{color:var(--text);text-decoration:none;font-size:.95rem;font-weight:600}
 .topnav a.l:hover{color:var(--mcd-red)}
@@ -136,15 +137,17 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 
 <div class="topbar">
   <a class="brand" href="#top">
-    <!-- Clean 2D Yellow-Gold Cup & Coffee Brown Smoke Logo -->
-    <svg width="34" height="34" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
-      <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="18" stroke-linecap="round"/>
-      <path d="M275 160 C290 135 255 110 270 85 C285 60 250 40 255 20" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
-      <ellipse cx="250" cy="210" rx="95" ry="32" fill="#4A2E1B"/>
-      <path d="M155 210 L175 365 C178 395 205 415 235 415 L265 415 C295 415 322 395 325 365 L345 210 Z" fill="#D4AF37"/>
-      <path d="M335 235 C385 235 395 315 345 345" fill="none" stroke="#D4AF37" stroke-width="22" stroke-linecap="round"/>
-    </svg>
-    Wangari Lounge
+    <span id="brandLogoContainer">
+      <!-- Clean 2D Yellow-Gold Cup & Coffee Brown Smoke Logo -->
+      <svg width="34" height="34" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="18" stroke-linecap="round"/>
+        <path d="M275 160 C290 135 255 110 270 85 C285 60 250 40 255 20" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
+        <ellipse cx="250" cy="210" rx="95" ry="32" fill="#4A2E1B"/>
+        <path d="M155 210 L175 365 C178 395 205 415 235 415 L265 415 C295 415 322 395 325 365 L345 210 Z" fill="#D4AF37"/>
+        <path d="M335 235 C385 235 395 315 345 345" fill="none" stroke="#D4AF37" stroke-width="22" stroke-linecap="round"/>
+      </svg>
+    </span>
+    <span id="brandNameText">Wangari Lounge</span>
   </a>
   <div class="topnav">
     <a class="l" href="#menu">Menu</a>
@@ -155,40 +158,43 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 </div>
 
 <div id="top" class="hero">
-  <h1>Fresh grills, cold drinks, fast ordering</h1>
-  <p>Select your favorites from the menu below, customize your order, and send it straight to our team in seconds.</p>
+  <h1 id="heroTitle">Fresh grills, cold drinks, fast ordering</h1>
+  <p id="heroSubtitle">Select your favorites from the menu below, customize your order, and send it straight to our team in seconds.</p>
   <div class="row">
     <button class="btn" id="toggleMenuBtn">Hide Menu</button>
     <button class="btn ghost" id="heroCart">View My Cart</button>
   </div>
 </div>
 
-<main class="wrap" id="menu">
-  <h2>Menu</h2>
-  <div class="tools"><input id="search" type="search" placeholder="Search burgers, drinks, grills..." aria-label="Search the menu"></div>
-  <div class="tabs" id="tabs"></div>
-  <div class="grid" id="grid"></div>
-</main>
+<!-- Dynamic Sections Container for Placement Order -->
+<div id="sectionsContainer">
+  <main class="wrap" id="menu">
+    <h2>Menu</h2>
+    <div class="tools"><input id="search" type="search" placeholder="Search burgers, drinks, grills..." aria-label="Search the menu"></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="grid" id="grid"></div>
+  </main>
 
-<section class="wrap" id="visit">
-  <h2>Visit Us</h2>
-  <div class="info">
-    <div><h3>Opening Hours</h3><p>02:00 until 02:00 (local time)</p></div>
-    <div><h3>Location</h3><p>AMBO UNIVERSITY tnshua ber</p></div>
-    <div><h3>Phone Support</h3><p>0955675103</p></div>
-  </div>
-</section>
+  <section class="wrap" id="visit">
+    <h2>Visit Us</h2>
+    <div class="info" id="visitInfoGrid">
+      <div><h3>Opening Hours</h3><p id="infoHours">02:00 until 02:00 (local time)</p></div>
+      <div><h3>Location</h3><p id="infoLocation">AMBO UNIVERSITY tnshua ber</p></div>
+      <div><h3>Phone Support</h3><p id="infoPhone">0955675103</p></div>
+    </div>
+  </section>
 
-<section class="wrap" id="reviews">
-  <h2>Customer Reviews</h2>
-  <div class="tools">
-    <button class="btn sm" id="openReviewModal">Leave a review</button>
-  </div>
-  <div class="grid" id="reviewGrid"></div>
-</section>
+  <section class="wrap" id="reviews">
+    <h2>Customer Reviews</h2>
+    <div class="tools">
+      <button class="btn sm" id="openReviewModal">Leave a review</button>
+    </div>
+    <div class="grid" id="reviewGrid"></div>
+  </section>
+</div>
 
 <footer>
-  <span id="yr"></span> Wangari Lounge. All rights reserved. <span style="font-size:0.8rem;opacity:0.7"><i>@gray_exists0</i></span>
+  <span id="yr"></span> <span id="footerBrandName">Wangari Lounge</span>. All rights reserved. <span style="font-size:0.8rem;opacity:0.7"><i>@gray_exists0</i></span>
   <a href="#dev" id="staffLink">Staff login</a>
 </footer>
 
@@ -273,6 +279,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       <button data-tab="orders">Orders <span id="newBadge"></span></button>
       <button data-tab="menu">Menu items</button>
       <button data-tab="stock">Stock</button>
+      <button data-tab="ui">UI & Logo</button>
       <button data-tab="care">Maintenance</button>
     </div>
     <div class="acts"><button class="btn ghost sm" data-act="refresh">Refresh</button><button class="btn ghost sm" data-act="logout">Log out</button></div>
@@ -405,6 +412,47 @@ async function removeOrder(id){
   if(cloud()){ try{ await FS.del("orders/" + id); }catch(e){} }
 }
 
+/* ===================== UI & CONFIG SETTINGS STORAGE ===================== */
+const defaultLogoSvg = `<svg width="34" height="34" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+  <path d="M235 150 C220 120 260 100 245 70 C230 40 265 25 260 10" fill="none" stroke="#6F4E37" stroke-width="18" stroke-linecap="round"/>
+  <path d="M275 160 C290 135 255 110 270 85 C285 60 250 40 255 20" fill="none" stroke="#6F4E37" stroke-width="16" stroke-linecap="round"/>
+  <ellipse cx="250" cy="210" rx="95" ry="32" fill="#4A2E1B"/>
+  <path d="M155 210 L175 365 C178 395 205 415 235 415 L265 415 C295 415 322 395 325 365 L345 210 Z" fill="#D4AF37"/>
+  <path d="M335 235 C385 235 395 315 345 345" fill="none" stroke="#D4AF37" stroke-width="22" stroke-linecap="round"/>
+</svg>`;
+
+let uiConfig = LS.get("wl_ui_config", {
+  brandName: "Wangari Lounge",
+  logoHtml: defaultLogoSvg,
+  heroTitle: "Fresh grills, cold drinks, fast ordering",
+  heroSubtitle: "Select your favorites from the menu below, customize your order, and send it straight to our team in seconds.",
+  hours: "02:00 until 02:00 (local time)",
+  location: "AMBO UNIVERSITY tnshua ber",
+  phone: "0955675103",
+  sectionOrder: ["menu", "visit", "reviews"]
+});
+
+function applyUIConfig() {
+  $("#siteTitle").textContent = uiConfig.brandName;
+  $("#brandNameText").textContent = uiConfig.brandName;
+  $("#footerBrandName").textContent = uiConfig.brandName;
+  $("#brandLogoContainer").innerHTML = uiConfig.logoHtml;
+  $("#heroTitle").textContent = uiConfig.heroTitle;
+  $("#heroSubtitle").textContent = uiConfig.heroSubtitle;
+  $("#infoHours").textContent = uiConfig.hours;
+  $("#infoLocation").textContent = uiConfig.location;
+  $("#infoPhone").textContent = uiConfig.phone;
+
+  // Reorder sections based on configuration
+  const container = $("#sectionsContainer");
+  if(container && uiConfig.sectionOrder) {
+    uiConfig.sectionOrder.forEach(id => {
+      const el = document.getElementById(id);
+      if(el) container.appendChild(el);
+    });
+  }
+}
+
 /* ===================== CUSTOMER MENU ===================== */
 let cat = "All", q = "";
 function renderTabs(){
@@ -448,7 +496,7 @@ function openCart(){ $("#drawer").classList.add("show"); $("#mask").classList.ad
 function closeCart(){ $("#drawer").classList.remove("show"); $("#mask").classList.remove("show"); }
 
 function receiptText(o){
-  const L = [C.NAME.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Ref: " + o.ref + ")" : ""), "------------------------------"];
+  const L = [uiConfig.brandName.toUpperCase() + " ORDER RECEIPT", "------------------------------", "Order no: " + o.id, "Date: " + new Date(o.t).toLocaleString(), "------------------------------", "Name: " + o.name, "Phone: " + o.phone, "Type: " + o.type, "Location: " + (o.where || "-"), "Payment: " + o.pay + (o.ref ? " (Ref: " + o.ref + ")" : ""), "------------------------------"];
   o.items.forEach(i => L.push(i.qty + " x " + i.name + "  " + money(i.price * i.qty)));
   L.push("------------------------------", "TOTAL: " + money(o.total));
   if(o.notes) L.push("Notes: " + o.notes);
@@ -497,7 +545,7 @@ function renderReviews() {
     grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
     return;
   }
-  grid.innerHTML = reviews.map(r => {
+  grid.innerHTML = reviews.map((r, idx) => {
     const stars = "⭐".repeat(Number(r.rating) || 5);
     return '<article class="card"><div class="body"><h3>' + esc(r.name) + '</h3><div style="color:#d97706;font-size:.9rem">' + stars + '</div><p>' + esc(r.comment) + '</p><small style="color:var(--mute);margin-top:4px">' + esc(r.date) + '</small></div></article>';
   }).join("");
@@ -611,7 +659,7 @@ $("#doneRcpt").onclick = () => $("#rcpt").classList.remove("show");
 $("#staffLink").onclick = e => { e.preventDefault(); openDev(); };
 
 /* ===================== STAFF DASHBOARD ===================== */
-let tab = "orders", ofilter = "All", editId = null, pendImg = "";
+let tab = "orders", ofilter = "All", editId = null, pendImg = "", pendLogo = "";
 const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
 
@@ -653,7 +701,7 @@ function setTab(t){
   tab = t; editId = null; pendImg = "";
   $("#dnav").classList.remove("hide");
   document.querySelectorAll("#dnav button").forEach(b => b.classList.toggle("on", b.dataset.tab === t));
-  const f = {orders: tabOrders, menu: tabMenu, stock: tabStock, care: tabCare}[t];
+  const f = {orders: tabOrders, menu: tabMenu, stock: tabStock, ui: tabUI, care: tabCare}[t];
   $("#devBody").innerHTML = f();
   badge();
 }
@@ -697,6 +745,42 @@ function tabStock(){
     menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + money(i.price) + '</small></div><input type="number" class="stk" data-stock="' + esc(i.id) + '" value="' + i.stock + '"></div>').join("");
 }
 
+function tabUI(){
+  let revHtml = reviews.map((r, i) => `<div class="row2"><div class="grow"><b>${esc(r.name)}</b> (${r.rating}⭐)<small>${esc(r.comment)}</small></div><button class="btn red sm" data-delreview="${i}">Delete</button></div>`).join("");
+  if(!revHtml) revHtml = '<p class="empty">No reviews available.</p>';
+
+  return `
+    <div class="frm" style="margin-bottom:24px">
+      <h3>Brand & Logo Customization</h3>
+      <div class="full"><label>Lounge Name</label><input id="uiBrandName" value="${esc(uiConfig.brandName)}"></div>
+      <div class="full"><label>Custom Logo Image/SVG (Paste raw SVG code or image URL)</label><textarea id="uiLogoHtml" rows="3">${esc(uiConfig.logoHtml)}</textarea></div>
+      <div class="full"><label>Or Upload Logo Image File</label><input type="file" accept="image/*" id="uiLogoFile"></div>
+      
+      <h3 style="margin-top:20px">Hero Banner Text</h3>
+      <div class="full"><label>Hero Title</label><input id="uiHeroTitle" value="${esc(uiConfig.heroTitle)}"></div>
+      <div class="full"><label>Hero Subtitle</label><textarea id="uiHeroSubtitle" rows="2">${esc(uiConfig.heroSubtitle)}</textarea></div>
+
+      <h3 style="margin-top:20px">Visit Us Details</h3>
+      <div><label>Opening Hours</label><input id="uiHours" value="${esc(uiConfig.hours)}"></div>
+      <div><label>Location</label><input id="uiLocation" value="${esc(uiConfig.location)}"></div>
+      <div><label>Phone Support</label><input id="uiPhone" value="${esc(uiConfig.phone)}"></div>
+
+      <h3 style="margin-top:20px">Section Placement Order</h3>
+      <div class="full">
+        <label>Drag or type section order (comma separated: menu, visit, reviews)</label>
+        <input id="uiSectionOrder" value="${esc(uiConfig.sectionOrder.join(","))}">
+      </div>
+
+      <div class="acts full" style="margin-top:16px">
+        <button class="btn sm" data-act="saveui">Save UI Settings</button>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom:12px">Manage Customer Reviews</h3>
+    ${revHtml}
+  `;
+}
+
 function tabCare(){
   return '<div class="info">' +
     '<div><h3>Reset Menu</h3><p>Restore default sample menu items.</p><button class="btn ghost sm" data-act="resetmenu" style="margin-top:12px">Reset Menu</button></div>' +
@@ -713,6 +797,15 @@ $("#devBody").addEventListener("click", async e => {
   if(t.dataset.del){ if(confirm("Delete this order?")){ await removeOrder(t.dataset.del); setTab("orders"); } return; }
   if(t.dataset.edit !== undefined){ editId = t.dataset.edit; pendImg = ""; $("#devBody").innerHTML = tabMenu(); return; }
   if(t.dataset.rm){ if(confirm("Delete this menu item?")){ menu = menu.filter(x => x.id !== t.dataset.rm); await saveMenu(); setTab("menu"); } return; }
+  if(t.dataset.delreview !== undefined){ 
+    const idx = Number(t.dataset.delreview);
+    reviews.splice(idx, 1);
+    LS.set("wl_reviews", reviews);
+    renderReviews();
+    setTab("ui");
+    toast("Review deleted");
+    return;
+  }
   const a = t.dataset.act;
   if(!a) return;
   if(a === "newitem"){ editId = ""; pendImg = ""; $("#devBody").innerHTML = tabMenu(); return; }
@@ -733,6 +826,23 @@ $("#devBody").addEventListener("click", async e => {
     if(editId === "") menu.push(obj);
     else { const idx = menu.findIndex(x => x.id === editId); if(idx >= 0) menu[idx] = obj; }
     await saveMenu(); editId = null; setTab("menu"); toast("Item saved"); return;
+  }
+  if(a === "saveui"){
+    uiConfig.brandName = $("#uiBrandName").value.trim() || "Wangari Lounge";
+    uiConfig.logoHtml = pendLogo || $("#uiLogoHtml").value.trim() || defaultLogoSvg;
+    uiConfig.heroTitle = $("#uiHeroTitle").value.trim();
+    uiConfig.heroSubtitle = $("#uiHeroSubtitle").value.trim();
+    uiConfig.hours = $("#uiHours").value.trim();
+    uiConfig.location = $("#uiLocation").value.trim();
+    uiConfig.phone = $("#uiPhone").value.trim();
+    const orderStr = $("#uiSectionOrder").value.trim();
+    if(orderStr) {
+      uiConfig.sectionOrder = orderStr.split(",").map(s => s.trim()).filter(Boolean);
+    }
+    LS.set("wl_ui_config", uiConfig);
+    applyUIConfig();
+    toast("UI & Logo settings saved successfully!");
+    return;
   }
   if(a === "resetmenu"){ if(confirm("Reset menu to default items?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("menu"); toast("Menu reset"); } return; }
   if(a === "clearorders"){ if(confirm("Clear all orders?")){ orders = []; LS.set("wl_orders", []); setTab("orders"); toast("Orders cleared"); } return; }
@@ -758,11 +868,22 @@ $("#devBody").addEventListener("change", async e => {
     reader.onload = ev => { pendImg = ev.target.result; };
     reader.readAsDataURL(file);
   }
+  if(t.id === "uiLogoFile" && t.files && t.files[0]){
+    const file = t.files[0];
+    if(file.size > 800000){ alert("Image too large under 800KB."); t.value = ""; return; }
+    const reader = new FileReader();
+    reader.onload = ev => { 
+      pendLogo = '<img src="' + ev.target.result + '" alt="Logo" style="height:34px;width:auto;display:block;">'; 
+      $("#uiLogoHtml").value = pendLogo;
+    };
+    reader.readAsDataURL(file);
+  }
 });
 
 /* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
+  applyUIConfig();
   await loadMenu();
   renderTabs();
   renderMenu();
