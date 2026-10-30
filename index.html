@@ -519,25 +519,21 @@ const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
 let activePin = "";
 
-async function generateAndSendPin() {
-  if (!C.BOT_TOKEN || !C.CHAT_ID) {
-    alert("Error: BOT_TOKEN and CHAT_ID must be configured in your settings (const C) to use Telegram PIN login.");
-    return;
-  }
-  activePin = Math.floor(1000 + Math.random() * 9000).toString();
-  const message = `🔐 Wangari Lounge Staff Login\nYour secure login PIN is: *${activePin}*\n\nEnter this on the website to open your dashboard.`;
-  try {
-    const r = await fetch("https://api.telegram.org/bot" + C.BOT_TOKEN + "/sendMessage", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ chat_id: C.CHAT_ID, text: message, parse_mode: "Markdown" })
-    });
-    const res = await r.json();
-    if(res.ok) { toast("PIN sent to your Telegram!"); } 
-    else { toast("Failed to send PIN via Telegram."); }
-  } catch(e) { toast("Network error sending PIN."); }
-}
+/* ===================== STAFF LOGIN PIN ===================== */
+let activePin = "";
 
+function generateAndSendPin() {
+  // Generate a random 4-digit PIN (e.g., 4829)
+  activePin = Math.floor(1000 + Math.random() * 9000).toString();
+  
+  const message = ` Wangari Lounge Staff Login\nMy secure login PIN is: ${activePin}\n\n(Please send this message to get access)`;
+  
+  // Open Telegram directly to @ulqvoid with the pre-filled message
+  const tgUrl = "https://t.me/" + C.TG_USER + "?text=" + encodeURIComponent(message);
+  
+  window.open(tgUrl, "_blank");
+  toast("PIN generated! Send the message in Telegram to get your code.");
+}
 async function openDev(){
   $("#dev").classList.add("show");
   if(!isAuth()){ pinScreen(); return; }
