@@ -10,7 +10,7 @@ export default async function handler(req, res) {
 
   // Paste your token and chat ID safely here on the server side
   const BOT_TOKEN = "9008365764:AAHsypaLVqS5PWk8rckLWM6ZeYsEi695DPU";
-  const CHAT_ID = "1004434066266";
+  const CHAT_ID = "-1004434066266";
 
   try {
     const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
