@@ -251,9 +251,8 @@ const C = {
   TELEBIRR_NAME: "Wangari Lounge",
   CBE_ACCOUNT: "1000XXXXXXXXX",
   CBE_NAME: "Wangari Lounge",
-  FIREBASE: { projectId: "enabled", apiKey: "enabled" } // Triggers cloud mode without exposing actual keys
+  USE_CLOUD: true
 };
-
 
 /* ===================== HELPERS ===================== */
 const $ = s => document.querySelector(s);
@@ -298,15 +297,41 @@ const LS = {
   get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ toast("Browser storage is full. Use smaller photos."); return false; } }
 };
-const cloud = () => !!(C.FIREBASE.projectId && C.FIREBASE.apiKey);
+
+const cloud = () => !!C.USE_CLOUD;
+
 const FS = {
-  u(p){ return "https://firestore.googleapis.com/v1/projects/" + C.FIREBASE.projectId + "/databases/(default)/documents/" + p; },
-  k(){ return "key=" + encodeURIComponent(C.FIREBASE.apiKey); },
-  async get(p){ const r = await fetch(this.u(p) + "?" + this.k()); if(r.status === 404) return null; if(!r.ok) throw new Error("get " + r.status); const d = await r.json(); return JSON.parse(d.fields.json.stringValue); },
-  async set(p, o){ const r = await fetch(this.u(p) + "?" + this.k(), {method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{json:{stringValue:JSON.stringify(o)}}})}); if(!r.ok) throw new Error("set " + r.status); },
-  async list(c){ const r = await fetch(this.u(c) + "?pageSize=300&" + this.k()); if(!r.ok) throw new Error("list " + r.status); const d = await r.json(); return (d.documents || []).map(x => JSON.parse(x.fields.json.stringValue)); },
-  async del(p){ await fetch(this.u(p) + "?" + this.k(), {method:"DELETE"}); }
+  async get(p){
+    const r = await fetch(`/api/db?action=get&path=${encodeURIComponent(p)}`);
+    if(!r.ok) throw new Error("API error " + r.status);
+    const d = await r.json();
+    if(!d || !d.fields || !d.fields.json) return null;
+    return JSON.parse(d.fields.json.stringValue);
+  },
+  async set(p, o){
+    const r = await fetch('/api/db', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        path: p,
+        data: { fields: { json: { stringValue: JSON.stringify(o) } } }
+      })
+    });
+    if(!r.ok) throw new Error("API set error " + r.status);
+  },
+  async list(c){
+    const r = await fetch(`/api/db?action=list&path=${encodeURIComponent(c)}`);
+    if(!r.ok) throw new Error("API list error " + r.status);
+    const d = await r.json();
+    return (d.documents || []).map(x => {
+      try { return JSON.parse(x.fields.json.stringValue); } catch(e){ return null; }
+    }).filter(Boolean);
+  },
+  async del(p){
+    await fetch(`/api/db?action=delete&path=${encodeURIComponent(p)}`, { method: 'DELETE' });
+  }
 };
+
 async function loadMenu(){
   if(cloud()){
     try{
