@@ -165,7 +165,6 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
   </div>
 </div>
 
-<!-- Dynamic Sections Container for Cloud-Synced Placement Order -->
 <div id="sectionsContainer">
   <main class="wrap" id="menu">
     <h2>Menu</h2>
@@ -354,7 +353,7 @@ function art(it){
   else if (cat.includes("food")) s = '<ellipse cx="200" cy="170" rx="130" ry="62" fill="rgba(255,255,255,.92)"/><ellipse cx="200" cy="165" rx="98" ry="44" fill="hsl('+hue+',65%,50%)"/><circle cx="170" cy="155" r="16" fill="hsl('+hue+',70%,70%)"/><circle cx="220" cy="172" r="18" fill="hsl('+hue+',60%,34%)"/><circle cx="238" cy="145" r="10" fill="hsl('+((hue+60)%360)+',60%,55%)"/>';
   else s = '<circle cx="200" cy="140" r="78" fill="rgba(255,255,255,.18)"/><circle cx="200" cy="140" r="44" fill="hsl('+hue+',70%,58%)"/>';
   const g = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl('+hue+',45%,30%)"/><stop offset="1" stop-color="hsl('+((hue+40)%360)+',50%,15%)"/></linearGradient></defs><rect width="400" height="260" fill="url(#g)"/>'+s+'</svg>';
-  return "data:image/svg+xml;utf8,+ encodeURIComponent(g);
+  return "data:image/svg+xml;utf8," + encodeURIComponent(g);
 }
 const imgTag = it => '<img src="' + esc(it.img || art(it)) + '" data-f="' + esc(art(it)) + '" alt="' + esc(it.name) + '" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.f">';
 
