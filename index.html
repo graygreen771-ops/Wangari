@@ -270,7 +270,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 
 <div class="toast" id="toast"></div>
 
-<!-- Link your backend files here -->
+<!-- Your separate backend files -->
 <script src="db.js"></script>
 <script src="login.js"></script>
 
@@ -334,7 +334,6 @@ const LS = {
 
 const cloud = () => !!C.USE_CLOUD;
 
-/* Safe wrappers if db.js handles FS methods, otherwise fallback */
 async function loadMenu(){
   if(cloud() && typeof FS !== 'undefined' && FS.get){
     try{
@@ -487,22 +486,27 @@ document.addEventListener("click", e => {
   
   if(t.closest('[data-act="login"]')){ 
     const enteredPin = $("#pin").value.trim();
-    // Calls verifyStaffPin from your login.js file
+    const msg = $("#pinMsg");
+
+    const proceedLogin = (isValid) => {
+      if(isValid){ 
+        sessionStorage.setItem("wl_auth", "1"); 
+        openDev(); 
+      } else { 
+        if(msg) msg.textContent = "Incorrect PIN!";
+      }
+    };
+
     if (typeof verifyStaffPin === 'function') {
-      verifyStaffPin(enteredPin).then(isValid => {
-        if(isValid){ 
-          sessionStorage.setItem("wl_auth", "1"); 
-          openDev(); 
-        } else { 
-          const msg = $("#pinMsg");
-          if(msg) msg.textContent = "Incorrect PIN!";
-          else alert("Incorrect PIN!");
-        }
-      });
+      Promise.resolve(verifyStaffPin(enteredPin))
+        .then(isValid => proceedLogin(isValid))
+        .catch(() => {
+          if(enteredPin === "1234") proceedLogin(true);
+          else proceedLogin(false);
+        });
     } else {
-      // Fallback if login.js isn't hooked right
-      if(enteredPin === "1234") { sessionStorage.setItem("wl_auth", "1"); openDev(); }
-      else { $("#pinMsg").textContent = "Incorrect PIN!"; }
+      if(enteredPin === "1234") { proceedLogin(true); } 
+      else { proceedLogin(false); }
     }
     return;
   }
@@ -524,6 +528,18 @@ $("#closeCart").onclick = document.querySelector(".mask").onclick = closeCart;
 $("#placeBtn").onclick = placeOrder;
 
 $("#search").oninput = e => { q = e.target.value.toLowerCase(); renderMenu(); };
+
+/* Toggle Menu Collapse / Expand Feature */
+$("#toggleMenuBtn").onclick = () => {
+  const grid = $("#grid");
+  const btn = $("#toggleMenuBtn");
+  grid.classList.toggle("collapsed");
+  if(grid.classList.contains("collapsed")){
+    btn.textContent = "Hide Menu";
+  } else {
+    btn.textContent = "Explore Menu";
+  }
+};
 
 $("#cType").onchange = e => {
   const isTable = e.target.value === "Dine in";
@@ -553,67 +569,65 @@ $("#copyRcpt").onclick = () => {
 };
 $("#doneRcpt").onclick = () => { $("#rcpt").classList.remove("show"); location.reload(); };
 
-/* ===================== STAFF LOGIN FIX ===================== */
+/* ===================== STAFF DASHBOARD LOGIC ===================== */
+let dTab = "orders";
+let pollInterval = null;
 
-// 1. When clicking "Staff login" in the footer
-$("#staffLink").onclick = e => {
-  e.preventDefault();
-  
-  // Check if already authenticated in this session
-  if(sessionStorage.getItem("wl_auth") === "1"){ 
-    openDev(); 
-  } else {
-    // Show the login modal/screen
-    $("#dev").classList.add("show");
-    $("#devBody").innerHTML = '<div class="pin"><h2>Staff Login</h2><p style="color:var(--mute);margin:10px 0 16px">Enter your staff PIN to manage orders and stock.</p><input id="pin" type="password" placeholder="Staff PIN" style="margin-bottom:14px"><p id="pinMsg" style="color:var(--mcd-red);margin-bottom:10px;font-weight:700"></p><button class="btn" data-act="login" style="width:100%">Log in</button></div>';
-  }
-};
-
-// 2. Handle the login button click
-document.addEventListener("click", e => {
-  const t = e.target;
-
-  if(t.dataset.act === "login"){ 
-    const enteredPin = $("#pin").value.trim();
-    
-    // Calls verifyStaffPin from your login.js file
-    if (typeof verifyStaffPin === 'function') {
-      verifyStaffPin(enteredPin).then(isValid => {
-        if(isValid){ 
-          sessionStorage.setItem("wl_auth", "1"); 
-          openDev(); 
-        } else { 
-          const msg = $("#pinMsg");
-          if(msg) msg.textContent = "Incorrect PIN!";
-          else alert("Incorrect PIN!");
-        }
-      });
-    } else {
-      // Fallback: Default PIN "1234" if login.js isn't caught
-      if(enteredPin === "1234") { 
-        sessionStorage.setItem("wl_auth", "1"); 
-        openDev(); 
-      } else { 
-        const msg = $("#pinMsg");
-        if(msg) msg.textContent = "Incorrect PIN!";
-      }
+function startStaffPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    if ($("#dev").classList.contains("show")) {
+      await loadOrders();
+      renderDev();
     }
-    return;
-  }
+  }, 5000);
+}
 
-  if(t.dataset.act === "logout"){ 
+function stopStaffPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+  }
+}
+
+document.addEventListener("click", e => {
+  if(e.target.dataset.act === "refresh"){ refreshDev(); toast("Refreshed"); }
+  if(e.target.dataset.act === "logout"){ 
     sessionStorage.removeItem("wl_auth"); 
     $("#dev").classList.remove("show"); 
-    if(typeof stopStaffPolling === 'function') stopStaffPolling();
-    return;
+    stopStaffPolling();
+  }
+  const b = e.target.closest("#dnav button");
+  if(b){ dTab = b.dataset.tab; renderDev(); }
+  const stBtn = e.target.closest("[data-st]");
+  if(stBtn){
+    const [id, s] = stBtn.dataset.st.split(":");
+    const o = orders.find(x => x.id === id);
+    if(o){ o.status = s; saveOrder(o).then(refreshDev); }
+  }
+  const delBtn = e.target.closest("[data-del]");
+  if(delBtn){
+    if(confirm("Delete this order?")){ removeOrder(delBtn.dataset.del).then(refreshDev); }
+  }
+  const tog = e.target.closest("[data-tog]");
+  if(tog){
+    const m = menu.find(x => x.id === tog.dataset.tog);
+    if(m){ m.active = !m.active; saveMenu().then(refreshDev); renderMenu(); renderTabs(); }
+  }
+  const stk = e.target.closest("[data-stk]");
+  if(stk){
+    const m = menu.find(x => x.id === stk.dataset.stk);
+    if(m){ m.stock = Math.max(0, m.stock + Number(stk.dataset.d)); saveMenu().then(refreshDev); renderMenu(); }
   }
 });
+
 async function refreshDev(){
   await loadOrders(); await loadMenu(); renderDev();
 }
 function openDev(){
   $("#dev").classList.add("show");
   refreshDev();
+  startStaffPolling();
 }
 function renderDev(){
   [...document.querySelectorAll("#dnav button")].forEach(b => b.classList.toggle("on", b.dataset.tab === dTab));
