@@ -486,28 +486,16 @@ document.addEventListener("click", e => {
   
   if(t.closest('[data-act="login"]')){ 
     const enteredPin = $("#pin").value.trim();
-    const msg = $("#pinMsg");
-
-    const proceedLogin = (isValid) => {
+    verifyStaffPin(enteredPin).then(isValid => {
       if(isValid){ 
         sessionStorage.setItem("wl_auth", "1"); 
         openDev(); 
       } else { 
+        const msg = $("#pinMsg");
         if(msg) msg.textContent = "Incorrect PIN!";
+        else alert("Incorrect PIN!");
       }
-    };
-
-    if (typeof verifyStaffPin === 'function') {
-      Promise.resolve(verifyStaffPin(enteredPin))
-        .then(isValid => proceedLogin(isValid))
-        .catch(() => {
-          if(enteredPin === "1234") proceedLogin(true);
-          else proceedLogin(false);
-        });
-    } else {
-      if(enteredPin === "1234") { proceedLogin(true); } 
-      else { proceedLogin(false); }
-    }
+    });
     return;
   }
 });
@@ -569,34 +557,11 @@ $("#copyRcpt").onclick = () => {
 };
 $("#doneRcpt").onclick = () => { $("#rcpt").classList.remove("show"); location.reload(); };
 
-/* ===================== STAFF DASHBOARD LOGIC ===================== */
+/* ===================== STAFF DASHBOARD ===================== */
 let dTab = "orders";
-let pollInterval = null;
-
-function startStaffPolling() {
-  if (pollInterval) clearInterval(pollInterval);
-  pollInterval = setInterval(async () => {
-    if ($("#dev").classList.contains("show")) {
-      await loadOrders();
-      renderDev();
-    }
-  }, 5000);
-}
-
-function stopStaffPolling() {
-  if (pollInterval) {
-    clearInterval(pollInterval);
-    pollInterval = null;
-  }
-}
-
 document.addEventListener("click", e => {
   if(e.target.dataset.act === "refresh"){ refreshDev(); toast("Refreshed"); }
-  if(e.target.dataset.act === "logout"){ 
-    sessionStorage.removeItem("wl_auth"); 
-    $("#dev").classList.remove("show"); 
-    stopStaffPolling();
-  }
+  if(e.target.dataset.act === "logout"){ sessionStorage.removeItem("wl_auth"); $("#dev").classList.remove("show"); }
   const b = e.target.closest("#dnav button");
   if(b){ dTab = b.dataset.tab; renderDev(); }
   const stBtn = e.target.closest("[data-st]");
@@ -627,7 +592,6 @@ async function refreshDev(){
 function openDev(){
   $("#dev").classList.add("show");
   refreshDev();
-  startStaffPolling();
 }
 function renderDev(){
   [...document.querySelectorAll("#dnav button")].forEach(b => b.classList.toggle("on", b.dataset.tab === dTab));
