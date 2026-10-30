@@ -142,7 +142,8 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
     <div><h3>Call us</h3><p>0955675103</p></div>
   </div>
 </section>
-  <section class="wrap" id="reviews">
+
+<section class="wrap" id="reviews">
   <h2>Customer Reviews</h2>
   <div class="tools">
     <button class="btn sm" id="openReviewModal">Leave a review</button>
@@ -172,17 +173,17 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       <label for="cPay">Payment method</label>
       <select id="cPay"><option>Telebirr</option><option>CBE bank transfer</option><option>Cash on arrival</option></select>
       <div id="payInfo" style="background:var(--bg2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.9rem;color:var(--mute)"></div>
-     <div id="refBox">
-  <label for="cRef">Transaction Reference / Sender Phone</label>
-  <input id="cRef" placeholder="Enter Telebirr/CBE ref or your phone number used to pay">
-  <small style="color:var(--mute);display:block;margin-top:4px">⚠️ Note: Please put your phone number or order name in your bank/Telebirr transfer remark so we can verify it instantly.</small>
-</div>
+      <div id="refBox">
+        <label for="cRef">Transaction Reference / Sender Phone</label>
+        <input id="cRef" placeholder="Enter Telebirr/CBE ref or your phone number used to pay">
+        <small style="color:var(--mute);display:block;margin-top:4px">⚠️ Note: Please put your phone number or order name in your bank/Telebirr transfer remark so we can verify it instantly.</small>
+      </div>
       <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
       <p id="formMsg" style="color:var(--red);margin-top:8px"></p>
     </div>
   </div>
   <div class="dfoot">
-    <div class="total"><span>Total</span><b id="cartTotal">KES 0</b></div>
+    <div class="total"><span>Total</span><b id="cartTotal">ETB 0</b></div>
     <button class="btn" style="width:100%" id="placeBtn" disabled>Place order</button>
   </div>
 </aside>
@@ -199,7 +200,8 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
     </div>
   </div>
 </div>
-  <div class="modal" id="reviewModal">
+
+<div class="modal" id="reviewModal">
   <div class="box">
     <h2>Leave a Review</h2>
     <label for="revName">Your Name</label>
@@ -254,17 +256,6 @@ const C = {
   FIREBASE: { projectId: "", apiKey: "" }
 };
 
-// Secure PIN Management (Master PIN setup)
-function getSavedPin() {
-  // Put your permanent secret staff PIN right here inside the quotes:
-  const MASTER_PIN = "2119127"; // <--- CHANGE THIS TO YOUR OWN SECRET 4-DIGIT PIN
-  return MASTER_PIN;
-}
-
-// Use this function wherever you check the PIN in your code:
-// Instead of: if (enteredPin === C.DEV_PIN)
-// Use:        if (enteredPin === getSavedPin())
-
 /* ===================== HELPERS ===================== */
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -289,7 +280,6 @@ const SEED = [
   {id:"m12",name:"Mineral water",cat:"Extras",price:100,stock:80,desc:"500ml bottle",img:"",active:true}
 ];
 
-/* Drawn illustration used when an item has no photo */
 function art(it){
   const cat = (it.cat || "").toLowerCase();
   const base = cat.includes("drink") ? 170 : cat.includes("food") ? 20 : 270;
@@ -432,13 +422,73 @@ async function placeOrder(){
   $("#rcpt").classList.add("show");
 }
 
+/* ===================== CUSTOMER REVIEWS ===================== */
+let reviews = LS.get("wl_reviews", [
+  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
+  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
+]);
+
+function renderReviews() {
+  const grid = $("#reviewGrid");
+  if(!grid) return;
+  if(!reviews.length) {
+    grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
+    return;
+  }
+  grid.innerHTML = reviews.map(r => {
+    const stars = "⭐".repeat(Number(r.rating) || 5);
+    return '<article class="card"><div class="body"><h3>' + esc(r.name) + '</h3><div style="color:var(--amber2);font-size:.9rem">' + stars + '</div><p>' + esc(r.comment) + '</p><small style="color:var(--mute);margin-top:4px">' + esc(r.date) + '</small></div></article>';
+  }).join("");
+}
+
+if($("#openReviewModal")) {
+  $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
+  $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
+  $("#submitReview").onclick = () => {
+    const name = $("#revName").value.trim();
+    const comment = $("#revComment").value.trim();
+    const rating = $("#revRating").value;
+    const msg = $("#revMsg");
+    
+    if(!name || !comment) {
+      msg.textContent = "Please enter your name and comment.";
+      return;
+    }
+    
+    reviews.unshift({ name, rating, comment, date: "Just now" });
+    LS.set("wl_reviews", reviews);
+    renderReviews();
+    
+    $("#revName").value = "";
+    $("#revComment").value = "";
+    msg.textContent = "";
+    $("#reviewModal").classList.remove("show");
+    toast("Thank you for your review!");
+  };
+}
+
 /* ===================== CUSTOMER EVENTS ===================== */
 document.addEventListener("click", e => {
   const t = e.target;
   if(t.closest("[data-add]")){ addToCart(t.closest("[data-add]").dataset.add, 1); toast("Added to your order"); return; }
   if(t.closest("[data-q]")){ const b = t.closest("[data-q]"); addToCart(b.dataset.q, Number(b.dataset.d)); return; }
   if(t.closest(".tab")){ cat = t.closest(".tab").dataset.c; renderTabs(); renderMenu(); return; }
+  if(t.closest('[data-act="reqpin"]')){ generateAndSendPin(); return; }
+  if(t.closest('[data-act="login"]')){ 
+    if($("#pin").value.trim() === activePin && activePin !== ""){ 
+      sessionStorage.setItem("wl_auth", "1"); 
+      activePin = ""; 
+      openDev(); 
+    } else { 
+      $("#pinMsg").textContent = "Wrong or expired PIN."; 
+    } 
+    return;
+  }
+  if(t.closest('[data-act="exit"]')){ closeDev(); return; }
+  if(t.closest('[data-act="refresh"]')){ openDev(); return; }
+  if(t.closest('[data-act="logout"]')){ sessionStorage.removeItem("wl_auth"); pinScreen(); return; }
 });
+
 $("#topCart").onclick = openCart;
 $("#heroCart").onclick = openCart;
 $("#bar").onclick = openCart;
@@ -461,11 +511,32 @@ function payInfo(){
 $("#cPay").onchange = payInfo;
 $("#copyRcpt").onclick = async () => { try{ await navigator.clipboard.writeText($("#rcptText").textContent); toast("Receipt copied"); }catch(e){ toast("Press and hold the text to copy it"); } };
 $("#doneRcpt").onclick = () => $("#rcpt").classList.remove("show");
+$("#staffLink").onclick = e => { e.preventDefault(); openDev(); };
 
 /* ===================== STAFF DASHBOARD ===================== */
 let tab = "orders", ofilter = "All", editId = null, pendImg = "";
 const STATUSES = ["New", "Preparing", "Ready", "Completed", "Cancelled"];
 const isAuth = () => sessionStorage.getItem("wl_auth") === "1";
+let activePin = "";
+
+async function generateAndSendPin() {
+  if (!C.BOT_TOKEN || !C.CHAT_ID) {
+    alert("Error: BOT_TOKEN and CHAT_ID must be configured in your settings (const C) to use Telegram PIN login.");
+    return;
+  }
+  activePin = Math.floor(1000 + Math.random() * 9000).toString();
+  const message = `🔐 Wangari Lounge Staff Login\nYour secure login PIN is: *${activePin}*\n\nEnter this on the website to open your dashboard.`;
+  try {
+    const r = await fetch("https://api.telegram.org/bot" + C.BOT_TOKEN + "/sendMessage", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ chat_id: C.CHAT_ID, text: message, parse_mode: "Markdown" })
+    });
+    const res = await r.json();
+    if(res.ok) { toast("PIN sent to your Telegram!"); } 
+    else { toast("Failed to send PIN via Telegram."); }
+  } catch(e) { toast("Network error sending PIN."); }
+}
 
 async function openDev(){
   $("#dev").classList.add("show");
@@ -491,7 +562,6 @@ function pinScreen(){
       </div>
     </div>`;
 }
-  let activePin = "";
 
 function setTab(t){
   tab = t; editId = null; pendImg = "";
@@ -510,234 +580,110 @@ function tabOrders(){
   const list = orders.filter(o => ofilter === "All" || o.status === ofilter);
   let h = '<div class="stats"><div class="stat"><b>' + td.length + '</b><span>Orders today</span></div><div class="stat"><b>' + money(sales) + '</b><span>Sales today</span></div><div class="stat"><b>' + orders.filter(o => o.status === "New").length + '</b><span>New orders waiting</span></div><div class="stat"><b>' + (cloud() ? "Shared" : "This phone") + '</b><span>Where orders are saved</span></div></div>';
   h += '<div class="tools"><select id="ofilter" data-act="filter" style="max-width:220px"><option>All</option>' + STATUSES.map(s => '<option' + (s === ofilter ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div>';
-  if(!list.length) return h + '<p class="empty">No orders yet.</p>';
-  return h + list.map(o => '<div class="ord"><div class="top"><b>' + esc(o.id) + '</b><span class="st ' + esc(o.status) + '">' + esc(o.status) + '</span></div><div style="color:var(--mute);font-size:.9rem">' + new Date(o.t).toLocaleString() + '</div><div>' + esc(o.name) + ' | <a href="tel:' + esc(o.phone) + '">' + esc(o.phone) + '</a></div><div style="color:var(--mute);font-size:.9rem">' + esc(o.type) + ' | ' + esc(o.where || "-") + ' | ' + esc(o.pay) + (o.ref ? ' | Ref ' + esc(o.ref) : '') + '</div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + '</li>').join("") + '</ul>' + (o.notes ? '<div style="color:var(--mute);font-size:.9rem">Notes: ' + esc(o.notes) + '</div>' : '') + '<div class="total" style="margin:8px 0"><span>Total</span><b>' + money(o.total) + '</b></div><div class="acts"><select data-act="status" data-id="' + esc(o.id) + '" style="width:auto">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select><button class="btn ghost sm" data-act="copyo" data-id="' + esc(o.id) + '">Copy receipt</button><button class="btn red sm" data-act="delo" data-id="' + esc(o.id) + '">Delete</button></div></div>').join("");
+  if(!list.length) return h + '<p class="empty">No orders found.</p>';
+  h += list.map(o => '<div class="ord"><div class="top"><div><b>#' + esc(o.id) + '</b> &bull; ' + esc(o.name) + ' (' + esc(o.phone) + ')<br><small style="color:var(--mute)">' + new Date(o.t).toLocaleString() + ' &bull; ' + esc(o.type) + (o.where ? ' (' + esc(o.where) + ')' : '') + '</small></div><div style="text-align:right"><span class="price">' + money(o.total) + '</span><br><select data-oid="' + esc(o.id) + '" class="st ' + esc(o.status) + '" style="margin-top:4px">' + STATUSES.map(s => '<option' + (s === o.status ? " selected" : "") + '>' + s + '</option>').join("") + '</select></div></div><ul>' + o.items.map(i => '<li>' + i.qty + ' x ' + esc(i.name) + ' (' + money(i.price * i.qty) + ')</li>').join("") + '</ul>' + (o.pay ? '<small style="color:var(--mute)">Payment: ' + esc(o.pay) + (o.ref ? ' | Ref: ' + esc(o.ref) : '') + '</small><br>' : '') + (o.notes ? '<small style="color:var(--amber2)">Notes: ' + esc(o.notes) + '</small><br>' : '') + '<div style="margin-top:8px"><button class="btn red sm" data-del="' + esc(o.id) + '">Delete order</button></div></div>').join("");
+  return h;
 }
 
 function tabMenu(){
-  const e = menu.find(x => x.id === editId) || {name:"",cat:"",price:"",stock:"",desc:"",img:"",active:true};
-  const cats = [...new Set(menu.map(i => i.cat))];
-  let h = '<h3 style="margin-bottom:10px">' + (editId ? "Edit item" : "Post a new item") + '</h3><div class="frm">';
-  h += '<div><label for="fName">Name</label><input id="fName" value="' + esc(e.name) + '"></div>';
-  h += '<div><label for="fCat">Category</label><input id="fCat" list="cats" value="' + esc(e.cat) + '" placeholder="Food, Drinks, Extras"><datalist id="cats">' + cats.map(c => '<option value="' + esc(c) + '">').join("") + '</datalist></div>';
-  h += '<div><label for="fPrice">Price (' + C.CURRENCY + ')</label><input id="fPrice" type="number" min="0" value="' + esc(e.price) + '"></div>';
-  h += '<div><label for="fStock">Stock quantity</label><input id="fStock" type="number" min="0" value="' + esc(e.stock) + '"></div>';
-  h += '<div class="full"><label for="fDesc">Description</label><input id="fDesc" value="' + esc(e.desc) + '"></div>';
-  h += '<div><label for="fImg">Photo link (optional)</label><input id="fImg" value="' + (e.img && e.img.startsWith("data:") ? "" : esc(e.img)) + '" placeholder="https://..."></div>';
-  h += '<div><label for="fFile">Or upload a photo</label><input id="fFile" type="file" accept="image/*" data-act="file"></div>';
-  h += '<div class="full"><div id="prev" style="margin-top:12px">' + imgTag(e).replace("<img", '<img style="width:140px;border-radius:8px"') + '</div></div>';
-  h += '<div class="full"><label><input type="checkbox" id="fActive" style="width:auto" ' + (e.active ? "checked" : "") + '> Show this item on the menu</label></div>';
-  h += '<div class="full acts" style="margin-top:12px"><button class="btn" data-act="saveitem">' + (editId ? "Save changes" : "Post item") + '</button>' + (editId ? '<button class="btn ghost" data-act="cancel">Cancel</button>' : '') + '</div></div>';
-  h += '<h3 style="margin-bottom:10px">All items (' + menu.length + ')</h3>';
-  h += menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + ' | ' + money(i.price) + ' | stock ' + i.stock + (i.active ? "" : " | hidden") + '</small></div><div class="acts"><button class="btn ghost sm" data-act="edit" data-id="' + esc(i.id) + '">Edit</button><button class="btn ghost sm" data-act="toggle" data-id="' + esc(i.id) + '">' + (i.active ? "Hide" : "Show") + '</button><button class="btn red sm" data-act="delitem" data-id="' + esc(i.id) + '">Delete</button></div></div>').join("");
+  let h = '<div class="tools"><button class="btn sm" data-act="newitem">+ Add menu item</button></div>';
+  if(editId !== null){
+    const m = editId === "" ? {name:"",cat:"Food",price:500,stock:20,desc:"",img:"",active:true} : menu.find(x => x.id === editId);
+    if(m){
+      h += '<div class="frm"><h3>' + (editId === "" ? "New item" : "Edit item") + '</h3>'
+        + '<div class="full"><label>Name</label><input id="eName" value="' + esc(m.name) + '"></div>'
+        + '<div><label>Category</label><input id="eCat" value="' + esc(m.cat) + '"></div>'
+        + '<div><label>Price</label><input id="ePrice" type="number" value="' + m.price + '"></div>'
+        + '<div><label>Stock</label><input id="eStock" type="number" value="' + m.stock + '"></div>'
+        + '<div><label>Status</label><select id="eActive"><option value="true"' + (m.active ? " selected" : "") + '>Active</option><option value="false"' + (!m.active ? " selected" : "") + '>Hidden</option></select></div>'
+        + '<div class="full"><label>Description</label><textarea id="eDesc" rows="2">' + esc(m.desc) + '</textarea></div>'
+        + '<div class="full"><label>Photo (optional)</label><input type="file" accept="image/*" id="eImgFile"></div>'
+        + '<div class="acts full" style="margin-top:10px"><button class="btn" data-act="saveitem">Save item</button><button class="btn ghost" data-act="canceledit">Cancel</button></div>'
+        + '</div>';
+    }
+  }
+  h += menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + ' &bull; ' + money(i.price) + ' &bull; Stock: ' + i.stock + (!i.active ? ' (Hidden)' : '') + '</small></div><button class="btn ghost sm" data-edit="' + esc(i.id) + '">Edit</button><button class="btn red sm" data-rm="' + esc(i.id) + '">Delete</button></div>').join("");
   return h;
 }
 
 function tabStock(){
-  const low = menu.filter(i => i.stock <= C.LOW_STOCK);
-  let h = '<div class="stats"><div class="stat"><b>' + menu.length + '</b><span>Items</span></div><div class="stat"><b>' + low.filter(i => i.stock > 0).length + '</b><span>Running low</span></div><div class="stat"><b>' + menu.filter(i => i.stock <= 0).length + '</b><span>Sold out</span></div></div>';
-  h += '<div class="frm"><div><label for="rsTo">Restock every low or sold out item to</label><input id="rsTo" type="number" min="1" value="20"></div><div style="align-self:end"><button class="btn" data-act="restock">Restock now</button></div></div>';
-  return h + menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + esc(i.cat) + (i.stock <= 0 ? " | sold out" : i.stock <= C.LOW_STOCK ? " | running low" : "") + '</small></div><div class="qty"><button data-act="stk" data-id="' + esc(i.id) + '" data-d="-1">-</button><input class="stk" type="number" min="0" value="' + i.stock + '" data-act="setstk" data-id="' + esc(i.id) + '"><button data-act="stk" data-id="' + esc(i.id) + '" data-d="1">+</button></div></div>').join("");
+  return '<p style="color:var(--mute);margin-bottom:12px">Quickly update inventory levels:</p>' +
+    menu.map(i => '<div class="row2">' + imgTag(i) + '<div class="grow"><b>' + esc(i.name) + '</b><small>' + money(i.price) + '</small></div><input type="number" class="stk" data-stock="' + esc(i.id) + '" value="' + i.stock + '"></div>').join("");
 }
 
 function tabCare(){
-  const done = orders.filter(o => o.status !== "Cancelled");
-  const rev = done.reduce((s, o) => s + o.total, 0), cnt = {};
-  done.forEach(o => o.items.forEach(i => cnt[i.name] = (cnt[i.name] || 0) + i.qty));
-  const top = Object.entries(cnt).sort((a, b) => b[1] - a[1]).slice(0, 5);
-  let h = '<div class="stats"><div class="stat"><b>' + done.length + '</b><span>Orders, all time</span></div><div class="stat"><b>' + money(rev) + '</b><span>Sales, all time</span></div><div class="stat"><b>' + (cloud() ? "Connected" : "Not connected") + '</b><span>Shared cloud storage</span></div></div>';
-  h += '<h3 style="margin-bottom:8px">Best sellers</h3>' + (top.length ? '<ul style="margin:0 0 18px 18px;color:var(--mute)">' + top.map(t => '<li>' + esc(t[0]) + ': ' + t[1] + ' sold</li>').join("") + '</ul>' : '<p class="empty">No sales yet.</p>');
-  h += '<h3 style="margin-bottom:8px">Maintenance</h3><div class="acts" style="margin-bottom:12px"><button class="btn" data-act="export">Download backup</button><label class="btn ghost" style="margin:0;color:var(--amber2)">Restore backup<input type="file" accept=".json" data-act="import" class="hide"></label><button class="btn ghost" data-act="tgtest">Test Telegram bot</button></div>';
-  h += '<div class="acts"><button class="btn ghost" data-act="clearold">Delete finished orders older than 30 days</button><button class="btn red" data-act="resetmenu">Reset menu to defaults</button></div>';
-  h += '<p style="color:var(--mute);font-size:.88rem;margin-top:16px;max-width:60ch">Tip: download a backup every week. The PIN only hides the dashboard on the page. Change DEV_PIN in the settings at the top of the code and keep your Telegram bot token empty unless you accept that it can be read from the page.</p>';
-  return h;
+  return '<div class="info">' +
+    '<div><h3>Reset Menu</h3><p>Restore the default sample menu items.</p><button class="btn ghost sm" data-act="resetmenu" style="margin-top:10px">Reset menu</button></div>' +
+    '<div><h3>Clear Orders</h3><p>Delete all saved orders from this browser.</p><button class="btn red sm" data-act="clearorders" style="margin-top:10px">Clear orders</button></div>' +
+    '</div>';
 }
 
-function shrink(file, cb){
-  const r = new FileReader();
-  r.onload = () => { const im = new Image(); im.onload = () => { const s = Math.min(1, 480 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = im.width * s; c.height = im.height * s; c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL("image/jpeg", .72)); }; im.src = r.result; };
-  r.readAsDataURL(file);
-}
-const download = (name, text) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type:"application/json"})); a.download = name; a.click(); };
-
-async function setStatus(id, ns){
-  const o = orders.find(x => x.id === id); if(!o) return;
-  const was = o.status;
-  if(ns === "Cancelled" && was !== "Cancelled") o.items.forEach(i => { const m = menu.find(x => x.id === i.id); if(m) m.stock += i.qty; });
-  if(was === "Cancelled" && ns !== "Cancelled") o.items.forEach(i => { const m = menu.find(x => x.id === i.id); if(m) m.stock = Math.max(0, m.stock - i.qty); });
-  o.status = ns;
-  await saveOrder(o); await saveMenu(); setTab("orders");
-}
-
-document.addEventListener("click", async e => {
-  const b = e.target.closest("[data-act]"); if(!b || b.tagName === "SELECT" || b.tagName === "INPUT") return;
-  const a = b.dataset.act, id = b.dataset.id;
-  else if(a === "reqpin"){ await generateAndSendPin(); }
-  else if(a === "login"){ 
-    if($("#pin").value.trim() === activePin && activePin !== ""){ 
-      sessionStorage.setItem("wl_auth", "1"); 
-      activePin = ""; // Clear it once used for security
-      openDev(); 
-    } else { 
-      $("#pinMsg").textContent = "Wrong or expired PIN."; 
-    } 
-  }
-  else if(a === "exit") closeDev();
-  else if(a === "logout"){ sessionStorage.removeItem("wl_auth"); closeDev(); }
-  else if(a === "refresh"){ await Promise.all([loadMenu(), loadOrders()]); setTab(tab); toast("Updated"); }
-  else if(a === "copyo"){ try{ await navigator.clipboard.writeText(receiptText(orders.find(x => x.id === id))); toast("Receipt copied"); }catch(er){ toast("Could not copy"); } }
-  else if(a === "delo"){ if(confirm("Delete this order?")){ await removeOrder(id); setTab("orders"); } }
-  else if(a === "edit"){ editId = id; pendImg = ""; $("#devBody").innerHTML = tabMenu(); scrollTo(0, 0); $("#devBody").scrollTop = 0; }
-  else if(a === "cancel") setTab("menu");
-  else if(a === "toggle"){ const m = menu.find(x => x.id === id); m.active = !m.active; await saveMenu(); setTab("menu"); }
-  else if(a === "delitem"){ if(confirm("Delete this item from the menu?")){ menu = menu.filter(x => x.id !== id); await saveMenu(); setTab("menu"); } }
-  else if(a === "saveitem"){
-    const name = $("#fName").value.trim(), price = Number($("#fPrice").value), stock = Number($("#fStock").value);
-    if(!name || !$("#fCat").value.trim() || isNaN(price) || isNaN(stock)){ toast("Fill in name, category, price and stock."); return; }
-    const img = pendImg || $("#fImg").value.trim() || (editId ? (menu.find(x => x.id === editId).img || "") : "");
-    const it = {id: editId || uid("m"), name, cat: $("#fCat").value.trim(), price, stock, desc: $("#fDesc").value.trim(), img: pendImg || $("#fImg").value.trim() || (editId && !$("#fImg").value.trim() && !pendImg ? menu.find(x => x.id === editId).img : ""), active: $("#fActive").checked};
-    if(editId) menu[menu.findIndex(x => x.id === editId)] = it; else menu.push(it);
-    await saveMenu(); toast(editId ? "Item updated" : "Item posted"); setTab("menu");
-  }
-  else if(a === "stk"){ const m = menu.find(x => x.id === id); m.stock = Math.max(0, m.stock + Number(b.dataset.d)); await saveMenu(); setTab("stock"); }
-  else if(a === "restock"){ const n = Number($("#rsTo").value) || 20; menu.forEach(i => { if(i.stock <= C.LOW_STOCK) i.stock = n; }); await saveMenu(); setTab("stock"); toast("Restocked"); }
-  else if(a === "export") download("wangari-backup-" + new Date().toISOString().slice(0, 10) + ".json", JSON.stringify({menu, orders}));
-  else if(a === "clearold"){
-    const cut = Date.now() - 30 * 864e5, old = orders.filter(o => o.t < cut && (o.status === "Completed" || o.status === "Cancelled"));
-    if(!old.length){ toast("Nothing to clear"); return; }
-    if(confirm("Delete " + old.length + " old orders?")){ for(const o of old) await removeOrder(o.id); setTab("care"); }
-  }
-  else if(a === "resetmenu"){ if(confirm("Replace the whole menu with the default menu?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("care"); toast("Menu reset"); } }
-  else if(a === "tgtest"){ const r = await botSend("Test message from " + C.NAME + " dashboard"); toast(r === true ? "Test message sent" : r === null ? "Add BOT_TOKEN and CHAT_ID in the settings first" : "Telegram refused the message"); }
+document.querySelectorAll("#dnav button").forEach(b => {
+  b.onclick = () => setTab(b.dataset.tab);
 });
 
-document.addEventListener("change", async e => {
-  const t = e.target, a = t.dataset && t.dataset.act; if(!a) return;
-  if(a === "status") setStatus(t.dataset.id, t.value);
-  else if(a === "filter"){ ofilter = t.value; setTab("orders"); }
-  else if(a === "setstk"){ const m = menu.find(x => x.id === t.dataset.id); m.stock = Math.max(0, Number(t.value) || 0); await saveMenu(); setTab("stock"); }
-  else if(a === "file" && t.files[0]) shrink(t.files[0], d => { pendImg = d; $("#prev").innerHTML = '<img style="width:140px;border-radius:8px" src="' + d + '" alt="Preview">'; });
-  else if(a === "import" && t.files[0]){
-    const r = new FileReader();
-    r.onload = async () => {
-      try{
-        const d = JSON.parse(r.result);
-        if(!Array.isArray(d.menu) || !Array.isArray(d.orders)) throw new Error("bad");
-        if(!confirm("Replace the current menu and orders with this backup?")) return;
-        menu = d.menu; await saveMenu();
-        orders = d.orders; LS.set("wl_orders", orders);
-        if(cloud()) for(const o of orders){ try{ await FS.set("orders/" + o.id, o); }catch(er){} }
-        setTab("care"); toast("Backup restored");
-      }catch(er){ toast("That file is not a valid backup."); }
+$("#devBody").addEventListener("click", async e => {
+  const t = e.target;
+  if(t.dataset.del){ if(confirm("Delete this order?")){ await removeOrder(t.dataset.del); setTab("orders"); } return; }
+  if(t.dataset.edit !== undefined){ editId = t.dataset.edit; pendImg = ""; $("#devBody").innerHTML = tabMenu(); return; }
+  if(t.dataset.rm){ if(confirm("Delete this menu item?")){ menu = menu.filter(x => x.id !== t.dataset.rm); await saveMenu(); setTab("menu"); } return; }
+  const a = t.dataset.act;
+  if(!a) return;
+  if(a === "newitem"){ editId = ""; pendImg = ""; $("#devBody").innerHTML = tabMenu(); return; }
+  if(a === "canceledit"){ editId = null; $("#devBody").innerHTML = tabMenu(); return; }
+  if(a === "saveitem"){
+    const name = $("#eName").value.trim();
+    if(!name){ alert("Name is required"); return; }
+    const obj = {
+      id: editId === "" ? uid("M") : editId,
+      name,
+      cat: $("#eCat").value.trim() || "Food",
+      price: Number($("#ePrice").value) || 0,
+      stock: Number($("#eStock").value) || 0,
+      desc: $("#eDesc").value.trim(),
+      active: $("#eActive").value === "true",
+      img: pendImg || (editId !== "" ? (menu.find(x => x.id === editId) || {}).img || "" : "")
     };
-    r.readAsText(t.files[0]);
+    if(editId === "") menu.push(obj);
+    else { const idx = menu.findIndex(x => x.id === editId); if(idx >= 0) menu[idx] = obj; }
+    await saveMenu(); editId = null; setTab("menu"); toast("Item saved"); return;
   }
+  if(a === "resetmenu"){ if(confirm("Reset menu to default items?")){ menu = JSON.parse(JSON.stringify(SEED)); await saveMenu(); setTab("menu"); toast("Menu reset"); } return; }
+  if(a === "clearorders"){ if(confirm("Clear all orders?")){ orders = []; LS.set("wl_orders", []); if(cloud()){ try{ const list = await FS.list("orders"); for(let x of list) await FS.del("orders/" + x.id); }catch(e){} } setTab("orders"); toast("Orders cleared"); } return; }
 });
-$("#dnav").onclick = e => { const b = e.target.closest("button"); if(b) setTab(b.dataset.tab); };
-$("#staffLink").onclick = e => { e.preventDefault(); history.replaceState(null, "", "#dev"); openDev(); };
-window.addEventListener("hashchange", () => { if(location.hash === "#dev") openDev(); });
 
-/* Check for new orders every 20 seconds while the dashboard is open */
-setInterval(async () => {
-  if(!$("#dev").classList.contains("show") || !isAuth()) return;
-  const before = orders.length;
-  await loadOrders(); badge();
-  if(orders.length > before){ toast("New order received"); if(tab === "orders") setTab("orders"); }
-}, 20000);
-
-/* ===================== START ===================== */
-(async function init(){
-  $("#yr").textContent = new Date().getFullYear();
-  cart = LS.get("wl_cart", {});
-  await loadMenu();
-  Object.keys(cart).forEach(id => { if(!menu.find(m => m.id === id)) delete cart[id]; });
-  renderTabs(); renderMenu(); renderCart();
-  if(location.hash === "#dev") openDev();
-})();
-
-  /* ===================== CUSTOMER REVIEWS ===================== */
-let reviews = LS.get("wl_reviews", [
-  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
-  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
-]);
-
-function renderReviews() {
-  const grid = $("#reviewGrid");
-  if(!grid) return;
-  if(!reviews.length) {
-    grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
+$("#devBody").addEventListener("change", async e => {
+  const t = e.target;
+  if(t.dataset.oid){
+    const o = orders.find(x => x.id === t.dataset.oid);
+    if(o){ o.status = t.value; await saveOrder(o); setTab("orders"); toast("Order status updated"); }
     return;
   }
-  grid.innerHTML = reviews.map(r => {
-    const stars = "⭐".repeat(Number(r.rating) || 5);
-    return `<article class="card"><div class="body"><h3>${esc(r.name)}</h3><div style="color:var(--amber2);font-size:.9rem">${stars}</div><p>${esc(r.comment)}</p><small style="color:var(--mute);margin-top:4px">${esc(r.date)}</small></div></article>`;
-  }).join("");
-}
+  if(t.dataset.stock){
+    const m = menu.find(x => x.id === t.dataset.stock);
+    if(m){ m.stock = Math.max(0, Number(t.value) || 0); await saveMenu(); }
+    return;
+  }
+  if(t.dataset.act === "filter"){ ofilter = t.value; $("#devBody").innerHTML = tabOrders(); return; }
+  if(t.id === "eImgFile" && t.files && t.files[0]){
+    const file = t.files[0];
+    if(file.size > 800000){ alert("Image is too large. Please use a smaller image under 800KB."); t.value = ""; return; }
+    const reader = new FileReader();
+    reader.onload = ev => { pendImg = ev.target.result; };
+    reader.readAsDataURL(file);
+  }
+});
 
-if($("#openReviewModal")) {
-  $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
-  $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
-  $("#submitReview").onclick = () => {
-    const name = $("#revName").value.trim();
-    const comment = $("#revComment").value.trim();
-    const rating = $("#revRating").value;
-    const msg = $("#revMsg");
-
-    if(!name || !comment) {
-      msg.textContent = "Please enter your name and comment.";
-      return;
-    }
-
-    reviews.unshift({ name, rating, comment, date: "Just now" });
-    LS.set("wl_reviews", reviews);
-    renderReviews();
-
-    $("#revName").value = "";
-    $("#revComment").value = "";
-    msg.textContent = "";
-    $("#reviewModal").classList.remove("show");
-    toast("Thank you for your review!");
-  };
-}
-  /* ===================== INIT ===================== */
+/* ===================== INIT ===================== */
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
   await loadMenu();
   renderTabs();
   renderMenu();
   renderCart();
-  renderReviews(); // This is the correct spot!
+  renderReviews();
   if(location.hash === "#dev") openDev();
 })();
-  let activePin = "";
-
-async function generateAndSendPin() {
-  if (!C.BOT_TOKEN || !C.CHAT_ID) {
-    alert("Error: BOT_TOKEN and CHAT_ID must be configured in your settings (const C) to use Telegram PIN login.");
-    return;
-  }
-  
-  // Generate a random 4-digit PIN (e.g., 4829)
-  activePin = Math.floor(1000 + Math.random() * 9000).toString();
-  
-  const message = `🔐 Wangari Lounge Staff Login\nYour secure login PIN is: *${activePin}*\n\nEnter this on the website to open your dashboard.`;
-  
-  try {
-    const r = await fetch("https://api.telegram.org/bot" + C.BOT_TOKEN + "/sendMessage", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ chat_id: C.CHAT_ID, text: message, parse_mode: "Markdown" })
-    });
-    const res = await r.json();
-    if(res.ok) {
-      toast("PIN sent to your Telegram!");
-    } else {
-      toast("Failed to send PIN via Telegram.");
-    }
-  } catch(e) {
-    toast("Network error sending PIN.");
-  }
-}
 </script>
 </body>
 </html>
