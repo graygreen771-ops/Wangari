@@ -36,3 +36,34 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: err.message });
   }
 }
+// Poll for new orders and data every 5 seconds when the staff dashboard is open
+let pollInterval = null;
+
+function startStaffPolling() {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(async () => {
+    // Only poll if the staff dashboard is currently visible
+    if ($("#dev").classList.contains("show")) {
+      await loadOrders();
+      renderDev();
+    }
+  }, 5000); // Checks every 5 seconds
+}
+
+function stopStaffPolling() {
+  if (pollInterval) {
+    clearInterval(pollInterval);
+    pollInterval = null;
+  }
+}
+
+// Hook it into your openDev and logout actions
+// Inside openDev():
+function openDev(){
+  $("#dev").classList.add("show");
+  refreshDev();
+  startStaffPolling(); // Start polling when open
+}
+
+// Inside your logout action:
+// sessionStorage.removeItem("wl_auth"); $("#dev").classList.remove("show"); stopStaffPolling();
