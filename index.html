@@ -56,7 +56,8 @@ label{display:block;font-size:.88rem;color:var(--mute);margin:14px 0 6px;font-we
 .tab.on{background:var(--mcd-red);color:#ffffff;border-color:var(--mcd-red);box-shadow:0 6px 20px rgba(218,41,28,0.3)}
 
 /* Menu Grid Card Layout */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;margin-top:20px;transition:all 0.3s ease}
+.grid.collapsed{display:none!important}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;box-shadow:0 4px 20px rgba(0,0,0,0.04);transition:transform .2s ease, box-shadow .2s ease}
 .card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.08)}
 .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#f1f5f9}
@@ -151,10 +152,10 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 </div>
 
 <div id="top" class="hero">
-  <h1>Fresh food, cold drinks, fast ordering</h1>
+  <h1>Fresh grills, cold drinks, fast ordering</h1>
   <p>Select your favorites from the menu below, customize your order, and send it straight to our team in seconds.</p>
   <div class="row">
-    <a class="btn" href="#menu">Explore Menu</a>
+    <button class="btn" id="toggleMenuBtn">Explore Menu</button>
     <button class="btn ghost" id="heroCart">View My Cart</button>
   </div>
 </div>
@@ -553,6 +554,24 @@ document.addEventListener("click", e => {
   if(t.closest('[data-act="refresh"]')){ openDev(); return; }
   if(t.closest('[data-act="logout"]')){ sessionStorage.removeItem("wl_auth"); pinScreen(); return; }
 });
+
+/* Menu Collapse/Expand Toggle */
+const toggleBtn = $("#toggleMenuBtn");
+const menuGrid = $("#grid");
+const toolsBox = $(".tools");
+const tabsBox = $("#tabs");
+let menuVisible = true;
+
+toggleBtn.onclick = () => {
+  menuVisible = !menuVisible;
+  menuGrid.classList.toggle("collapsed", !menuVisible);
+  toolsBox.style.display = menuVisible ? "flex" : "none";
+  tabsBox.style.display = menuVisible ? "flex" : "none";
+  toggleBtn.textContent = menuVisible ? "Hide Menu" : "Explore Menu";
+  if(menuVisible) {
+    document.getElementById("menu").scrollIntoView({ behavior: 'smooth' });
+  }
+};
 
 $("#topCart").onclick = openCart;
 $("#heroCart").onclick = openCart;
