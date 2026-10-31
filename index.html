@@ -315,7 +315,6 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => C.CURRENCY + " " + Number(n || 0).toLocaleString();
 
-// Formats order count to 2-digit minimum (01, 02, 03... 10, 11... 99, 100...)
 function getNextOrderNumber() {
   const currentCounter = LS.get("wl_order_counter", 0) + 1;
   LS.set("wl_order_counter", currentCounter);
@@ -355,7 +354,7 @@ function art(it){
 const imgTag = it => '<img src="' + esc(it.img || art(it)) + '" data-f="' + esc(art(it)) + '" alt="' + esc(it.name) + '" loading="lazy" onerror="this.onerror=null;this.src=this.dataset.f">';
 
 /* ===================== STORAGE ===================== */
-let menu = [], orders = [], cart = {};
+let menu = [], orders = [], reviews = [], cart = {};
 const LS = {
   get(k, d){ try{ const v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ toast("Browser storage is full."); return false; } }
@@ -425,6 +424,26 @@ async function removeOrder(id){
   orders = orders.filter(o => o.id !== id);
   LS.set("wl_orders", orders);
   if(cloud()){ try{ await FS.del("orders/" + id); }catch(e){} }
+}
+
+async function loadReviews(){
+  const defaultReviews = [
+    {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
+    {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
+  ];
+  if(cloud()){
+    try{
+      const d = await FS.get("config/reviews");
+      if(d && d.items){ reviews = d.items; LS.set("wl_reviews", reviews); return; }
+      reviews = LS.get("wl_reviews", null) || defaultReviews;
+      await FS.set("config/reviews", {items: reviews}); return;
+    }catch(e){ toast("Cloud offline. Showing cached reviews."); }
+  }
+  reviews = LS.get("wl_reviews", null) || defaultReviews;
+}
+async function saveReviews(){
+  LS.set("wl_reviews", reviews);
+  if(cloud()){ try{ await FS.set("config/reviews", {items: reviews}); }catch(e){} }
 }
 
 /* ===================== CLOUD-SYNCED UI & LOGO CONFIG ===================== */
@@ -596,11 +615,6 @@ async function placeOrder(){
 }
 
 /* ===================== CUSTOMER REVIEWS ===================== */
-let reviews = LS.get("wl_reviews", [
-  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
-  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
-]);
-
 function renderReviews() {
   const grid = $("#reviewGrid");
   if(!grid) return;
@@ -617,7 +631,7 @@ function renderReviews() {
 if($("#openReviewModal")) {
   $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
   $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
-  $("#submitReview").onclick = () => {
+  $("#submitReview").onclick = async () => {
     const name = $("#revName").value.trim();
     const comment = $("#revComment").value.trim();
     const rating = $("#revRating").value;
@@ -629,7 +643,7 @@ if($("#openReviewModal")) {
     }
     
     reviews.unshift({ name, rating, comment, date: "Just now" });
-    LS.set("wl_reviews", reviews);
+    await saveReviews();
     renderReviews();
     
     $("#revName").value = "";
@@ -733,7 +747,7 @@ async function openDev(){
   if(!isAuth()){ pinScreen(); return; }
   $("#dnav").classList.remove("hide");
   $("#devBody").innerHTML = '<p class="empty">Loading...</p>';
-  await Promise.all([loadMenu(), loadOrders()]);
+  await Promise.all([loadMenu(), loadOrders(), loadReviews()]);
   setTab(tab);
 }
 
@@ -749,8 +763,7 @@ function pinScreen(){
   $("#dnav").classList.add("hide");
   $("#devBody").innerHTML = `
     <div class="pin">
-      `
-      + `<h2>Staff Access</h2>
+      <h2>Staff Access</h2>
       <p style="color:var(--mute);font-size:.9rem;margin-bottom:16px">Enter your secure staff PIN to continue.</p>
       <label for="pin">Enter PIN</label>
       <input id="pin" type="password" inputmode="numeric" autocomplete="off" maxlength="10">
@@ -867,7 +880,7 @@ $("#devBody").addEventListener("click", async e => {
   if(t.dataset.delreview !== undefined){ 
     const idx = Number(t.dataset.delreview);
     reviews.splice(idx, 1);
-    LS.set("wl_reviews", reviews);
+    await saveReviews();
     renderReviews();
     setTab("ui");
     toast("Review deleted");
@@ -953,6 +966,7 @@ $("#yr").textContent = new Date().getFullYear();
 (async () => {
   await loadUIConfig();
   await loadMenu();
+  await loadReviews();
   renderTabs();
   renderMenu();
   renderCart();
