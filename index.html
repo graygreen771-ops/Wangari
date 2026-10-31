@@ -646,68 +646,77 @@ async function placeOrder(){
 }
 
 /* ===================== CUSTOMER REVIEWS ===================== */
-let reviews = [];
+let reviews = LS.get("wl_reviews", [
+  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
+  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
+]);
 
-async function loadReviews() {
-  if (cloud()) {
-    try {
-      const list = await FS.list("reviews");
-      if (list && list.length > 0) {
-        reviews = list;
-        reviews.sort((a, b) => (b.t || 0) - (a.t || 0));
-        LS.set("wl_reviews", reviews);
-        renderReviews();
-        return;
-      }
-    } catch (e) {
-      console.log("Cloud reviews fetch error:", e);
-    }
+function syncReviewsFromConfig() {
+  if (uiConfig && uiConfig.reviews) {
+    reviews = uiConfig.reviews;
+    LS.set("wl_reviews", reviews);
   }
-  // Fallback to local storage if cloud is disabled or empty
-  reviews = LS.get("wl_reviews", [
-    {id: "r1", name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago", t: Date.now() - 172800000},
-    {id: "r2", name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago", t: Date.now() - 604800000}
-  ]);
   renderReviews();
 }
 
-async function saveReviewToCloud(rev) {
+async function saveReviewsToCloud() {
   LS.set("wl_reviews", reviews);
-  if (cloud()) {
-    try {
-      await FS.set("reviews/" + rev.id, rev);
-    } catch (e) {
-      console.log("Failed to sync review to cloud:", e);
-      toast("Review saved locally, but cloud sync failed.");
-    }
+  if (uiConfig) {
+    uiConfig.reviews = reviews;
   }
+  await saveUIConfig();
 }
 
-async function removeReviewFromCloud(revId) {
-  LS.set("wl_reviews", reviews);
-  if (cloud()) {
-    try {
-      await FS.del("reviews/" + revId);
-    } catch (e) {
-      console.log("Failed to delete review from cloud:", e);
-    }
+function renderReviews() {
+  const grid = $("#reviewGrid");
+  if(!grid) return;
+  if(!reviews.length) {
+    grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
+    return;
   }
-}
-/* ===================== BACKEND PIN VERIFICATION ===================== */
-async function verifyStaffPin(enteredPin) {
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pin: enteredPin })
-    });
-    const data = await response.json();
-    return data.success;
-  } catch (err) {
-    return false;
-  }
+  grid.innerHTML = reviews.map((r, idx) => {
+    const stars = "⭐".repeat(Number(r.rating) || 5);
+    return '<article class="card"><div class="body"><h3>' + esc(r.name) + '</h3><div style="color:#d97706;font-size:.9rem">' + stars + '</div><p>' + esc(r.comment) + '</p><small style="color:var(--mute);margin-top:4px">' + esc(r.date) + '</small></div></article>';
+  }).join("");
 }
 
+// Dedicated initialization for review modal buttons
+function initReviewModal() {
+  const openBtn = $("#openReviewModal");
+  const closeBtn = $("#closeReviewModal");
+  const submitBtn = $("#submitReview");
+  const modal = $("#reviewModal");
+
+  if(openBtn && modal) {
+    openBtn.onclick = () => modal.classList.add("show");
+  }
+  if(closeBtn && modal) {
+    closeBtn.onclick = () => modal.classList.remove("show");
+  }
+  if(submitBtn) {
+    submitBtn.onclick = async () => {
+      const name = $("#revName").value.trim();
+      const comment = $("#revComment").value.trim();
+      const rating = $("#revRating").value;
+      const msg = $("#revMsg");
+      
+      if(!name || !comment) {
+        msg.textContent = "Please enter your name and comment.";
+        return;
+      }
+      
+      reviews.unshift({ name, rating, comment, date: "Just now" });
+      await saveReviewsToCloud();
+      renderReviews();
+      
+      $("#revName").value = "";
+      $("#revComment").value = "";
+      msg.textContent = "";
+      modal.classList.remove("show");
+      toast("Thank you for your review!");
+    };
+  }
+}
 /* ===================== CUSTOMER EVENTS ===================== */
 document.addEventListener("click", e => {
   const t = e.target;
@@ -1011,6 +1020,7 @@ $("#yr").textContent = new Date().getFullYear();
   renderMenu();
   renderCart();
   renderReviews();
+  initReviewModal(); // <--- Ensures the button event listener attaches on load
   if(location.hash === "#dev") openDev();
 })();
   // Quick jump helper for drawer shortcuts
