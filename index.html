@@ -201,14 +201,7 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 <div class="mask" id="mask"></div>
 
 <aside class="drawer" id="drawer" aria-label="Your order">
-  <div class="dhead">
-    <h2>Your Order</h2>
-    <div style="display:flex; gap:6px; align-items:center;">
-      <button class="btn ghost sm" onclick="jumpToSection('visit')" style="padding:6px 12px; font-size:0.8rem;">📍 Visit</button>
-      <button class="btn ghost sm" onclick="jumpToSection('reviews')" style="padding:6px 12px; font-size:0.8rem;">⭐ Reviews</button>
-      <button class="btn ghost sm" id="closeCart">Close</button>
-    </div>
-  </div>
+  <div class="dhead"><h2>Your Order</h2><button class="btn ghost sm" id="closeCart">Close</button></div>
   <div class="dbody">
     <div id="cartList"></div>
     <div id="checkout" class="hide">
@@ -229,26 +222,13 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       
       <div id="payInfo" style="background:#f8fafc;border:2px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;font-size:.9rem;color:var(--mute)"></div>
       
-     <div id="refBox">
+      <div id="refBox">
         <label for="cRef">Transaction Reference / Sender Name</label>
         <input id="cRef" placeholder="e.g., Abebe Kebede or Ref: TXN12345">
         <small style="color:var(--mute);display:block;margin-top:6px">🇪🇹 እባክዎ የባንክ መላኪያ ስምዎን ወይም የደረሰኝ መለያ ቁጥር (ለሲቢኢ - CBE)፣ እንዲሁም የቴሌብር መላኪያ ስምዎን ወይም የደረሰኝ መለያ ቁጥር (ለቴሌብር - Telebirr) ይጻፉ።</small>
       </div>
 
       <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
-      
-      <!-- Quick Info / Jump Links inside the Drawer for Mobile -->
-      <div style="background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:14px; font-size:0.85rem; color:var(--mute);">
-        <div style="font-weight:700; color:var(--text); margin-bottom:4px;">📍 Quick Info & Support</div>
-        <div><b>Hours:</b> 02:00 until 02:00 (local time)</div>
-        <div><b>Location:</b> AMBO UNIVERSITY tnshua ber</div>
-        <div><b>Phone:</b> 0955675103</div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
-          <button type="button" class="btn ghost sm" onclick="jumpToSection('visit')" style="flex:1; font-size:0.75rem; padding:6px;">View Visit Info</button>
-          <button type="button" class="btn ghost sm" onclick="jumpToSection('reviews')" style="flex:1; font-size:0.75rem; padding:6px;">View Reviews</button>
-        </div>
-      </div>
-
       <p id="formMsg" style="color:var(--mcd-red);margin-top:10px;font-weight:700"></p>
     </div>
   </div>
@@ -334,14 +314,6 @@ const C = {
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => C.CURRENCY + " " + Number(n || 0).toLocaleString();
-  // Quick jump helper for drawer shortcuts
-function jumpToSection(sectionId) {
-  closeCart(); // Closes the cart drawer
-  const target = document.getElementById(sectionId);
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
-  }
-}
 
 // Formats order count to 2-digit minimum (01, 02, 03... 10, 11... 99, 100...)
 function getNextOrderNumber() {
@@ -438,9 +410,7 @@ async function saveMenu(){
   LS.set("wl_menu", menu);
   if(cloud()){ try{ await FS.set("config/menu", {items: menu}); }catch(e){} }
 }
-// Unique ID generator for new menu items
-const uid = p => p + Math.random().toString(36).substr(2, 9);
-  async function loadOrders(){
+async function loadOrders(){
   if(cloud()){ try{ orders = await FS.list("orders"); LS.set("wl_orders", orders); }catch(e){ orders = LS.get("wl_orders", []); } }
   else orders = LS.get("wl_orders", []);
   orders.sort((a, b) => b.t - a.t);
@@ -474,11 +444,7 @@ let uiConfig = LS.get("wl_ui_config", {
   hours: "02:00 until 02:00 (local time)",
   location: "AMBO UNIVERSITY tnshua ber",
   phone: "0955675103",
-  sectionOrder: ["menu", "visit", "reviews"],
-  reviews: [
-    {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
-    {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
-  ]
+  sectionOrder: ["menu", "visit", "reviews"]
 });
 
 async function loadUIConfig(){
@@ -517,22 +483,6 @@ function applyUIConfig() {
       if(el) container.appendChild(el);
     });
   }
-}
-  // Cloud-synced review handlers via UI config
-function syncReviewsFromConfig() {
-  if (uiConfig && uiConfig.reviews) {
-    reviews = uiConfig.reviews;
-    LS.set("wl_reviews", reviews);
-  }
-  renderReviews();
-}
-
-async function saveReviewsToCloud() {
-  LS.set("wl_reviews", reviews);
-  if (uiConfig) {
-    uiConfig.reviews = reviews;
-  }
-  await saveUIConfig();
 }
 
 /* ===================== CUSTOMER MENU ===================== */
@@ -651,22 +601,6 @@ let reviews = LS.get("wl_reviews", [
   {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
 ]);
 
-function syncReviewsFromConfig() {
-  if (uiConfig && uiConfig.reviews) {
-    reviews = uiConfig.reviews;
-    LS.set("wl_reviews", reviews);
-  }
-  renderReviews();
-}
-
-async function saveReviewsToCloud() {
-  LS.set("wl_reviews", reviews);
-  if (uiConfig) {
-    uiConfig.reviews = reviews;
-  }
-  await saveUIConfig();
-}
-
 function renderReviews() {
   const grid = $("#reviewGrid");
   if(!grid) return;
@@ -680,43 +614,47 @@ function renderReviews() {
   }).join("");
 }
 
-// Dedicated initialization for review modal buttons
-function initReviewModal() {
-  const openBtn = $("#openReviewModal");
-  const closeBtn = $("#closeReviewModal");
-  const submitBtn = $("#submitReview");
-  const modal = $("#reviewModal");
+if($("#openReviewModal")) {
+  $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
+  $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
+  $("#submitReview").onclick = () => {
+    const name = $("#revName").value.trim();
+    const comment = $("#revComment").value.trim();
+    const rating = $("#revRating").value;
+    const msg = $("#revMsg");
+    
+    if(!name || !comment) {
+      msg.textContent = "Please enter your name and comment.";
+      return;
+    }
+    
+    reviews.unshift({ name, rating, comment, date: "Just now" });
+    LS.set("wl_reviews", reviews);
+    renderReviews();
+    
+    $("#revName").value = "";
+    $("#revComment").value = "";
+    msg.textContent = "";
+    $("#reviewModal").classList.remove("show");
+    toast("Thank you for your review!");
+  };
+}
 
-  if(openBtn && modal) {
-    openBtn.onclick = () => modal.classList.add("show");
-  }
-  if(closeBtn && modal) {
-    closeBtn.onclick = () => modal.classList.remove("show");
-  }
-  if(submitBtn) {
-    submitBtn.onclick = async () => {
-      const name = $("#revName").value.trim();
-      const comment = $("#revComment").value.trim();
-      const rating = $("#revRating").value;
-      const msg = $("#revMsg");
-      
-      if(!name || !comment) {
-        msg.textContent = "Please enter your name and comment.";
-        return;
-      }
-      
-      reviews.unshift({ name, rating, comment, date: "Just now" });
-      await saveReviewsToCloud();
-      renderReviews();
-      
-      $("#revName").value = "";
-      $("#revComment").value = "";
-      msg.textContent = "";
-      modal.classList.remove("show");
-      toast("Thank you for your review!");
-    };
+/* ===================== BACKEND PIN VERIFICATION ===================== */
+async function verifyStaffPin(enteredPin) {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pin: enteredPin })
+    });
+    const data = await response.json();
+    return data.success;
+  } catch (err) {
+    return false;
   }
 }
+
 /* ===================== CUSTOMER EVENTS ===================== */
 document.addEventListener("click", e => {
   const t = e.target;
@@ -724,27 +662,15 @@ document.addEventListener("click", e => {
   if(t.closest("[data-q]")){ const b = t.closest("[data-q]"); addToCart(b.dataset.q, Number(b.dataset.d)); return; }
   if(t.closest(".tab")){ cat = t.closest(".tab").dataset.c; renderTabs(); renderMenu(); return; }
   
- if(t.closest('[data-act="login"]')){ 
-    const pinInput = $("#pin");
-    const msg = $("#pinMsg");
-    if(!pinInput) return;
-    const enteredPin = pinInput.value.trim();
-    
-    if(!enteredPin) {
-      if(msg) msg.textContent = "Please enter your PIN.";
-      return;
-    }
-
-    if(msg) msg.textContent = "Verifying...";
+  if(t.closest('[data-act="login"]')){ 
+    const enteredPin = $("#pin").value.trim();
     verifyStaffPin(enteredPin).then(isValid => {
       if(isValid){ 
         sessionStorage.setItem("wl_auth", "1"); 
         openDev(); 
       } else { 
-        if(msg) msg.textContent = "Wrong PIN."; 
+        $("#pinMsg").textContent = "Wrong PIN."; 
       }
-    }).catch(err => {
-      if(msg) msg.textContent = "Login error. Try again.";
     });
     return;
   }
@@ -753,16 +679,7 @@ document.addEventListener("click", e => {
   if(t.closest('[data-act="refresh"]')){ openDev(); return; }
   if(t.closest('[data-act="logout"]')){ sessionStorage.removeItem("wl_auth"); pinScreen(); return; }
 });
-// Allow pressing Enter inside the PIN input box
-document.addEventListener("keydown", e => {
-  if(e.key === "Enter") {
-    const pinInput = $("#pin");
-    const loginBtn = document.querySelector('[data-act="login"]');
-    if(pinInput && document.activeElement === pinInput && loginBtn) {
-      loginBtn.click();
-    }
-  }
-});
+
 const toggleBtn = $("#toggleMenuBtn");
 const menuGrid = $("#grid");
 const toolsBox = $(".tools");
@@ -1035,27 +952,13 @@ $("#devBody").addEventListener("change", async e => {
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
   await loadUIConfig();
-  syncReviewsFromConfig();
   await loadMenu();
   renderTabs();
   renderMenu();
   renderCart();
   renderReviews();
-  initReviewModal(); // <--- Ensures the button event listener attaches on load
   if(location.hash === "#dev") openDev();
 })();
-  // Quick jump helper for drawer shortcuts
-function jumpToSection(sectionId) {
-  const drawer = document.getElementById("drawer");
-  const mask = document.getElementById("mask");
-  if (drawer) drawer.classList.remove("show");
-  if (mask) mask.classList.remove("show");
-  
-  const target = document.getElementById(sectionId);
-  if (target) {
-    target.scrollIntoView({ behavior: 'smooth' });
-  }
-}
 </script>
 </body>
 </html>
