@@ -201,7 +201,14 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
 <div class="mask" id="mask"></div>
 
 <aside class="drawer" id="drawer" aria-label="Your order">
-  <div class="dhead"><h2>Your Order</h2><button class="btn ghost sm" id="closeCart">Close</button></div>
+  <div class="dhead">
+    <h2>Your Order</h2>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button class="btn ghost sm" onclick="jumpToSection('visit')" style="padding:6px 12px; font-size:0.8rem;">📍 Visit</button>
+      <button class="btn ghost sm" onclick="jumpToSection('reviews')" style="padding:6px 12px; font-size:0.8rem;">⭐ Reviews</button>
+      <button class="btn ghost sm" id="closeCart">Close</button>
+    </div>
+  </div>
   <div class="dbody">
     <div id="cartList"></div>
     <div id="checkout" class="hide">
@@ -314,6 +321,14 @@ const C = {
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const money = n => C.CURRENCY + " " + Number(n || 0).toLocaleString();
+  // Quick jump helper for drawer shortcuts
+function jumpToSection(sectionId) {
+  closeCart(); // Closes the cart drawer
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 
 // Formats order count to 2-digit minimum (01, 02, 03... 10, 11... 99, 100...)
 function getNextOrderNumber() {
