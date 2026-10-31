@@ -438,7 +438,9 @@ async function saveMenu(){
   LS.set("wl_menu", menu);
   if(cloud()){ try{ await FS.set("config/menu", {items: menu}); }catch(e){} }
 }
-async function loadOrders(){
+// Unique ID generator for new menu items
+const uid = p => p + Math.random().toString(36).substr(2, 9);
+  async function loadOrders(){
   if(cloud()){ try{ orders = await FS.list("orders"); LS.set("wl_orders", orders); }catch(e){ orders = LS.get("wl_orders", []); } }
   else orders = LS.get("wl_orders", []);
   orders.sort((a, b) => b.t - a.t);
