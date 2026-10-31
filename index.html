@@ -474,7 +474,11 @@ let uiConfig = LS.get("wl_ui_config", {
   hours: "02:00 until 02:00 (local time)",
   location: "AMBO UNIVERSITY tnshua ber",
   phone: "0955675103",
-  sectionOrder: ["menu", "visit", "reviews"]
+  sectionOrder: ["menu", "visit", "reviews"],
+  reviews: [
+    {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
+    {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
+  ]
 });
 
 async function loadUIConfig(){
@@ -513,6 +517,22 @@ function applyUIConfig() {
       if(el) container.appendChild(el);
     });
   }
+}
+  // Cloud-synced review handlers via UI config
+function syncReviewsFromConfig() {
+  if (uiConfig && uiConfig.reviews) {
+    reviews = uiConfig.reviews;
+    LS.set("wl_reviews", reviews);
+  }
+  renderReviews();
+}
+
+async function saveReviewsToCloud() {
+  LS.set("wl_reviews", reviews);
+  if (uiConfig) {
+    uiConfig.reviews = reviews;
+  }
+  await saveUIConfig();
 }
 
 /* ===================== CUSTOMER MENU ===================== */
@@ -985,6 +1005,7 @@ $("#devBody").addEventListener("change", async e => {
 $("#yr").textContent = new Date().getFullYear();
 (async () => {
   await loadUIConfig();
+  syncReviewsFromConfig();
   await loadMenu();
   renderTabs();
   renderMenu();
