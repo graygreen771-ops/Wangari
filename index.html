@@ -229,13 +229,26 @@ pre{white-space:pre-wrap;word-break:break-word;font-family:"Courier New",monospa
       
       <div id="payInfo" style="background:#f8fafc;border:2px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;font-size:.9rem;color:var(--mute)"></div>
       
-      <div id="refBox">
+     <div id="refBox">
         <label for="cRef">Transaction Reference / Sender Name</label>
         <input id="cRef" placeholder="e.g., Abebe Kebede or Ref: TXN12345">
         <small style="color:var(--mute);display:block;margin-top:6px">🇪🇹 እባክዎ የባንክ መላኪያ ስምዎን ወይም የደረሰኝ መለያ ቁጥር (ለሲቢኢ - CBE)፣ እንዲሁም የቴሌብር መላኪያ ስምዎን ወይም የደረሰኝ መለያ ቁጥር (ለቴሌብር - Telebirr) ይጻፉ።</small>
       </div>
 
       <label for="cNotes">Notes (optional)</label><textarea id="cNotes" rows="2"></textarea>
+      
+      <!-- Quick Info / Jump Links inside the Drawer for Mobile -->
+      <div style="background:#f8fafc; border:1px solid var(--line); border-radius:12px; padding:12px; margin-top:14px; font-size:0.85rem; color:var(--mute);">
+        <div style="font-weight:700; color:var(--text); margin-bottom:4px;">📍 Quick Info & Support</div>
+        <div><b>Hours:</b> 02:00 until 02:00 (local time)</div>
+        <div><b>Location:</b> AMBO UNIVERSITY tnshua ber</div>
+        <div><b>Phone:</b> 0955675103</div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" class="btn ghost sm" onclick="jumpToSection('visit')" style="flex:1; font-size:0.75rem; padding:6px;">View Visit Info</button>
+          <button type="button" class="btn ghost sm" onclick="jumpToSection('reviews')" style="flex:1; font-size:0.75rem; padding:6px;">View Reviews</button>
+        </div>
+      </div>
+
       <p id="formMsg" style="color:var(--mcd-red);margin-top:10px;font-weight:700"></p>
     </div>
   </div>
@@ -974,6 +987,18 @@ $("#yr").textContent = new Date().getFullYear();
   renderReviews();
   if(location.hash === "#dev") openDev();
 })();
+  // Quick jump helper for drawer shortcuts
+function jumpToSection(sectionId) {
+  const drawer = document.getElementById("drawer");
+  const mask = document.getElementById("mask");
+  if (drawer) drawer.classList.remove("show");
+  if (mask) mask.classList.remove("show");
+  
+  const target = document.getElementById(sectionId);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth' });
+  }
+}
 </script>
 </body>
 </html>
