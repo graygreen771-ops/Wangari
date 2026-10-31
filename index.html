@@ -626,76 +626,52 @@ async function placeOrder(){
 }
 
 /* ===================== CUSTOMER REVIEWS ===================== */
-let reviews = LS.get("wl_reviews", [
-  {name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago"},
-  {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
-]);
+let reviews = [];
 
 async function loadReviews() {
-  if(cloud()){
+  if (cloud()) {
     try {
-      const d = await FS.get("config/reviews");
-      if(d && d.items) {
-        reviews = d.items;
+      const list = await FS.list("reviews");
+      if (list && list.length > 0) {
+        reviews = list;
+        reviews.sort((a, b) => (b.t || 0) - (a.t || 0));
         LS.set("wl_reviews", reviews);
+        renderReviews();
         return;
       }
-      // If cloud is empty, seed it with current local/default reviews
-      await FS.set("config/reviews", { items: reviews });
-    } catch(e) {
-      toast("Cloud offline. Showing cached reviews.");
+    } catch (e) {
+      console.log("Cloud reviews fetch error:", e);
     }
   }
-  reviews = LS.get("wl_reviews", reviews);
+  // Fallback to local storage if cloud is disabled or empty
+  reviews = LS.get("wl_reviews", [
+    {id: "r1", name: "Amina", rating: 5, comment: "The Nyama Choma is absolute perfection! Will definitely come back.", date: "2 days ago", t: Date.now() - 172800000},
+    {id: "r2", name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago", t: Date.now() - 604800000}
+  ]);
+  renderReviews();
 }
 
-async function saveReviews() {
+async function saveReviewToCloud(rev) {
   LS.set("wl_reviews", reviews);
-  if(cloud()){
+  if (cloud()) {
     try {
-      await FS.set("config/reviews", { items: reviews });
-    } catch(e) {
-      toast("Failed to sync reviews to cloud.");
+      await FS.set("reviews/" + rev.id, rev);
+    } catch (e) {
+      console.log("Failed to sync review to cloud:", e);
+      toast("Review saved locally, but cloud sync failed.");
     }
   }
-}
-function renderReviews() {
-  const grid = $("#reviewGrid");
-  if(!grid) return;
-  if(!reviews.length) {
-    grid.innerHTML = '<p class="empty">No reviews yet. Be the first to leave one!</p>';
-    return;
-  }
-  grid.innerHTML = reviews.map((r, idx) => {
-    const stars = "⭐".repeat(Number(r.rating) || 5);
-    return '<article class="card"><div class="body"><h3>' + esc(r.name) + '</h3><div style="color:#d97706;font-size:.9rem">' + stars + '</div><p>' + esc(r.comment) + '</p><small style="color:var(--mute);margin-top:4px">' + esc(r.date) + '</small></div></article>';
-  }).join("");
 }
 
-if($("#openReviewModal")) {
-  $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
-  $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
-  $("#submitReview").onclick = async () => {
-    const name = $("#revName").value.trim();
-    const comment = $("#revComment").value.trim();
-    const rating = $("#revRating").value;
-    const msg = $("#revMsg");
-    
-    if(!name || !comment) {
-      msg.textContent = "Please enter your name and comment.";
-      return;
+async function removeReviewFromCloud(revId) {
+  LS.set("wl_reviews", reviews);
+  if (cloud()) {
+    try {
+      await FS.del("reviews/" + revId);
+    } catch (e) {
+      console.log("Failed to delete review from cloud:", e);
     }
-    
-    reviews.unshift({ name, rating, comment, date: "Just now" });
-    await saveReviews();
-    renderReviews();
-    
-    $("#revName").value = "";
-    $("#revComment").value = "";
-    msg.textContent = "";
-    $("#reviewModal").classList.remove("show");
-    toast("Thank you for your review!");
-  };
+  }
 }
 /* ===================== BACKEND PIN VERIFICATION ===================== */
 async function verifyStaffPin(enteredPin) {
