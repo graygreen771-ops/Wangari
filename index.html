@@ -631,6 +631,34 @@ let reviews = LS.get("wl_reviews", [
   {name: "Dawit", rating: 5, comment: "Great atmosphere and cold drinks. Fast service too.", date: "1 week ago"}
 ]);
 
+async function loadReviews() {
+  if(cloud()){
+    try {
+      const d = await FS.get("config/reviews");
+      if(d && d.items) {
+        reviews = d.items;
+        LS.set("wl_reviews", reviews);
+        return;
+      }
+      // If cloud is empty, seed it with current local/default reviews
+      await FS.set("config/reviews", { items: reviews });
+    } catch(e) {
+      toast("Cloud offline. Showing cached reviews.");
+    }
+  }
+  reviews = LS.get("wl_reviews", reviews);
+}
+
+async function saveReviews() {
+  LS.set("wl_reviews", reviews);
+  if(cloud()){
+    try {
+      await FS.set("config/reviews", { items: reviews });
+    } catch(e) {
+      toast("Failed to sync reviews to cloud.");
+    }
+  }
+}
 function renderReviews() {
   const grid = $("#reviewGrid");
   if(!grid) return;
@@ -647,7 +675,7 @@ function renderReviews() {
 if($("#openReviewModal")) {
   $("#openReviewModal").onclick = () => $("#reviewModal").classList.add("show");
   $("#closeReviewModal").onclick = () => $("#reviewModal").classList.remove("show");
-  $("#submitReview").onclick = () => {
+  $("#submitReview").onclick = async () => {
     const name = $("#revName").value.trim();
     const comment = $("#revComment").value.trim();
     const rating = $("#revRating").value;
@@ -659,7 +687,7 @@ if($("#openReviewModal")) {
     }
     
     reviews.unshift({ name, rating, comment, date: "Just now" });
-    LS.set("wl_reviews", reviews);
+    await saveReviews();
     renderReviews();
     
     $("#revName").value = "";
@@ -669,7 +697,6 @@ if($("#openReviewModal")) {
     toast("Thank you for your review!");
   };
 }
-
 /* ===================== BACKEND PIN VERIFICATION ===================== */
 async function verifyStaffPin(enteredPin) {
   try {
