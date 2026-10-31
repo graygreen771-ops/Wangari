@@ -724,15 +724,27 @@ document.addEventListener("click", e => {
   if(t.closest("[data-q]")){ const b = t.closest("[data-q]"); addToCart(b.dataset.q, Number(b.dataset.d)); return; }
   if(t.closest(".tab")){ cat = t.closest(".tab").dataset.c; renderTabs(); renderMenu(); return; }
   
-  if(t.closest('[data-act="login"]')){ 
-    const enteredPin = $("#pin").value.trim();
+ if(t.closest('[data-act="login"]')){ 
+    const pinInput = $("#pin");
+    const msg = $("#pinMsg");
+    if(!pinInput) return;
+    const enteredPin = pinInput.value.trim();
+    
+    if(!enteredPin) {
+      if(msg) msg.textContent = "Please enter your PIN.";
+      return;
+    }
+
+    if(msg) msg.textContent = "Verifying...";
     verifyStaffPin(enteredPin).then(isValid => {
       if(isValid){ 
         sessionStorage.setItem("wl_auth", "1"); 
         openDev(); 
       } else { 
-        $("#pinMsg").textContent = "Wrong PIN."; 
+        if(msg) msg.textContent = "Wrong PIN."; 
       }
+    }).catch(err => {
+      if(msg) msg.textContent = "Login error. Try again.";
     });
     return;
   }
@@ -741,7 +753,16 @@ document.addEventListener("click", e => {
   if(t.closest('[data-act="refresh"]')){ openDev(); return; }
   if(t.closest('[data-act="logout"]')){ sessionStorage.removeItem("wl_auth"); pinScreen(); return; }
 });
-
+// Allow pressing Enter inside the PIN input box
+document.addEventListener("keydown", e => {
+  if(e.key === "Enter") {
+    const pinInput = $("#pin");
+    const loginBtn = document.querySelector('[data-act="login"]');
+    if(pinInput && document.activeElement === pinInput && loginBtn) {
+      loginBtn.click();
+    }
+  }
+});
 const toggleBtn = $("#toggleMenuBtn");
 const menuGrid = $("#grid");
 const toolsBox = $(".tools");
